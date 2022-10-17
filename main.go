@@ -7,6 +7,7 @@ import (
   "fmt"
   "time"
   "sync"
+  "rhymald/mag-gamma/player"
 )
 
 type PowerState struct {
@@ -24,10 +25,10 @@ type Player struct {
   Heat map[string]float64
   OverHeat map[string]float64
   XYZ [3]float64
-  ElemEnv ElementalAffinization
-  ElemExt ElementalAffinization
-  // ElemAff ElementalAffinization
-  ElemInt ElementalAffinization
+  // ElemEnv ElementalAffinization
+  // ElemExt ElementalAffinization
+  // // ElemAff ElementalAffinization
+  // ElemInt ElementalAffinization
   Resistance [8]float64
   Name string // character name
   Class float64 // born random
@@ -59,7 +60,9 @@ var (
   AllElements [9]string = [9]string{"Common", "Air", "Fire", "Earth", "Water", "Void", "Mallom", "Noise", "Resonance"}
   ElemSigns [9]string = [9]string{"✳️ ", "☁️ ", "🔥", "⛰ ", "🧊", "🌑", "🩸", "🎶", "🌟"}
   Environment []PowerState
+
   You Player
+  YourElemState player.ElementalState
 )
 
 func init() {
@@ -148,106 +151,106 @@ func Orienting() {
       }
     }
   }
-  You.ElemEnv = ElementalAffinization{}
+  YourElemState = player.ElementalState{}
   for _, affection := range affectingPlaces {
     for i:=1;i<9;i++ {
       if affection.Element == AllElements[i] {
-        You.ElemEnv[i].Creation += affection.Creation
-        You.ElemEnv[i].Alteration += affection.Alteration
-        You.ElemEnv[i].Destruction += affection.Destruction
+        YourElemState.External[i].Creation += affection.Creation
+        YourElemState.External[i].Alteration += affection.Alteration
+        YourElemState.External[i].Destruction += affection.Destruction
       }
     }
   }
 }
 func InnerAffinization() {
-  You.ElemExt = ElementalAffinization{}
-  You.ElemInt = ElementalAffinization{}
+  // YourElemState.Empowered = ElementalAffinization{}
+  // YourElemState.Internal = ElementalAffinization{}
   // You.ElemAff = ElementalAffinization{}
   // Internal
   for _, each := range You.StreamStrings {
-    You.ElemInt[0].Creation += each.Creation // + You.ElemExt[0].Creation)
-    You.ElemInt[0].Alteration += each.Alteration //  + You.ElemExt[0].Alteration)
-    You.ElemInt[0].Destruction += each.Destruction //    + You.ElemExt[0].Destruction)
+    YourElemState.Internal[0].Creation += each.Creation // + YourElemState.Empowered[0].Creation)
+    YourElemState.Internal[0].Alteration += each.Alteration //  + YourElemState.Empowered[0].Alteration)
+    YourElemState.Internal[0].Destruction += each.Destruction //    + YourElemState.Empowered[0].Destruction)
     if each.Element != "Common" {
-      You.ElemInt[ElemToInt(each.Element)].Creation += each.Creation // + You.ElemExt[0].Creation)
-      You.ElemInt[ElemToInt(each.Element)].Alteration += each.Alteration //  + You.ElemExt[0].Alteration)
-      You.ElemInt[ElemToInt(each.Element)].Destruction += each.Destruction //    + You.ElemExt[0].Destruction)
+      YourElemState.Internal[ElemToInt(each.Element)].Creation += each.Creation // + YourElemState.Empowered[0].Creation)
+      YourElemState.Internal[ElemToInt(each.Element)].Alteration += each.Alteration //  + YourElemState.Empowered[0].Alteration)
+      YourElemState.Internal[ElemToInt(each.Element)].Destruction += each.Destruction //    + YourElemState.Empowered[0].Destruction)
     }
   }
   // External basic
-  You.ElemExt[1].Creation    = math.Sqrt(7-You.Class) * ( You.ElemEnv[1].Creation    + You.ElemEnv[3].Destruction) - You.ElemEnv[2].Destruction * math.Sqrt(You.Class)
-  You.ElemExt[1].Alteration  = math.Sqrt(7-You.Class) * ( You.ElemEnv[1].Alteration  + You.ElemEnv[3].Alteration)  - You.ElemEnv[2].Alteration  * math.Sqrt(You.Class)
-  You.ElemExt[1].Destruction = math.Sqrt(7-You.Class) * ( You.ElemEnv[1].Destruction + You.ElemEnv[3].Creation)    - You.ElemEnv[2].Creation    * math.Sqrt(You.Class)
-  You.ElemExt[2].Creation    = math.Sqrt(7-You.Class) * ( You.ElemEnv[2].Creation    + You.ElemEnv[1].Destruction) - You.ElemEnv[4].Destruction * math.Sqrt(You.Class)
-  You.ElemExt[2].Alteration  = math.Sqrt(7-You.Class) * ( You.ElemEnv[2].Alteration  + You.ElemEnv[1].Alteration)  - You.ElemEnv[4].Alteration  * math.Sqrt(You.Class)
-  You.ElemExt[2].Destruction = math.Sqrt(7-You.Class) * ( You.ElemEnv[2].Destruction + You.ElemEnv[1].Creation)    - You.ElemEnv[4].Creation    * math.Sqrt(You.Class)
-  You.ElemExt[3].Creation    = math.Sqrt(7-You.Class) * ( You.ElemEnv[3].Creation    + You.ElemEnv[4].Destruction) - You.ElemEnv[1].Destruction * math.Sqrt(You.Class)
-  You.ElemExt[3].Alteration  = math.Sqrt(7-You.Class) * ( You.ElemEnv[3].Alteration  + You.ElemEnv[4].Alteration)  - You.ElemEnv[1].Alteration  * math.Sqrt(You.Class)
-  You.ElemExt[3].Destruction = math.Sqrt(7-You.Class) * ( You.ElemEnv[3].Destruction + You.ElemEnv[4].Creation)    - You.ElemEnv[1].Creation    * math.Sqrt(You.Class)
-  You.ElemExt[4].Creation    = math.Sqrt(7-You.Class) * ( You.ElemEnv[4].Creation    + You.ElemEnv[2].Destruction) - You.ElemEnv[3].Destruction * math.Sqrt(You.Class)
-  You.ElemExt[4].Alteration  = math.Sqrt(7-You.Class) * ( You.ElemEnv[4].Alteration  + You.ElemEnv[2].Alteration)  - You.ElemEnv[3].Alteration  * math.Sqrt(You.Class)
-  You.ElemExt[4].Destruction = math.Sqrt(7-You.Class) * ( You.ElemEnv[4].Destruction + You.ElemEnv[2].Creation)    - You.ElemEnv[3].Creation    * math.Sqrt(You.Class)
+  YourElemState.Empowered[1].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[1].Creation    + YourElemState.External[3].Destruction) - YourElemState.External[2].Destruction * math.Sqrt(You.Class)
+  YourElemState.Empowered[1].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[1].Alteration  + YourElemState.External[3].Alteration)  - YourElemState.External[2].Alteration  * math.Sqrt(You.Class)
+  YourElemState.Empowered[1].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[1].Destruction + YourElemState.External[3].Creation)    - YourElemState.External[2].Creation    * math.Sqrt(You.Class)
+  YourElemState.Empowered[2].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[2].Creation    + YourElemState.External[1].Destruction) - YourElemState.External[4].Destruction * math.Sqrt(You.Class)
+  YourElemState.Empowered[2].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[2].Alteration  + YourElemState.External[1].Alteration)  - YourElemState.External[4].Alteration  * math.Sqrt(You.Class)
+  YourElemState.Empowered[2].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[2].Destruction + YourElemState.External[1].Creation)    - YourElemState.External[4].Creation    * math.Sqrt(You.Class)
+  YourElemState.Empowered[3].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[3].Creation    + YourElemState.External[4].Destruction) - YourElemState.External[1].Destruction * math.Sqrt(You.Class)
+  YourElemState.Empowered[3].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[3].Alteration  + YourElemState.External[4].Alteration)  - YourElemState.External[1].Alteration  * math.Sqrt(You.Class)
+  YourElemState.Empowered[3].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[3].Destruction + YourElemState.External[4].Creation)    - YourElemState.External[1].Creation    * math.Sqrt(You.Class)
+  YourElemState.Empowered[4].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[4].Creation    + YourElemState.External[2].Destruction) - YourElemState.External[3].Destruction * math.Sqrt(You.Class)
+  YourElemState.Empowered[4].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[4].Alteration  + YourElemState.External[2].Alteration)  - YourElemState.External[3].Alteration  * math.Sqrt(You.Class)
+  YourElemState.Empowered[4].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[4].Destruction + YourElemState.External[2].Creation)    - YourElemState.External[3].Creation    * math.Sqrt(You.Class)
   // v void - extra consumption
-  You.ElemExt[5].Creation    = math.Sqrt(7-You.Class) * ( You.ElemEnv[5].Creation) //    + You.ElemExt[5].Creation)
-  You.ElemExt[5].Alteration  = math.Sqrt(7-You.Class) * ( You.ElemEnv[5].Alteration) //  + You.ElemExt[5].Alteration)
-  You.ElemExt[5].Destruction = math.Sqrt(7-You.Class) * ( You.ElemEnv[5].Destruction) // + You.ElemExt[5].Destruction)
+  YourElemState.Empowered[5].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[5].Creation) //    + YourElemState.Empowered[5].Creation)
+  YourElemState.Empowered[5].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[5].Alteration) //  + YourElemState.Empowered[5].Alteration)
+  YourElemState.Empowered[5].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[5].Destruction) // + YourElemState.Empowered[5].Destruction)
   // v deviant - extra overheat
-  You.ElemExt[6].Creation    = math.Sqrt(7-You.Class) * ( You.ElemEnv[6].Creation    + 2 * math.Sqrt(You.ElemEnv[4].Creation    * You.ElemEnv[2].Creation)) // + You.ElemExt[6].Creation    )
-  You.ElemExt[6].Alteration  = math.Sqrt(7-You.Class) * ( You.ElemEnv[6].Alteration  + 2 * math.Sqrt(You.ElemEnv[4].Alteration  * You.ElemEnv[2].Creation)) // + You.ElemExt[6].Alteration  )
-  You.ElemExt[6].Destruction = math.Sqrt(7-You.Class) * ( You.ElemEnv[6].Destruction + 2 * math.Sqrt(You.ElemEnv[4].Destruction * You.ElemEnv[2].Creation)) // + You.ElemExt[6].Destruction )
-  You.ElemExt[7].Creation    = math.Sqrt(7-You.Class) * ( You.ElemEnv[7].Creation    + 2 * math.Sqrt(You.ElemEnv[3].Creation    * You.ElemEnv[1].Creation)) //  + You.ElemExt[7].Creation    )
-  You.ElemExt[7].Alteration  = math.Sqrt(7-You.Class) * ( You.ElemEnv[7].Alteration  + 2 * math.Sqrt(You.ElemEnv[3].Alteration  * You.ElemEnv[1].Creation)) //  + You.ElemExt[7].Alteration  )
-  You.ElemExt[7].Destruction = math.Sqrt(7-You.Class) * ( You.ElemEnv[7].Destruction + 2 * math.Sqrt(You.ElemEnv[3].Destruction * You.ElemEnv[1].Creation)) //  + You.ElemExt[7].Destruction )
+  YourElemState.Empowered[6].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[6].Creation    + 2 * math.Sqrt(YourElemState.External[4].Creation    * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Creation    )
+  YourElemState.Empowered[6].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[6].Alteration  + 2 * math.Sqrt(YourElemState.External[4].Alteration  * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Alteration  )
+  YourElemState.Empowered[6].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[6].Destruction + 2 * math.Sqrt(YourElemState.External[4].Destruction * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Destruction )
+  YourElemState.Empowered[7].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[7].Creation    + 2 * math.Sqrt(YourElemState.External[3].Creation    * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Creation    )
+  YourElemState.Empowered[7].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[7].Alteration  + 2 * math.Sqrt(YourElemState.External[3].Alteration  * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Alteration  )
+  YourElemState.Empowered[7].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[7].Destruction + 2 * math.Sqrt(YourElemState.External[3].Destruction * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Destruction )
   // v rarest - extra overheat and consumption
-  You.ElemExt[8].Creation    = math.Sqrt(7-You.Class) * ( You.ElemEnv[8].Alteration + You.ElemEnv[8].Creation   )//  + You.ElemExt[8].Creation)
-  You.ElemExt[8].Alteration  = math.Sqrt(7-You.Class) * ( You.ElemEnv[8].Creation   + You.ElemEnv[8].Destruction)//  + You.ElemExt[8].Alteration)
-  You.ElemExt[8].Destruction = math.Sqrt(7-You.Class) * ( You.ElemEnv[8].Alteration + You.ElemEnv[8].Destruction) // + You.ElemExt[8].Destruction)
+  YourElemState.Empowered[8].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[8].Alteration + YourElemState.External[8].Creation   )//  + YourElemState.Empowered[8].Creation)
+  YourElemState.Empowered[8].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[8].Creation   + YourElemState.External[8].Destruction)//  + YourElemState.Empowered[8].Alteration)
+  YourElemState.Empowered[8].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[8].Alteration + YourElemState.External[8].Destruction) // + YourElemState.Empowered[8].Destruction)
   // Finalizing
-  You.ElemExt[0].Creation = math.Sqrt(7-You.Class) * You.ElemEnv[8].Creation - You.ElemEnv[5].Destruction * math.Sqrt(You.Class) + You.ElemInt[0].Creation
-  You.ElemExt[0].Alteration = math.Sqrt(7-You.Class) * You.ElemEnv[8].Alteration - You.ElemEnv[5].Alteration * math.Sqrt(You.Class) + You.ElemInt[0].Alteration
-  You.ElemExt[0].Destruction = math.Sqrt(7-You.Class) * You.ElemEnv[8].Destruction - You.ElemEnv[5].Creation * math.Sqrt(You.Class) + You.ElemInt[0].Destruction
+  YourElemState.Empowered[0].Creation = math.Sqrt(7-You.Class) * YourElemState.External[8].Creation - YourElemState.External[5].Destruction * math.Sqrt(You.Class) + YourElemState.Internal[0].Creation
+  YourElemState.Empowered[0].Alteration = math.Sqrt(7-You.Class) * YourElemState.External[8].Alteration - YourElemState.External[5].Alteration * math.Sqrt(You.Class) + YourElemState.Internal[0].Alteration
+  YourElemState.Empowered[0].Destruction = math.Sqrt(7-You.Class) * YourElemState.External[8].Destruction - YourElemState.External[5].Creation * math.Sqrt(You.Class) + YourElemState.Internal[0].Destruction
   for i:=1; i<9; i++ {
-    // if You.ElemExt[i].Creation != 0 {
-    //   You.ElemAff[i].Creation += You.ElemExt[i].Creation + You.ElemInt[i].Creation
-    //   You.ElemAff[i].Alteration += You.ElemExt[i].Alteration + You.ElemInt[i].Alteration
-    //   You.ElemAff[i].Destruction += You.ElemExt[i].Destruction + You.ElemInt[i].Destruction
+    // if YourElemState.Empowered[i].Creation != 0 {
+    //   You.ElemAff[i].Creation += YourElemState.Empowered[i].Creation + YourElemState.Internal[i].Creation
+    //   You.ElemAff[i].Alteration += YourElemState.Empowered[i].Alteration + YourElemState.Internal[i].Alteration
+    //   You.ElemAff[i].Destruction += YourElemState.Empowered[i].Destruction + YourElemState.Internal[i].Destruction
     // }
-    if You.ElemInt[i].Creation*You.ElemInt[i].Destruction != 0 { You.Resistance[i-1] = You.ElemInt[i].Destruction * You.ElemInt[i].Creation }
+    if YourElemState.Internal[i].Creation*YourElemState.Internal[i].Destruction != 0 { You.Resistance[i-1] = YourElemState.Internal[i].Destruction * YourElemState.Internal[i].Creation }
   }
 }
 func PlotEnvAff() {
   i := 0
   if verbose {
     fmt.Printf("\nDEBUG [fundamental attribute stats]: ")
-    if You.ElemExt[0].Creation != 0 {fmt.Printf("%s ✳️  ─── %1.2f'vitality ─── %1.2f'concentration ─── %1.2f'power", elbr, You.ElemExt[0].Creation, You.ElemExt[0].Alteration, You.ElemExt[0].Destruction)}
+    if YourElemState.Empowered[0].Creation != 0 {fmt.Printf("%s ✳️  ─── %1.2f'vitality ─── %1.2f'concentration ─── %1.2f'power", elbr, YourElemState.Empowered[0].Creation, YourElemState.Empowered[0].Alteration, YourElemState.Empowered[0].Destruction)}
   } else {
     fmt.Printf("%s INFO [fundamental attribute balance]: ", cbr)
-    summ := You.ElemExt[0].Creation+You.ElemExt[0].Alteration+You.ElemExt[0].Destruction
-    if You.ElemExt[0].Creation != 0 {fmt.Printf("%s ✳️  ─── %2.1f%%'vitality ─── %2.1f%%'concentration ─── %2.1f%%'power", elbr, You.ElemExt[0].Creation/summ*100, You.ElemExt[0].Alteration/summ*100, You.ElemExt[0].Destruction/summ*100)}
+    summ := YourElemState.Empowered[0].Creation+YourElemState.Empowered[0].Alteration+YourElemState.Empowered[0].Destruction
+    if YourElemState.Empowered[0].Creation != 0 {fmt.Printf("%s ✳️  ─── %2.1f%%'vitality ─── %2.1f%%'concentration ─── %2.1f%%'power", elbr, YourElemState.Empowered[0].Creation/summ*100, YourElemState.Empowered[0].Alteration/summ*100, YourElemState.Empowered[0].Destruction/summ*100)}
   }
   fmt.Printf("\nINFO [resistances]: ")
-  fmt.Printf(" %s:%1.2f ───", ElemSigns[0], (You.ElemInt[0].Creation)*(You.ElemInt[0].Alteration)*(You.ElemInt[0].Destruction) )
+  fmt.Printf(" %s:%1.2f ───", ElemSigns[0], (YourElemState.Internal[0].Creation)*(YourElemState.Internal[0].Alteration)*(YourElemState.Internal[0].Destruction) )
   for i:=0; i<8; i++ { if You.Resistance[i] != 0 { fmt.Printf(" %s:%1.2f ───", ElemSigns[i+1], You.Resistance[i] ) } }
   if verbose {
     fmt.Printf("\nDEBUG [surrending elemental state]: ")
-    if You.ElemEnv[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, You.ElemEnv[1].Creation, You.ElemEnv[1].Alteration, You.ElemEnv[1].Destruction) ; i++}
-    if You.ElemEnv[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, You.ElemEnv[2].Creation, You.ElemEnv[2].Alteration, You.ElemEnv[2].Destruction) ; i++}
-    if You.ElemEnv[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, You.ElemEnv[3].Creation, You.ElemEnv[3].Alteration, You.ElemEnv[3].Destruction) ; i++}
-    if You.ElemEnv[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, You.ElemEnv[4].Creation, You.ElemEnv[4].Alteration, You.ElemEnv[4].Destruction) ; i++}
-    if You.ElemEnv[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, You.ElemEnv[5].Creation, You.ElemEnv[5].Alteration, You.ElemEnv[5].Destruction) ; i++}
-    if You.ElemEnv[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, You.ElemEnv[6].Creation, You.ElemEnv[6].Alteration, You.ElemEnv[6].Destruction) ; i++}
-    if You.ElemEnv[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, You.ElemEnv[7].Creation, You.ElemEnv[7].Alteration, You.ElemEnv[7].Destruction) ; i++}
-    if You.ElemEnv[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, You.ElemEnv[8].Creation, You.ElemEnv[8].Alteration, You.ElemEnv[8].Destruction) ; i++}
+    if YourElemState.External[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, YourElemState.External[1].Creation, YourElemState.External[1].Alteration, YourElemState.External[1].Destruction) ; i++}
+    if YourElemState.External[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, YourElemState.External[2].Creation, YourElemState.External[2].Alteration, YourElemState.External[2].Destruction) ; i++}
+    if YourElemState.External[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, YourElemState.External[3].Creation, YourElemState.External[3].Alteration, YourElemState.External[3].Destruction) ; i++}
+    if YourElemState.External[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, YourElemState.External[4].Creation, YourElemState.External[4].Alteration, YourElemState.External[4].Destruction) ; i++}
+    if YourElemState.External[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, YourElemState.External[5].Creation, YourElemState.External[5].Alteration, YourElemState.External[5].Destruction) ; i++}
+    if YourElemState.External[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, YourElemState.External[6].Creation, YourElemState.External[6].Alteration, YourElemState.External[6].Destruction) ; i++}
+    if YourElemState.External[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, YourElemState.External[7].Creation, YourElemState.External[7].Alteration, YourElemState.External[7].Destruction) ; i++}
+    if YourElemState.External[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, YourElemState.External[8].Creation, YourElemState.External[8].Alteration, YourElemState.External[8].Destruction) ; i++}
     if i==0 {fmt.Printf("%s Totaly not affected by environment ", elbr)}
     fmt.Printf("\nDEBUG [incoming elemental affection]: ")
-    if You.ElemExt[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, You.ElemExt[1].Creation, You.ElemExt[1].Alteration, You.ElemExt[1].Destruction) }
-    if You.ElemExt[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, You.ElemExt[2].Creation, You.ElemExt[2].Alteration, You.ElemExt[2].Destruction) }
-    if You.ElemExt[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, You.ElemExt[3].Creation, You.ElemExt[3].Alteration, You.ElemExt[3].Destruction) }
-    if You.ElemExt[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, You.ElemExt[4].Creation, You.ElemExt[4].Alteration, You.ElemExt[4].Destruction) }
-    if You.ElemExt[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, You.ElemExt[5].Creation, You.ElemExt[5].Alteration, You.ElemExt[5].Destruction) }
-    if You.ElemExt[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, You.ElemExt[6].Creation, You.ElemExt[6].Alteration, You.ElemExt[6].Destruction) }
-    if You.ElemExt[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, You.ElemExt[7].Creation, You.ElemExt[7].Alteration, You.ElemExt[7].Destruction) }
-    if You.ElemExt[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, You.ElemExt[8].Creation, You.ElemExt[8].Alteration, You.ElemExt[8].Destruction) }
+    if YourElemState.Empowered[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, YourElemState.Empowered[1].Creation, YourElemState.Empowered[1].Alteration, YourElemState.Empowered[1].Destruction) }
+    if YourElemState.Empowered[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, YourElemState.Empowered[2].Creation, YourElemState.Empowered[2].Alteration, YourElemState.Empowered[2].Destruction) }
+    if YourElemState.Empowered[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, YourElemState.Empowered[3].Creation, YourElemState.Empowered[3].Alteration, YourElemState.Empowered[3].Destruction) }
+    if YourElemState.Empowered[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, YourElemState.Empowered[4].Creation, YourElemState.Empowered[4].Alteration, YourElemState.Empowered[4].Destruction) }
+    if YourElemState.Empowered[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, YourElemState.Empowered[5].Creation, YourElemState.Empowered[5].Alteration, YourElemState.Empowered[5].Destruction) }
+    if YourElemState.Empowered[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, YourElemState.Empowered[6].Creation, YourElemState.Empowered[6].Alteration, YourElemState.Empowered[6].Destruction) }
+    if YourElemState.Empowered[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, YourElemState.Empowered[7].Creation, YourElemState.Empowered[7].Alteration, YourElemState.Empowered[7].Destruction) }
+    if YourElemState.Empowered[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, YourElemState.Empowered[8].Creation, YourElemState.Empowered[8].Alteration, YourElemState.Empowered[8].Destruction) }
     if i==0 {fmt.Printf("%s Totaly not affected by environment ", elbr)}
     // fmt.Printf("\nDEBUG [finaly affecting elemental state]: ") -- dat will be curses
     // if You.ElemAff[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, You.ElemAff[1].Creation, You.ElemAff[1].Alteration, You.ElemAff[1].Destruction) }
@@ -260,14 +263,14 @@ func PlotEnvAff() {
     // if You.ElemAff[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, You.ElemAff[8].Creation, You.ElemAff[8].Alteration, You.ElemAff[8].Destruction) }
     // if i==0 {fmt.Printf("%s Totaly not affected by environment ", elbr)}
     fmt.Printf("\nDEBUG [internal elemental state]: ")
-    if You.ElemInt[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, You.ElemInt[1].Creation, You.ElemInt[1].Alteration, You.ElemInt[1].Destruction) }
-    if You.ElemInt[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, You.ElemInt[2].Creation, You.ElemInt[2].Alteration, You.ElemInt[2].Destruction) }
-    if You.ElemInt[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, You.ElemInt[3].Creation, You.ElemInt[3].Alteration, You.ElemInt[3].Destruction) }
-    if You.ElemInt[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, You.ElemInt[4].Creation, You.ElemInt[4].Alteration, You.ElemInt[4].Destruction) }
-    if You.ElemInt[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, You.ElemInt[5].Creation, You.ElemInt[5].Alteration, You.ElemInt[5].Destruction) }
-    if You.ElemInt[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, You.ElemInt[6].Creation, You.ElemInt[6].Alteration, You.ElemInt[6].Destruction) }
-    if You.ElemInt[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, You.ElemInt[7].Creation, You.ElemInt[7].Alteration, You.ElemInt[7].Destruction) }
-    if You.ElemInt[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, You.ElemInt[8].Creation, You.ElemInt[8].Alteration, You.ElemInt[8].Destruction) }
+    if YourElemState.Internal[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, YourElemState.Internal[1].Creation, YourElemState.Internal[1].Alteration, YourElemState.Internal[1].Destruction) }
+    if YourElemState.Internal[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, YourElemState.Internal[2].Creation, YourElemState.Internal[2].Alteration, YourElemState.Internal[2].Destruction) }
+    if YourElemState.Internal[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, YourElemState.Internal[3].Creation, YourElemState.Internal[3].Alteration, YourElemState.Internal[3].Destruction) }
+    if YourElemState.Internal[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, YourElemState.Internal[4].Creation, YourElemState.Internal[4].Alteration, YourElemState.Internal[4].Destruction) }
+    if YourElemState.Internal[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, YourElemState.Internal[5].Creation, YourElemState.Internal[5].Alteration, YourElemState.Internal[5].Destruction) }
+    if YourElemState.Internal[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, YourElemState.Internal[6].Creation, YourElemState.Internal[6].Alteration, YourElemState.Internal[6].Destruction) }
+    if YourElemState.Internal[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, YourElemState.Internal[7].Creation, YourElemState.Internal[7].Alteration, YourElemState.Internal[7].Destruction) }
+    if YourElemState.Internal[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, YourElemState.Internal[8].Creation, YourElemState.Internal[8].Alteration, YourElemState.Internal[8].Destruction) }
   }
 }
 
@@ -486,10 +489,10 @@ func DotTransferIn(e int) {
   if verbose {fmt.Printf("Absorbing dots:")}
   element := AllElements[e]
   if float64(len(You.Pool.Dots)) >= You.Pool.MaxVol+Log1479(You.Pool.MaxVol) { if verbose {fmt.Printf(" Full is energy.\n")} ; time.Sleep( time.Millisecond * time.Duration( 4000 )) ; return }
-  weight := Log1479( You.ElemExt[e].Alteration ) * (1 + RNF()) / 2
+  weight := Log1479( YourElemState.Empowered[e].Alteration ) * (1 + RNF()) / 2
   dot := Dot{Element: element, Weight: weight}
   You.Pool.Dots = append(You.Pool.Dots, dot)
-  step := 32*math.Sqrt(1+math.Abs(You.ElemExt[e].Creation))
+  step := 32*math.Sqrt(1+math.Abs(YourElemState.Empowered[e].Creation))
   if verbose {fmt.Printf(" +%s'%1.2f", ES(element), weight )}
   if verbose {fmt.Printf(", - dot absorbed for %1.3fs.\n", math.Log2(step)/math.Sqrt(step)*math.Sqrt(weight))}
   time.Sleep( time.Millisecond * time.Duration( 1000* math.Log2(step)/math.Sqrt(step) *math.Sqrt(weight) ))
@@ -502,7 +505,7 @@ func DotTransferOut(e int) {
   if len(presense) == 0 { if verbose{fmt.Printf(" No such dots.\n")} ; time.Sleep( time.Millisecond * time.Duration( 4000 )) ; return }
   killer := presense[rand.New(rand.NewSource(time.Now().UnixNano())).Intn( len(presense) )]
   _, weight := MinusDot(killer)
-  step := 32*math.Sqrt(1+math.Abs(You.ElemExt[e].Destruction)) //Log1479(math.Abs(You.ElemExt[e].Destruction)) * (1 + RNF()) / 2
+  step := 32*math.Sqrt(1+math.Abs(YourElemState.Empowered[e].Destruction)) //Log1479(math.Abs(YourElemState.Empowered[e].Destruction)) * (1 + RNF()) / 2
   if verbose {fmt.Printf(" -%s'%1.2f", ES(element), weight)}
   if verbose {fmt.Printf(", - dot is lost for %1.3fs.\n", math.Log2(step)/math.Sqrt(step)/math.Sqrt(weight))}
   time.Sleep( time.Millisecond * time.Duration( 1000* math.Log2(step)/math.Sqrt(step) /math.Sqrt(weight) ))
@@ -510,11 +513,11 @@ func DotTransferOut(e int) {
 func Transferrence() {
   demand := [9]int{}
   cooldown := 0.0
-  for i, source := range You.ElemExt {
+  for i, source := range YourElemState.Empowered {
     count := 0.0
     if source.Creation < 0 { count = - math.Sqrt(1+math.Abs(source.Destruction)) * (1 + RNF()) / 2 } else { count = math.Sqrt(1+math.Abs(source.Creation)) * (1 + RNF()) / 2 }
     if i == 0 { count = 0 }
-    demand[i] = ChancedRound(count * Sign(You.ElemEnv[i].Creation))
+    demand[i] = ChancedRound(count * Sign(YourElemState.External[i].Creation))
     cooldown = math.Max(math.Abs(count) * 500, cooldown)
   }
   if cooldown == 0 { cooldown = 2000 }
