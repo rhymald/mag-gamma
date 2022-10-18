@@ -312,7 +312,7 @@ func PlayerBorn(class float64) {
   if You.Name == "Rhymald" || You.Name == "" {verbose = true}
   You.Health.Current = 1
 
-  player.NewBorn(&YourStreams, class, 5, 4917)
+  player.NewBorn(&YourStreams, class, 3.5, 4917)
   // Class randomizing
   // if class < 6.5 && class >= 0.5 {
   //   YourStreams.Class = class
@@ -373,7 +373,8 @@ func ListStrings() {
     counter.Creation += stream.Creation
     counter.Alteration += stream.Alteration
     counter.Destruction += stream.Destruction
-    fmt.Printf("%s %d ─── %s %1.2f'len ─── %1.2f'wid ─── %1.2f'pow ────── Volume: %1.1f ─────", elbr,i+1, ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction, (stream.Alteration)*(stream.Destruction)*(stream.Creation))
+    fmt.Printf("%s %d ─── %s %1.1f'len ─── %1.2f'wid ─── %1.3f'pow ", elbr,i+1, ES(stream.Element), stream.LWP[0], stream.LWP[1], stream.LWP[2])
+    if verbose {fmt.Printf("%s ─── %1.2f'len ─── %1.2f'wid ─── %1.2f'pow ────── Volume: %1.1f ─────", ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction, (stream.Alteration)*(stream.Destruction)*(stream.Creation))}
   }
   if verbose == false {PlotEnvAff()}
   fmt.Printf("%s Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.1f\n", ebr, counter.Creation, counter.Alteration, counter.Destruction, vols)
