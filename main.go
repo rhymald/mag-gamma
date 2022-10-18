@@ -8,6 +8,7 @@ import (
   "time"
   "sync"
   "rhymald/mag-gamma/player"
+  "rhymald/mag-gamma/primitives"
 )
 
 type PowerState struct {
@@ -63,6 +64,7 @@ var (
 
   You Player
   YourElemState player.ElementalState
+  YourStreams player.Streams
 )
 
 func init() {
@@ -73,7 +75,7 @@ func init() {
     go func() { for You.Health.Current > 0 {Regenerate()}    ; fmt.Println("FATAL: You are dead.")}()
     go func() { for You.Health.Current > 0 {Transferrence()} ; fmt.Println("FATAL: You are dead.")}()
   }()
-  fmt.Printf("SYSTEM [Start]:%s Welcome to the world, %s@%1.0f.\n", ebr, You.Name, You.Class*100000)
+  fmt.Printf("SYSTEM [Start]:%s Welcome to the world, %s@%1.0f.\n", ebr, You.Name, YourStreams.Class*100000)
 }
 
 func main() {
@@ -167,7 +169,7 @@ func InnerAffinization() {
   // YourElemState.Internal = ElementalAffinization{}
   // You.ElemAff = ElementalAffinization{}
   // Internal
-  for _, each := range You.StreamStrings {
+  for _, each := range YourStreams.List {
     YourElemState.Internal[0].Creation += each.Creation // + YourElemState.Empowered[0].Creation)
     YourElemState.Internal[0].Alteration += each.Alteration //  + YourElemState.Empowered[0].Alteration)
     YourElemState.Internal[0].Destruction += each.Destruction //    + YourElemState.Empowered[0].Destruction)
@@ -178,37 +180,37 @@ func InnerAffinization() {
     }
   }
   // External basic
-  YourElemState.Empowered[1].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[1].Creation    + YourElemState.External[3].Destruction) - YourElemState.External[2].Destruction * math.Sqrt(You.Class)
-  YourElemState.Empowered[1].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[1].Alteration  + YourElemState.External[3].Alteration)  - YourElemState.External[2].Alteration  * math.Sqrt(You.Class)
-  YourElemState.Empowered[1].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[1].Destruction + YourElemState.External[3].Creation)    - YourElemState.External[2].Creation    * math.Sqrt(You.Class)
-  YourElemState.Empowered[2].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[2].Creation    + YourElemState.External[1].Destruction) - YourElemState.External[4].Destruction * math.Sqrt(You.Class)
-  YourElemState.Empowered[2].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[2].Alteration  + YourElemState.External[1].Alteration)  - YourElemState.External[4].Alteration  * math.Sqrt(You.Class)
-  YourElemState.Empowered[2].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[2].Destruction + YourElemState.External[1].Creation)    - YourElemState.External[4].Creation    * math.Sqrt(You.Class)
-  YourElemState.Empowered[3].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[3].Creation    + YourElemState.External[4].Destruction) - YourElemState.External[1].Destruction * math.Sqrt(You.Class)
-  YourElemState.Empowered[3].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[3].Alteration  + YourElemState.External[4].Alteration)  - YourElemState.External[1].Alteration  * math.Sqrt(You.Class)
-  YourElemState.Empowered[3].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[3].Destruction + YourElemState.External[4].Creation)    - YourElemState.External[1].Creation    * math.Sqrt(You.Class)
-  YourElemState.Empowered[4].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[4].Creation    + YourElemState.External[2].Destruction) - YourElemState.External[3].Destruction * math.Sqrt(You.Class)
-  YourElemState.Empowered[4].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[4].Alteration  + YourElemState.External[2].Alteration)  - YourElemState.External[3].Alteration  * math.Sqrt(You.Class)
-  YourElemState.Empowered[4].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[4].Destruction + YourElemState.External[2].Creation)    - YourElemState.External[3].Creation    * math.Sqrt(You.Class)
+  YourElemState.Empowered[1].Creation    = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[1].Creation    + YourElemState.External[3].Destruction) - YourElemState.External[2].Destruction * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[1].Alteration  = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[1].Alteration  + YourElemState.External[3].Alteration)  - YourElemState.External[2].Alteration  * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[1].Destruction = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[1].Destruction + YourElemState.External[3].Creation)    - YourElemState.External[2].Creation    * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[2].Creation    = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[2].Creation    + YourElemState.External[1].Destruction) - YourElemState.External[4].Destruction * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[2].Alteration  = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[2].Alteration  + YourElemState.External[1].Alteration)  - YourElemState.External[4].Alteration  * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[2].Destruction = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[2].Destruction + YourElemState.External[1].Creation)    - YourElemState.External[4].Creation    * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[3].Creation    = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[3].Creation    + YourElemState.External[4].Destruction) - YourElemState.External[1].Destruction * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[3].Alteration  = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[3].Alteration  + YourElemState.External[4].Alteration)  - YourElemState.External[1].Alteration  * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[3].Destruction = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[3].Destruction + YourElemState.External[4].Creation)    - YourElemState.External[1].Creation    * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[4].Creation    = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[4].Creation    + YourElemState.External[2].Destruction) - YourElemState.External[3].Destruction * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[4].Alteration  = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[4].Alteration  + YourElemState.External[2].Alteration)  - YourElemState.External[3].Alteration  * math.Sqrt(YourStreams.Class)
+  YourElemState.Empowered[4].Destruction = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[4].Destruction + YourElemState.External[2].Creation)    - YourElemState.External[3].Creation    * math.Sqrt(YourStreams.Class)
   // v void - extra consumption
-  YourElemState.Empowered[5].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[5].Creation) //    + YourElemState.Empowered[5].Creation)
-  YourElemState.Empowered[5].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[5].Alteration) //  + YourElemState.Empowered[5].Alteration)
-  YourElemState.Empowered[5].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[5].Destruction) // + YourElemState.Empowered[5].Destruction)
+  YourElemState.Empowered[5].Creation    = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[5].Creation) //    + YourElemState.Empowered[5].Creation)
+  YourElemState.Empowered[5].Alteration  = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[5].Alteration) //  + YourElemState.Empowered[5].Alteration)
+  YourElemState.Empowered[5].Destruction = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[5].Destruction) // + YourElemState.Empowered[5].Destruction)
   // v deviant - extra overheat
-  YourElemState.Empowered[6].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[6].Creation    + 2 * math.Sqrt(YourElemState.External[4].Creation    * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Creation    )
-  YourElemState.Empowered[6].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[6].Alteration  + 2 * math.Sqrt(YourElemState.External[4].Alteration  * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Alteration  )
-  YourElemState.Empowered[6].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[6].Destruction + 2 * math.Sqrt(YourElemState.External[4].Destruction * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Destruction )
-  YourElemState.Empowered[7].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[7].Creation    + 2 * math.Sqrt(YourElemState.External[3].Creation    * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Creation    )
-  YourElemState.Empowered[7].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[7].Alteration  + 2 * math.Sqrt(YourElemState.External[3].Alteration  * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Alteration  )
-  YourElemState.Empowered[7].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[7].Destruction + 2 * math.Sqrt(YourElemState.External[3].Destruction * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Destruction )
+  YourElemState.Empowered[6].Creation    = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[6].Creation    + 2 * math.Sqrt(YourElemState.External[4].Creation    * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Creation    )
+  YourElemState.Empowered[6].Alteration  = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[6].Alteration  + 2 * math.Sqrt(YourElemState.External[4].Alteration  * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Alteration  )
+  YourElemState.Empowered[6].Destruction = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[6].Destruction + 2 * math.Sqrt(YourElemState.External[4].Destruction * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Destruction )
+  YourElemState.Empowered[7].Creation    = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[7].Creation    + 2 * math.Sqrt(YourElemState.External[3].Creation    * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Creation    )
+  YourElemState.Empowered[7].Alteration  = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[7].Alteration  + 2 * math.Sqrt(YourElemState.External[3].Alteration  * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Alteration  )
+  YourElemState.Empowered[7].Destruction = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[7].Destruction + 2 * math.Sqrt(YourElemState.External[3].Destruction * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Destruction )
   // v rarest - extra overheat and consumption
-  YourElemState.Empowered[8].Creation    = math.Sqrt(7-You.Class) * ( YourElemState.External[8].Alteration + YourElemState.External[8].Creation   )//  + YourElemState.Empowered[8].Creation)
-  YourElemState.Empowered[8].Alteration  = math.Sqrt(7-You.Class) * ( YourElemState.External[8].Creation   + YourElemState.External[8].Destruction)//  + YourElemState.Empowered[8].Alteration)
-  YourElemState.Empowered[8].Destruction = math.Sqrt(7-You.Class) * ( YourElemState.External[8].Alteration + YourElemState.External[8].Destruction) // + YourElemState.Empowered[8].Destruction)
+  YourElemState.Empowered[8].Creation    = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[8].Alteration + YourElemState.External[8].Creation   )//  + YourElemState.Empowered[8].Creation)
+  YourElemState.Empowered[8].Alteration  = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[8].Creation   + YourElemState.External[8].Destruction)//  + YourElemState.Empowered[8].Alteration)
+  YourElemState.Empowered[8].Destruction = math.Sqrt(7-YourStreams.Class) * ( YourElemState.External[8].Alteration + YourElemState.External[8].Destruction) // + YourElemState.Empowered[8].Destruction)
   // Finalizing
-  YourElemState.Empowered[0].Creation = math.Sqrt(7-You.Class) * YourElemState.External[8].Creation - YourElemState.External[5].Destruction * math.Sqrt(You.Class) + YourElemState.Internal[0].Creation
-  YourElemState.Empowered[0].Alteration = math.Sqrt(7-You.Class) * YourElemState.External[8].Alteration - YourElemState.External[5].Alteration * math.Sqrt(You.Class) + YourElemState.Internal[0].Alteration
-  YourElemState.Empowered[0].Destruction = math.Sqrt(7-You.Class) * YourElemState.External[8].Destruction - YourElemState.External[5].Creation * math.Sqrt(You.Class) + YourElemState.Internal[0].Destruction
+  YourElemState.Empowered[0].Creation = math.Sqrt(7-YourStreams.Class) * YourElemState.External[8].Creation - YourElemState.External[5].Destruction * math.Sqrt(YourStreams.Class) + YourElemState.Internal[0].Creation
+  YourElemState.Empowered[0].Alteration = math.Sqrt(7-YourStreams.Class) * YourElemState.External[8].Alteration - YourElemState.External[5].Alteration * math.Sqrt(YourStreams.Class) + YourElemState.Internal[0].Alteration
+  YourElemState.Empowered[0].Destruction = math.Sqrt(7-YourStreams.Class) * YourElemState.External[8].Destruction - YourElemState.External[5].Creation * math.Sqrt(YourStreams.Class) + YourElemState.Internal[0].Destruction
   for i:=1; i<9; i++ {
     // if YourElemState.Empowered[i].Creation != 0 {
     //   You.ElemAff[i].Creation += YourElemState.Empowered[i].Creation + YourElemState.Internal[i].Creation
@@ -311,26 +313,26 @@ func PlayerBorn(class float64) {
   You.Health.Current = 1
   // Class randomizing
   if class < 6.5 && class >= 0.5 {
-    You.Class = class
+    YourStreams.Class = class
   } else {
     playerCountInDB := math.Round(math.Log10(  4917  )+3.5)
-    You.Class = class
+    YourStreams.Class = class
     for j:=0; j<int(playerCountInDB); j++ {
-      You.Class += (RNF()*6+0.499999) /playerCountInDB
+      YourStreams.Class += (RNF()*6+0.499999) /playerCountInDB
     }
   }
   // Stream attachment
-  countOfStreams := math.Round(You.Class)
+  countOfStreams := math.Round(YourStreams.Class)
   standart := .9
   standart = math.Cbrt(standart / countOfStreams)
   // fmt.Println(standart)
   You.Health.Max = standart * 16
-  empowering := ( - countOfStreams + You.Class )
+  empowering := ( - countOfStreams + YourStreams.Class )
   if empowering < 0 { empowering = 1 / (1 + math.Abs(empowering)) } else { empowering = (1 + math.Abs(empowering)) }
   empowering = math.Cbrt(empowering)
   if verbose {fmt.Printf("DEBUG [Player creation]: %d streams, %1.0f%% of power\n", int(countOfStreams), empowering*100)}
   // fmt.Printf("DEBUG [Player creation]:%s Count: %d, %1.2f%% of power\n", ebr, int(countOfStreams), empowering*100)
-  stringsMatrix := []Stream {}
+  stringsMatrix := []primitives.Stream{}
   lens, wids, pows, geomean := []float64 {}, []float64 {}, []float64 {}, 0.0
   for i:=0; i<int(countOfStreams); i++ {
     leni, widi, powi := 0.1+RNF(), 0.1+RNF(), 0.1+RNF()
@@ -341,7 +343,7 @@ func PlayerBorn(class float64) {
   }
   geomean = math.Pow(geomean, float64(1/countOfStreams/3))
   for i:=0; i<int(countOfStreams); i++ {
-    var strings Stream
+    var strings primitives.Stream
     strings.Element     = AllElements[0]
     strings.Creation    = lens[i] * empowering
     strings.Alteration  = wids[i]
@@ -352,7 +354,7 @@ func PlayerBorn(class float64) {
     You.Health.Max += healthBonus
   }
   fmt.Println("DEBUG: Max health:", You.Health.Max)
-  You.StreamStrings = stringsMatrix
+  YourStreams.List = stringsMatrix
   ExtendPools()
   InnerAffinization()
   ListStrings()
@@ -362,7 +364,7 @@ func ListStrings() {
   fmt.Printf("INFO [List strings]:")
   vols := 0.0
   counter.Creation, counter.Alteration, counter.Destruction = 0.0, 0.0, 0.0
-  for i, stream := range You.StreamStrings {
+  for i, stream := range YourStreams.List {
     vols += (stream.Alteration)*(stream.Destruction)*(stream.Creation)
     counter.Creation += stream.Creation
     counter.Alteration += stream.Alteration
@@ -375,7 +377,7 @@ func ListStrings() {
 func ExtendPools() {
   fmt.Printf("INFO [Extend dot capacity to maximum]:")
   old := You.Pool.MaxVol
-  for _, stream := range You.StreamStrings {
+  for _, stream := range YourStreams.List {
     You.Pool.MaxVol += 32*math.Sqrt(1+stream.Creation)
   }
   You.Pool.MaxVol = math.Round(You.Pool.MaxVol)
@@ -426,9 +428,9 @@ func EnergyStatus() {
 
 func GainDot() {
   if len(You.Pool.Dots) >= int(You.Pool.MaxVol) { time.Sleep( time.Millisecond * time.Duration( 4000 )) ; return }
-  picker := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(You.StreamStrings))
-  element := You.StreamStrings[picker].Element
-  weight := Log1479( You.StreamStrings[picker].Alteration ) * (1 + RNF()) / 2
+  picker := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(YourStreams.List))
+  element := YourStreams.List[picker].Element
+  weight := Log1479( YourStreams.List[picker].Alteration ) * (1 + RNF()) / 2
   dot := Dot{Element: element, Weight: weight}
   You.Pool.Dots = append(You.Pool.Dots, dot)
   if You.Health.Current < You.Health.Max {
@@ -455,7 +457,7 @@ func Regenerate() {
     GainDot()
   }
 }
-func CrackStream(stream Stream) { // need heat {
+func CrackStream(stream primitives.Stream) { // need heat {
   element := stream.Element
   weight := Log1479( stream.Destruction ) * (RNF() + RNF()) / 2
   dot := Dot{Element: element, Weight: weight}
@@ -465,10 +467,10 @@ func CrackStream(stream Stream) { // need heat {
 func EnergeticSurge(doze float64) { // need in time
   fmt.Printf("\n▲ YOU yelling [around]:%s CHEERS! A-ah...", ebr)
   if doze == 0 {
-    doze = 1 / You.StreamStrings[0].Destruction
-    for _, string := range You.StreamStrings { doze = math.Max(doze, 1 / string.Destruction) }
+    doze = 1 / YourStreams.List[0].Destruction
+    for _, string := range YourStreams.List { doze = math.Max(doze, 1 / string.Destruction) }
   }
-  for _, string := range You.StreamStrings {
+  for _, string := range YourStreams.List {
     i := 0.0
     for {
       CrackStream(string)
