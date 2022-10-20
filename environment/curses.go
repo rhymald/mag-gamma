@@ -5,7 +5,7 @@ import "fmt"
 
 // emulation, in future get from db
 func Cursing(environment *Location) {
-  fmt.Printf(" ┌─ DEBUG [Cursing]: reading bunch of negative power states - start.\n")
+  fmt.Printf(" ┌─ DEBUG [Location init][Cursing]: reading bunch of negative power states - start.\n")
   // state where fires are much dangerous
   driesFire := primitives.Stream{Element: "Fire", Creation: 5, Destruction: 8, Alteration: 3}
   Dries     := PowerState{ Area: 22.0, Nature: []primitives.Stream{driesFire}, Description: "Dry fields: dried plants.", Concentrated: false}
@@ -14,5 +14,5 @@ func Cursing(environment *Location) {
   var buffer []PowerState
   buffer = append(buffer, Dries)
   *&environment.Curses = buffer
-  fmt.Printf(" └─ DEBUG [Cursing]: reading bunch of negative power states - done.\n")
+  fmt.Printf(" └─ DEBUG [Location init][Cursing]: reading bunch of negative power states - done.\n")
 }
