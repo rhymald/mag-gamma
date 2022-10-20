@@ -12,14 +12,6 @@ import (
   "rhymald/mag-gamma/environment"
 )
 
-type PowerState struct {
-  Description string
-  Nature []Stream
-  Area float64
-  XYZs [][3]float64
-  Concentrated bool
-}
-
 type Player struct {
   Health struct {
     Current float64
@@ -40,7 +32,7 @@ type Player struct {
     MaxVol float64
   }
 }
-type ElementalAffinization [9]Stream
+// type ElementalAffinization [9]Stream
 type Stream struct {
   Element string
   Creation float64

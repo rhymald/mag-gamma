@@ -34,7 +34,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   empowering := ( - countOfStreams + stringsMatrix.Class )
   if empowering < 0 { empowering = 1 / math.Cbrt(1 + math.Abs(empowering)) } else { empowering = math.Cbrt(1 + math.Abs(empowering)) }
   empowering = math.Cbrt(empowering)
-  fmt.Printf("INFO [Player creation]: defined %d class (%d streams), %1.0f%% of power\n", int(stringsMatrix.Class*100000), int(countOfStreams), empowering*100)
+  fmt.Printf("INFO  [Player creation]: defined %d class (%d streams), %1.0f%% of power\n", int(stringsMatrix.Class*100000), int(countOfStreams), empowering*100)
   lens, wids, pows := []float64 {}, []float64 {}, []float64 {}
   slen, swid, spow := 0.0, 0.0, 0.0
   for i:=0; i<int(countOfStreams); i++ {
