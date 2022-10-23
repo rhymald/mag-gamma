@@ -16,6 +16,23 @@ var (
   ElemSigns   = primitives.ElemSigns
 )
 
+func PlotStreamList(list Streams, verbose bool) {
+  var counter primitives.Stream
+  fmt.Printf(" ┌─ INFO [List strings]:\n")
+  vols := 0.0
+  counter.Creation, counter.Alteration, counter.Destruction = 0.0, 0.0, 0.0
+  for i, stream := range list.List {
+    vols += (stream.Alteration)*(stream.Destruction)*(stream.Creation)
+    counter.Creation += stream.Creation
+    counter.Alteration += stream.Alteration
+    counter.Destruction += stream.Destruction
+    fmt.Printf(" ├─ %d %s %1.1f'len ── %1.2f'wid ── %1.3f'pow ──", i+1, primitives.ES(stream.Element), stream.LWP[0], stream.LWP[1], stream.LWP[2])
+    if verbose {fmt.Printf(" %1.2f'len ── %1.2f'wid ── %1.2f'pow ── Volume:%1.1f ──", stream.Creation, stream.Alteration, stream.Destruction, (stream.Alteration)*(stream.Destruction)*(stream.Creation))}
+    fmt.Println()
+  }
+  fmt.Printf(" └─ Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.1f ──\n", counter.Creation, counter.Alteration, counter.Destruction, vols)
+}
+
 func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount int) {
   fmt.Printf(" ┌─ DEBUG [Player creation][New initial streams]: start.\n ├─ ")
   stringsMatrix := Streams{}

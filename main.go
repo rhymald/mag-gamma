@@ -358,24 +358,24 @@ func PlayerBorn(class float64) {
   You.Health.Max += 100
   ExtendPools()
   InnerAffinization()
-  ListStrings()
+  player.PlotStreamList(YourStreams, verbose)
 }
-func ListStrings() {
-  var counter Stream
-  fmt.Printf("INFO [List strings]:")
-  vols := 0.0
-  counter.Creation, counter.Alteration, counter.Destruction = 0.0, 0.0, 0.0
-  for i, stream := range YourStreams.List {
-    vols += (stream.Alteration)*(stream.Destruction)*(stream.Creation)
-    counter.Creation += stream.Creation
-    counter.Alteration += stream.Alteration
-    counter.Destruction += stream.Destruction
-    fmt.Printf("%s %d ─── %s %1.1f'len ─── %1.2f'wid ─── %1.3f'pow ", elbr,i+1, primitives.ES(stream.Element), stream.LWP[0], stream.LWP[1], stream.LWP[2])
-    if verbose {fmt.Printf("%s ─── %1.2f'len ─── %1.2f'wid ─── %1.2f'pow ────── Volume: %1.1f ─────", primitives.ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction, (stream.Alteration)*(stream.Destruction)*(stream.Creation))}
-  }
-  if verbose == false {PlotEnvAff()}
-  fmt.Printf("%s Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.1f\n", ebr, counter.Creation, counter.Alteration, counter.Destruction, vols)
-}
+// func ListStrings() {
+//   var counter Stream
+//   fmt.Printf("INFO [List strings]:")
+//   vols := 0.0
+//   counter.Creation, counter.Alteration, counter.Destruction = 0.0, 0.0, 0.0
+//   for i, stream := range YourStreams.List {
+//     vols += (stream.Alteration)*(stream.Destruction)*(stream.Creation)
+//     counter.Creation += stream.Creation
+//     counter.Alteration += stream.Alteration
+//     counter.Destruction += stream.Destruction
+//     fmt.Printf("%s %d ─── %s %1.1f'len ─── %1.2f'wid ─── %1.3f'pow ", elbr,i+1, primitives.ES(stream.Element), stream.LWP[0], stream.LWP[1], stream.LWP[2])
+//     if verbose {fmt.Printf("%s ─── %1.2f'len ─── %1.2f'wid ─── %1.2f'pow ────── Volume: %1.1f ─────", primitives.ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction, (stream.Alteration)*(stream.Destruction)*(stream.Creation))}
+//   }
+//   if verbose == false {PlotEnvAff()}
+//   fmt.Printf("%s Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.1f\n", ebr, counter.Creation, counter.Alteration, counter.Destruction, vols)
+// }
 func ExtendPools() {
   fmt.Printf("INFO [Extend dot capacity to maximum]:")
   old := You.Pool.MaxVol
