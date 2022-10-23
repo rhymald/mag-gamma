@@ -18,7 +18,7 @@ var (
 
 func PlotStreamList(list Streams, verbose bool) {
   var counter primitives.Stream
-  fmt.Printf(" ┌─ INFO [List strings]:\n")
+  fmt.Printf(" ┌──── INFO [List strings]:\n")
   vols := 0.0
   counter.Creation, counter.Alteration, counter.Destruction = 0.0, 0.0, 0.0
   for i, stream := range list.List {
@@ -26,15 +26,16 @@ func PlotStreamList(list Streams, verbose bool) {
     counter.Creation += stream.Creation
     counter.Alteration += stream.Alteration
     counter.Destruction += stream.Destruction
-    fmt.Printf(" ├─ %d %s %1.1f'len ── %1.2f'wid ── %1.3f'pow ──", i+1, primitives.ES(stream.Element), stream.LWP[0], stream.LWP[1], stream.LWP[2])
+    fmt.Printf(" │ %d'%s %1.1f'len ── %1.2f'wid ── %1.3f'pow ──", i+1, primitives.ES(stream.Element), stream.LWP[0], stream.LWP[1], stream.LWP[2])
     if verbose {fmt.Printf(" %1.2f'len ── %1.2f'wid ── %1.2f'pow ── Volume:%1.1f ──", stream.Creation, stream.Alteration, stream.Destruction, (stream.Alteration)*(stream.Destruction)*(stream.Creation))}
     fmt.Println()
   }
-  fmt.Printf(" └─ Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.1f ──\n", counter.Creation, counter.Alteration, counter.Destruction, vols)
+  fmt.Printf(" ├── Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.1f ──\n", counter.Creation, counter.Alteration, counter.Destruction, vols)
+  fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
 
 func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount int) {
-  fmt.Printf(" ┌─ DEBUG [Player creation][New initial streams]: start.\n ├─ ")
+  fmt.Printf(" ┌──── DEBUG [Player creation][New initial streams]: start.\n │ ")
   stringsMatrix := Streams{}
   if class < 6.5 && class >= 0.5 {
     stringsMatrix.Class = class
@@ -51,7 +52,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   empowering := ( - countOfStreams + stringsMatrix.Class )
   if empowering < 0 { empowering = 1 / math.Cbrt(1 + math.Abs(empowering)) } else { empowering = math.Cbrt(1 + math.Abs(empowering)) }
   empowering = math.Cbrt(empowering)
-  fmt.Printf("INFO  [Player creation][New initial streams]: defined %d class (%d streams), %1.0f%% of power\n", int(stringsMatrix.Class*100000), int(countOfStreams), empowering*100)
+  fmt.Printf("INFO [Player creation][New initial streams]: defined %d class (%d streams), %1.0f%% of power\n", int(stringsMatrix.Class*100000), int(countOfStreams), empowering*100)
   lens, wids, pows := []float64 {}, []float64 {}, []float64 {}
   slen, swid, spow := 0.0, 0.0, 0.0
   for i:=0; i<int(countOfStreams); i++ {
@@ -61,7 +62,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   }
   for i:=0; i<int(countOfStreams); i++ {
     var strings primitives.Stream
-    strings.Element     = AllElements[0]
+    strings.Element     = primitives.RNDElem()//AllElements[0]
     strings.Creation    = lens[i] * empowering / slen * standart
     strings.Alteration  = wids[i] / swid * standart
     strings.Destruction = pows[i] / empowering / spow * standart
@@ -70,5 +71,6 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }
   *yourStreams = stringsMatrix
-  fmt.Printf(" └─ DEBUG [Player creation][New initial streams]: done.\n")
+  fmt.Printf(" │ DEBUG [Player creation][New initial streams]: done.\n")
+  fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }

@@ -107,7 +107,7 @@ func main() {
 
 func Move(x float64, y float64) {
   fmt.Printf("▲ YOU moving, hurry [to people in front of you]:%s I am coming! ", cbr)
-  if verbose {PlotEnvAff()}
+  if verbose {player.PlotElementalState(YourElemState, verbose)}
   fmt.Printf("%s", elbr)
   distance := math.Sqrt(x*x+y*y)
   for t:=0.0; t<distance/0.7; t+=0.7 {
@@ -118,7 +118,7 @@ func Move(x float64, y float64) {
     Orienting()
     InnerAffinization()
   }
-  if verbose {PlotEnvAff()}
+  if verbose {player.PlotElementalState(YourElemState, verbose)}
   fmt.Printf("%s Here I am: %1.2f'long-, %1.2f'graditude.", ebr, You.XYZ[0],You.XYZ[1])
 }
 func Orienting() {
@@ -217,61 +217,61 @@ func InnerAffinization() {
     if YourElemState.Internal[i].Creation*YourElemState.Internal[i].Destruction != 0 { You.Resistance[i-1] = YourElemState.Internal[i].Destruction * YourElemState.Internal[i].Creation }
   }
 }
-func PlotEnvAff() {
-  i := 0
-  if verbose {
-    fmt.Printf("\nDEBUG [fundamental attribute stats]: ")
-    if YourElemState.Empowered[0].Creation != 0 {fmt.Printf("%s ✳️  ─── %1.2f'vitality ─── %1.2f'concentration ─── %1.2f'power", elbr, YourElemState.Empowered[0].Creation, YourElemState.Empowered[0].Alteration, YourElemState.Empowered[0].Destruction)}
-  } else {
-    fmt.Printf("%s INFO [fundamental attribute balance]: ", cbr)
-    summ := YourElemState.Empowered[0].Creation+YourElemState.Empowered[0].Alteration+YourElemState.Empowered[0].Destruction
-    if YourElemState.Empowered[0].Creation != 0 {fmt.Printf("%s ✳️  ─── %2.1f%%'vitality ─── %2.1f%%'concentration ─── %2.1f%%'power", elbr, YourElemState.Empowered[0].Creation/summ*100, YourElemState.Empowered[0].Alteration/summ*100, YourElemState.Empowered[0].Destruction/summ*100)}
-  }
-  fmt.Printf("\nINFO [resistances]: ")
-  fmt.Printf(" %s:%1.2f ───", ElemSigns[0], (YourElemState.Internal[0].Creation)*(YourElemState.Internal[0].Alteration)*(YourElemState.Internal[0].Destruction) )
-  for i:=0; i<8; i++ { if You.Resistance[i] != 0 { fmt.Printf(" %s:%1.2f ───", ElemSigns[i+1], You.Resistance[i] ) } }
-  if verbose {
-    fmt.Printf("\nDEBUG [surrending elemental state]: ")
-    if YourElemState.External[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, YourElemState.External[1].Creation, YourElemState.External[1].Alteration, YourElemState.External[1].Destruction) ; i++}
-    if YourElemState.External[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, YourElemState.External[2].Creation, YourElemState.External[2].Alteration, YourElemState.External[2].Destruction) ; i++}
-    if YourElemState.External[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, YourElemState.External[3].Creation, YourElemState.External[3].Alteration, YourElemState.External[3].Destruction) ; i++}
-    if YourElemState.External[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, YourElemState.External[4].Creation, YourElemState.External[4].Alteration, YourElemState.External[4].Destruction) ; i++}
-    if YourElemState.External[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, YourElemState.External[5].Creation, YourElemState.External[5].Alteration, YourElemState.External[5].Destruction) ; i++}
-    if YourElemState.External[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, YourElemState.External[6].Creation, YourElemState.External[6].Alteration, YourElemState.External[6].Destruction) ; i++}
-    if YourElemState.External[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, YourElemState.External[7].Creation, YourElemState.External[7].Alteration, YourElemState.External[7].Destruction) ; i++}
-    if YourElemState.External[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, YourElemState.External[8].Creation, YourElemState.External[8].Alteration, YourElemState.External[8].Destruction) ; i++}
-    if i==0 {fmt.Printf("%s Totaly not affected by environment ", elbr)}
-    fmt.Printf("\nDEBUG [incoming elemental affection]: ")
-    if YourElemState.Empowered[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, YourElemState.Empowered[1].Creation, YourElemState.Empowered[1].Alteration, YourElemState.Empowered[1].Destruction) }
-    if YourElemState.Empowered[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, YourElemState.Empowered[2].Creation, YourElemState.Empowered[2].Alteration, YourElemState.Empowered[2].Destruction) }
-    if YourElemState.Empowered[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, YourElemState.Empowered[3].Creation, YourElemState.Empowered[3].Alteration, YourElemState.Empowered[3].Destruction) }
-    if YourElemState.Empowered[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, YourElemState.Empowered[4].Creation, YourElemState.Empowered[4].Alteration, YourElemState.Empowered[4].Destruction) }
-    if YourElemState.Empowered[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, YourElemState.Empowered[5].Creation, YourElemState.Empowered[5].Alteration, YourElemState.Empowered[5].Destruction) }
-    if YourElemState.Empowered[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, YourElemState.Empowered[6].Creation, YourElemState.Empowered[6].Alteration, YourElemState.Empowered[6].Destruction) }
-    if YourElemState.Empowered[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, YourElemState.Empowered[7].Creation, YourElemState.Empowered[7].Alteration, YourElemState.Empowered[7].Destruction) }
-    if YourElemState.Empowered[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, YourElemState.Empowered[8].Creation, YourElemState.Empowered[8].Alteration, YourElemState.Empowered[8].Destruction) }
-    if i==0 {fmt.Printf("%s Totaly not affected by environment ", elbr)}
-    // fmt.Printf("\nDEBUG [finaly affecting elemental state]: ") -- dat will be curses
-    // if You.ElemAff[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, You.ElemAff[1].Creation, You.ElemAff[1].Alteration, You.ElemAff[1].Destruction) }
-    // if You.ElemAff[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, You.ElemAff[2].Creation, You.ElemAff[2].Alteration, You.ElemAff[2].Destruction) }
-    // if You.ElemAff[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, You.ElemAff[3].Creation, You.ElemAff[3].Alteration, You.ElemAff[3].Destruction) }
-    // if You.ElemAff[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, You.ElemAff[4].Creation, You.ElemAff[4].Alteration, You.ElemAff[4].Destruction) }
-    // if You.ElemAff[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, You.ElemAff[5].Creation, You.ElemAff[5].Alteration, You.ElemAff[5].Destruction) }
-    // if You.ElemAff[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, You.ElemAff[6].Creation, You.ElemAff[6].Alteration, You.ElemAff[6].Destruction) }
-    // if You.ElemAff[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, You.ElemAff[7].Creation, You.ElemAff[7].Alteration, You.ElemAff[7].Destruction) }
-    // if You.ElemAff[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, You.ElemAff[8].Creation, You.ElemAff[8].Alteration, You.ElemAff[8].Destruction) }
-    // if i==0 {fmt.Printf("%s Totaly not affected by environment ", elbr)}
-    fmt.Printf("\nDEBUG [internal elemental state]: ")
-    if YourElemState.Internal[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, YourElemState.Internal[1].Creation, YourElemState.Internal[1].Alteration, YourElemState.Internal[1].Destruction) }
-    if YourElemState.Internal[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, YourElemState.Internal[2].Creation, YourElemState.Internal[2].Alteration, YourElemState.Internal[2].Destruction) }
-    if YourElemState.Internal[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, YourElemState.Internal[3].Creation, YourElemState.Internal[3].Alteration, YourElemState.Internal[3].Destruction) }
-    if YourElemState.Internal[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, YourElemState.Internal[4].Creation, YourElemState.Internal[4].Alteration, YourElemState.Internal[4].Destruction) }
-    if YourElemState.Internal[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, YourElemState.Internal[5].Creation, YourElemState.Internal[5].Alteration, YourElemState.Internal[5].Destruction) }
-    if YourElemState.Internal[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, YourElemState.Internal[6].Creation, YourElemState.Internal[6].Alteration, YourElemState.Internal[6].Destruction) }
-    if YourElemState.Internal[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, YourElemState.Internal[7].Creation, YourElemState.Internal[7].Alteration, YourElemState.Internal[7].Destruction) }
-    if YourElemState.Internal[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, YourElemState.Internal[8].Creation, YourElemState.Internal[8].Alteration, YourElemState.Internal[8].Destruction) }
-  }
-}
+// func PlotEnvAff() {
+//   i := 0
+//   if verbose {
+//     fmt.Printf("\nDEBUG [fundamental attribute stats]: ")
+//     if YourElemState.Empowered[0].Creation != 0 {fmt.Printf("%s ✳️  ─── %1.2f'vitality ─── %1.2f'concentration ─── %1.2f'power", elbr, YourElemState.Empowered[0].Creation, YourElemState.Empowered[0].Alteration, YourElemState.Empowered[0].Destruction)}
+//   } else {
+//     fmt.Printf("%s INFO [fundamental attribute balance]: ", cbr)
+//     summ := YourElemState.Empowered[0].Creation+YourElemState.Empowered[0].Alteration+YourElemState.Empowered[0].Destruction
+//     if YourElemState.Empowered[0].Creation != 0 {fmt.Printf("%s ✳️  ─── %2.1f%%'vitality ─── %2.1f%%'concentration ─── %2.1f%%'power", elbr, YourElemState.Empowered[0].Creation/summ*100, YourElemState.Empowered[0].Alteration/summ*100, YourElemState.Empowered[0].Destruction/summ*100)}
+//   }
+//   fmt.Printf("\nINFO [resistances]: ")
+//   fmt.Printf(" %s:%1.2f ───", ElemSigns[0], (YourElemState.Internal[0].Creation)*(YourElemState.Internal[0].Alteration)*(YourElemState.Internal[0].Destruction) )
+//   for i:=0; i<8; i++ { if You.Resistance[i] != 0 { fmt.Printf(" %s:%1.2f ───", ElemSigns[i+1], You.Resistance[i] ) } }
+//   if verbose {
+//     fmt.Printf("\nDEBUG [surrending elemental state]: ")
+//     if YourElemState.External[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, YourElemState.External[1].Creation, YourElemState.External[1].Alteration, YourElemState.External[1].Destruction) ; i++}
+//     if YourElemState.External[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, YourElemState.External[2].Creation, YourElemState.External[2].Alteration, YourElemState.External[2].Destruction) ; i++}
+//     if YourElemState.External[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, YourElemState.External[3].Creation, YourElemState.External[3].Alteration, YourElemState.External[3].Destruction) ; i++}
+//     if YourElemState.External[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, YourElemState.External[4].Creation, YourElemState.External[4].Alteration, YourElemState.External[4].Destruction) ; i++}
+//     if YourElemState.External[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, YourElemState.External[5].Creation, YourElemState.External[5].Alteration, YourElemState.External[5].Destruction) ; i++}
+//     if YourElemState.External[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, YourElemState.External[6].Creation, YourElemState.External[6].Alteration, YourElemState.External[6].Destruction) ; i++}
+//     if YourElemState.External[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, YourElemState.External[7].Creation, YourElemState.External[7].Alteration, YourElemState.External[7].Destruction) ; i++}
+//     if YourElemState.External[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, YourElemState.External[8].Creation, YourElemState.External[8].Alteration, YourElemState.External[8].Destruction) ; i++}
+//     if i==0 {fmt.Printf("%s Totaly not affected by environment ", elbr)}
+//     fmt.Printf("\nDEBUG [incoming elemental affection]: ")
+//     if YourElemState.Empowered[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, YourElemState.Empowered[1].Creation, YourElemState.Empowered[1].Alteration, YourElemState.Empowered[1].Destruction) }
+//     if YourElemState.Empowered[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, YourElemState.Empowered[2].Creation, YourElemState.Empowered[2].Alteration, YourElemState.Empowered[2].Destruction) }
+//     if YourElemState.Empowered[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, YourElemState.Empowered[3].Creation, YourElemState.Empowered[3].Alteration, YourElemState.Empowered[3].Destruction) }
+//     if YourElemState.Empowered[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, YourElemState.Empowered[4].Creation, YourElemState.Empowered[4].Alteration, YourElemState.Empowered[4].Destruction) }
+//     if YourElemState.Empowered[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, YourElemState.Empowered[5].Creation, YourElemState.Empowered[5].Alteration, YourElemState.Empowered[5].Destruction) }
+//     if YourElemState.Empowered[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, YourElemState.Empowered[6].Creation, YourElemState.Empowered[6].Alteration, YourElemState.Empowered[6].Destruction) }
+//     if YourElemState.Empowered[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, YourElemState.Empowered[7].Creation, YourElemState.Empowered[7].Alteration, YourElemState.Empowered[7].Destruction) }
+//     if YourElemState.Empowered[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, YourElemState.Empowered[8].Creation, YourElemState.Empowered[8].Alteration, YourElemState.Empowered[8].Destruction) }
+//     if i==0 {fmt.Printf("%s Totaly not affected by environment ", elbr)}
+//     // fmt.Printf("\nDEBUG [finaly affecting elemental state]: ") -- dat will be curses
+//     // if You.ElemAff[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, You.ElemAff[1].Creation, You.ElemAff[1].Alteration, You.ElemAff[1].Destruction) }
+//     // if You.ElemAff[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, You.ElemAff[2].Creation, You.ElemAff[2].Alteration, You.ElemAff[2].Destruction) }
+//     // if You.ElemAff[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, You.ElemAff[3].Creation, You.ElemAff[3].Alteration, You.ElemAff[3].Destruction) }
+//     // if You.ElemAff[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, You.ElemAff[4].Creation, You.ElemAff[4].Alteration, You.ElemAff[4].Destruction) }
+//     // if You.ElemAff[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, You.ElemAff[5].Creation, You.ElemAff[5].Alteration, You.ElemAff[5].Destruction) }
+//     // if You.ElemAff[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, You.ElemAff[6].Creation, You.ElemAff[6].Alteration, You.ElemAff[6].Destruction) }
+//     // if You.ElemAff[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, You.ElemAff[7].Creation, You.ElemAff[7].Alteration, You.ElemAff[7].Destruction) }
+//     // if You.ElemAff[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, You.ElemAff[8].Creation, You.ElemAff[8].Alteration, You.ElemAff[8].Destruction) }
+//     // if i==0 {fmt.Printf("%s Totaly not affected by environment ", elbr)}
+//     fmt.Printf("\nDEBUG [internal elemental state]: ")
+//     if YourElemState.Internal[1].Creation != 0 {fmt.Printf("%s ☁️  ──── %1.2f'pressure ────── %1.2f'spreading ──── %1.2f'puncture ───────", elbr, YourElemState.Internal[1].Creation, YourElemState.Internal[1].Alteration, YourElemState.Internal[1].Destruction) }
+//     if YourElemState.Internal[2].Creation != 0 {fmt.Printf("%s 🔥 ──── %1.2f'warming ─────── %1.2f'burning ────── %1.2f'detonation ─────", elbr, YourElemState.Internal[2].Creation, YourElemState.Internal[2].Alteration, YourElemState.Internal[2].Destruction) }
+//     if YourElemState.Internal[3].Creation != 0 {fmt.Printf("%s ⛰  ──── %1.2f'structure ───── %1.2f'mass ───────── %1.2f'fragility ──────", elbr, YourElemState.Internal[3].Creation, YourElemState.Internal[3].Alteration, YourElemState.Internal[3].Destruction) }
+//     if YourElemState.Internal[4].Creation != 0 {fmt.Printf("%s 🧊 ──── %1.2f'form ─────────── %1.2f'direction ─── %1.2f'calm ───────────", elbr, YourElemState.Internal[4].Creation, YourElemState.Internal[4].Alteration, YourElemState.Internal[4].Destruction) }
+//     if YourElemState.Internal[5].Creation != 0 {fmt.Printf("%s 🌑 ───── %1.2f'shadows ─────── %1.2f'curse ──────── %1.2f'pain ───────────", elbr, YourElemState.Internal[5].Creation, YourElemState.Internal[5].Alteration, YourElemState.Internal[5].Destruction) }
+//     if YourElemState.Internal[6].Creation != 0 {fmt.Printf("%s 🩸 ───── %1.2f'growing ─────── %1.2f'corruption ─── %1.2f'consumption ────", elbr, YourElemState.Internal[6].Creation, YourElemState.Internal[6].Alteration, YourElemState.Internal[6].Destruction) }
+//     if YourElemState.Internal[7].Creation != 0 {fmt.Printf("%s 🎶 ───── %1.2f'inspiration ─── %1.2f'echo ───────── %1.2f'roar ───────────", elbr, YourElemState.Internal[7].Creation, YourElemState.Internal[7].Alteration, YourElemState.Internal[7].Destruction) }
+//     if YourElemState.Internal[8].Creation != 0 {fmt.Printf("%s 🌟 ────── %1.2f'mirage ──────── %1.2f'matter ─────── %1.2f'desintegration ─", elbr, YourElemState.Internal[8].Creation, YourElemState.Internal[8].Alteration, YourElemState.Internal[8].Destruction) }
+//   }
+// }
 
 // func RNDElem() string { return AllElements[ rand.New(rand.NewSource(time.Now().UnixNano())).Intn( len(AllElements)-1 ) +1 ] }
 // func primitives.ES(elem string) string { return ElemSigns[primitives.ElemToInt(elem)] }

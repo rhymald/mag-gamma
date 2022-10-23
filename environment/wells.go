@@ -7,7 +7,7 @@ import "math"
 
 // emulation, in future get from db
 func Welling(environment *Location) {
-  fmt.Printf(" ┌─ DEBUG [Location init][Welling]: reading bunch of positive power states - start.\n ├─ ")
+  fmt.Printf(" ┌──── DEBUG [Location init][Welling]: reading bunch of positive power states - start.\n │ ")
   // campfires
   campFireFire := primitives.Stream{Element: "Fire", Creation: 3, Destruction: 5, Alteration: 8}
   CampFire     := PowerState{ Area: 5.0, Nature: []primitives.Stream{campFireFire}, Description: "Campfire: Warm place to rest at.", Concentrated: false}
@@ -26,5 +26,6 @@ func Welling(environment *Location) {
   var buffer []PowerState
   buffer = append(buffer, CampFire,OpenSpace,PowerCore)
   *&environment.Wells = buffer
-  fmt.Printf(" └─ DEBUG [Location init][Welling]: reading bucnh of positive power states - done.\n")
+  fmt.Printf(" │ DEBUG [Location init][Welling]: reading bucnh of positive power states - done.\n")
+  fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
