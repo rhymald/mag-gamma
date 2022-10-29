@@ -13,8 +13,8 @@ func Welling(environment *Location) {
   CampFire     := PowerState{ Area: 5.0, Nature: []primitives.Stream{campFireFire}, Description: "Campfire: Warm place to rest at.", Concentrated: false}
   CampFire.XYZs = append(CampFire.XYZs, [3]float64{1014.0, -16.5, 430.0})
   // elementalTree
-  powerCore1 := primitives.Stream{Element: primitives.RNDElem(), Creation: math.Abs(primitives.SRNF()), Destruction: math.Abs(primitives.SRNF()), Alteration: math.Abs(primitives.SRNF())}
-  powerCore2 := primitives.Stream{Element: primitives.RNDElem(), Creation: math.Abs(primitives.SRNF()), Destruction: math.Abs(primitives.SRNF()), Alteration: math.Abs(primitives.SRNF())}
+  powerCore1 := primitives.Stream{Element: primitives.RNDElem(), Creation: 1+math.Abs(primitives.SRNF()), Destruction: 1+math.Abs(primitives.SRNF()), Alteration: 1+math.Abs(primitives.SRNF())}
+  powerCore2 := primitives.Stream{Element: primitives.RNDElem(), Creation: 1+math.Abs(primitives.SRNF()), Destruction: 1+math.Abs(primitives.SRNF()), Alteration: 1+math.Abs(primitives.SRNF())}
   PowerCore     := PowerState{ Area: 25.0, Nature: []primitives.Stream{powerCore1, powerCore2}, Description: "Source of pure energy.", Concentrated: true}
   PowerCore.XYZs = append(PowerCore.XYZs, [3]float64{1011.1, -8.5, 430.0})
   fmt.Printf("DEBUG [Location init][Welling]: power core is randomized for emitting %s and %s energy...\n", primitives.ES(powerCore1.Element), primitives.ES(powerCore2.Element))

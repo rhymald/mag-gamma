@@ -83,13 +83,11 @@ func PlotElementalState(estate ElementalState, verbose bool) {
 }
 
 func ReadStatesFromEnv(elementalState *ElementalState, position [3]float64, flock Streams, location environment.Location) {
-  // estate := *elementalState
   var affectingPlaces []primitives.Stream
   for _, place := range location.Wells {
     for _, being := range place.XYZs {
       distance := math.Sqrt(math.Pow(position[0]-being[0],2)+math.Pow(position[1]-being[1],2)+math.Pow(position[2]-being[2],2))/place.Area
       if distance <= 1 {
-        // fmt.Printf(" %1.2f from %s ",distance,place.Description)
         for _, affection := range place.Nature {
           if place.Concentrated {
             buffer := primitives.Stream{
@@ -137,20 +135,6 @@ func ReadStatesFromEnv(elementalState *ElementalState, position [3]float64, floc
 
 func InnerAffinization(elementalState *ElementalState, bender float64, herald float64) {
   estate := *elementalState
-  // estate.Empowered = ElementalAffinization{}
-  // estate.Internal = ElementalAffinization{}
-  // You.ElemAff = ElementalAffinization{}
-  // Internal
-  // for _, each := range YourStreams.List {
-  //   estate.Internal[0].Creation += each.Creation // + estate.Empowered[0].Creation)
-  //   estate.Internal[0].Alteration += each.Alteration //  + estate.Empowered[0].Alteration)
-  //   estate.Internal[0].Destruction += each.Destruction //    + estate.Empowered[0].Destruction)
-  //   if each.Element != "Common" {
-  //     estate.Internal[primitives.ElemToInt(each.Element)].Creation += each.Creation // + estate.Empowered[0].Creation)
-  //     estate.Internal[primitives.ElemToInt(each.Element)].Alteration += each.Alteration //  + estate.Empowered[0].Alteration)
-  //     estate.Internal[primitives.ElemToInt(each.Element)].Destruction += each.Destruction //    + estate.Empowered[0].Destruction)
-  //   }
-  // }
   // External basic
   estate.Empowered[1].Creation    = bender * ( estate.External[1].Creation    + estate.External[3].Destruction) - estate.External[2].Destruction * herald
   estate.Empowered[1].Alteration  = bender * ( estate.External[1].Alteration  + estate.External[3].Alteration)  - estate.External[2].Alteration  * herald
@@ -183,13 +167,6 @@ func InnerAffinization(elementalState *ElementalState, bender float64, herald fl
   estate.Empowered[0].Creation = bender * estate.External[8].Creation - estate.External[5].Destruction * herald + estate.Internal[0].Creation
   estate.Empowered[0].Alteration = bender * estate.External[8].Alteration - estate.External[5].Alteration * herald + estate.Internal[0].Alteration
   estate.Empowered[0].Destruction = bender * estate.External[8].Destruction - estate.External[5].Creation * herald + estate.Internal[0].Destruction
-  for i:=1; i<9; i++ {
-    // if estate.Empowered[i].Creation != 0 {
-    //   You.ElemAff[i].Creation += estate.Empowered[i].Creation + estate.Internal[i].Creation
-    //   You.ElemAff[i].Alteration += estate.Empowered[i].Alteration + estate.Internal[i].Alteration
-    //   You.ElemAff[i].Destruction += estate.Empowered[i].Destruction + estate.Internal[i].Destruction
-    // }
-    if estate.Internal[i].Creation*estate.Internal[i].Destruction > 0 { estate.Resistances[i-1] = math.Sqrt( math.Pow(estate.Internal[i].Destruction, 2) + math.Pow(estate.Internal[i].Creation, 2)) }
-  }
+  for i:=1; i<9; i++ { if estate.Internal[i].Creation*estate.Internal[i].Destruction > 0 { estate.Resistances[i-1] = math.Sqrt( math.Pow(estate.Internal[i].Destruction, 2)*2 - 1 + math.Pow(estate.Internal[i].Creation, 2)) }}
   *elementalState = estate
 }

@@ -357,6 +357,7 @@ func PlayerBorn(class float64) {
   // YourStreams.List = stringsMatrix
   You.Health.Max += 100
   ExtendPools()
+  player.ReadStatesFromEnv(&YourElemState, You.XYZ, YourStreams, Environment)
   player.InnerAffinization(&YourElemState, YourStreams.Bender, YourStreams.Herald)
   player.PlotStreamList(YourStreams, verbose)
 }
