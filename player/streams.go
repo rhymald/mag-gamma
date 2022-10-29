@@ -27,10 +27,10 @@ func PlotStreamList(list Streams, verbose bool) {
     counter.Alteration += stream.Alteration
     counter.Destruction += stream.Destruction
     fmt.Printf(" │ %d'%s %1.0f'len ── %1.1f'wid ── %1.2f'pow ──", i+1, primitives.ES(stream.Element), stream.LWP[0], stream.LWP[1], stream.LWP[2])
-    if verbose {fmt.Printf(" %1.2f'cre ── %1.2f'alt ── %1.2f'des ── Volume:%1.1f ──", stream.Creation, stream.Alteration, stream.Destruction, (stream.Alteration)*(stream.Destruction)*(stream.Creation))}
+    if verbose {fmt.Printf(" %1.2f'cre ── %1.2f'alt ── %1.2f'des ── Volume: %1.2f ──", stream.Creation, stream.Alteration, stream.Destruction, primitives.Vector(stream.Alteration,stream.Destruction,stream.Creation))}
     fmt.Println()
   }
-  fmt.Printf(" ├── Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.1f ──\n", counter.Creation, counter.Alteration, counter.Destruction, vols)
+  fmt.Printf(" ├── Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.2f ──\n", counter.Creation, counter.Alteration, counter.Destruction, primitives.Vector(counter.Creation,counter.Alteration,counter.Destruction,))
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
 
@@ -45,8 +45,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
       stringsMatrix.Class += (primitives.RNF()*6+0.499999) / playerCountInDB
     }
   }
-  stringsMatrix.Bender = math.Cbrt(7.5-stringsMatrix.Class)
-  stringsMatrix.Herald = math.Cbrt(0.5+stringsMatrix.Class)
+  stringsMatrix.Bender, stringsMatrix.Herald = primitives.BendHeraldFromClass(stringsMatrix.Class)
   countOfStreams := math.Round(stringsMatrix.Class)
   standart = standart
   empowering := ( - countOfStreams + stringsMatrix.Class )

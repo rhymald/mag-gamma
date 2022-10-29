@@ -309,7 +309,7 @@ func PlayerBorn(class float64) {
   if You.Name == "Rhymald" || You.Name == "" {verbose = true}
   You.Health.Current = 1
 
-  player.NewBorn(&YourStreams, class, 3.5, 4917)
+  player.NewBorn(&YourStreams, class, 0.35, 4917)
   // Class randomizing
   // if class < 6.5 && class >= 0.5 {
   //   YourStreams.Class = class
