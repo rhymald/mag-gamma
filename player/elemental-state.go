@@ -167,6 +167,6 @@ func InnerAffinization(elementalState *ElementalState, bender float64, herald fl
   estate.Empowered[0].Creation = bender * estate.External[8].Creation - estate.External[5].Destruction * herald + estate.Internal[0].Creation
   estate.Empowered[0].Alteration = bender * estate.External[8].Alteration - estate.External[5].Alteration * herald + estate.Internal[0].Alteration
   estate.Empowered[0].Destruction = bender * estate.External[8].Destruction - estate.External[5].Creation * herald + estate.Internal[0].Destruction
-  for i:=1; i<9; i++ { if estate.Internal[i].Creation*estate.Internal[i].Destruction > 0 { estate.Resistances[i-1] = math.Sqrt( math.Pow(estate.Internal[i].Destruction, 2)*2 - 1 + math.Pow(estate.Internal[i].Creation, 2)) }}
+  for i:=1; i<9; i++ { if estate.Internal[i].Creation*estate.Internal[i].Destruction > 0 { estate.Resistances[i-1] = primitives.ResistanceFromState(estate.Internal[i]) }} // math.Sqrt( math.Pow(estate.Internal[i].Destruction, 2)*2 - 1 + math.Pow(estate.Internal[i].Creation, 2)) }}
   *elementalState = estate
 }

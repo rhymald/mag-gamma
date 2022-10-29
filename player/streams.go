@@ -67,7 +67,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
     strings.Alteration  = wids[i] / swid * standart
     strings.Destruction = pows[i] / empowering / spow * standart
     strings.HeatPrint   = strings.Destruction/strings.Creation
-    strings.LWP = [3]float64{ strings.Creation*1024, 32*strings.Alteration/primitives.Vector(strings.Alteration, strings.Creation), 10*strings.Destruction/primitives.Vector(strings.Destruction, strings.Alteration, strings.Creation) }
+    strings.LWP = [3]float64{ primitives.LenFromStream(strings), primitives.WidFromStream(strings), primitives.PowFromStream(strings) }
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }
   *yourStreams = stringsMatrix
