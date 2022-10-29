@@ -115,108 +115,108 @@ func Move(x float64, y float64) {
     You.XYZ[1] += y*0.7/distance
     time.Sleep( time.Millisecond * time.Duration( math.Sqrt(0.5)*1000 ))
     if verbose {fmt.Printf(" 🐾")} else {fmt.Printf(" 🐾")}
-    Orienting()
-    InnerAffinization()
+    player.ReadStatesFromEnv(&YourElemState, You.XYZ, YourStreams, Environment)
+    player.InnerAffinization(&YourElemState, YourStreams.Bender, YourStreams.Herald)
   }
   if verbose {player.PlotElementalState(YourElemState, verbose)}
   fmt.Printf("%s Here I am: %1.2f'long-, %1.2f'graditude.", ebr, You.XYZ[0],You.XYZ[1])
 }
-func Orienting() {
-  var affectingPlaces []Stream
-  for _, place := range Environment.Wells {
-    for _, being := range place.XYZs {
-      distance := math.Sqrt(math.Pow(You.XYZ[0]-being[0],2)+math.Pow(You.XYZ[1]-being[1],2)+math.Pow(You.XYZ[2]-being[2],2))/place.Area
-      if distance <= 1 {
-        // fmt.Printf(" %1.2f from %s ",distance,place.Description)
-        for _, affection := range place.Nature {
-          if place.Concentrated {
-            buffer := Stream{
-              Element: affection.Element,
-              Creation: affection.Creation * math.Pow(1-distance, 2), // creation amount
-              Alteration: affection.Alteration * math.Pow(1-distance, 2), //creation quality
-              Destruction: affection.Destruction * math.Pow(1-distance, 2), // loose amount
-            }
-            affectingPlaces = append(affectingPlaces, buffer)
-          } else {
-            buffer := Stream{
-              Element: affection.Element,
-              Creation: affection.Creation * math.Sqrt(1-distance), // creation amount
-              Alteration: affection.Alteration * math.Sqrt(1-distance), //creation quality
-              Destruction: affection.Destruction * math.Sqrt(1-distance), // loose amount
-            }
-            affectingPlaces = append(affectingPlaces, buffer)
-          }
-        }
-      }
-    }
-  }
-  YourElemState = player.ElementalState{}
-  for _, affection := range affectingPlaces {
-    for i:=1;i<9;i++ {
-      if affection.Element == AllElements[i] {
-        YourElemState.External[i].Creation += affection.Creation
-        YourElemState.External[i].Alteration += affection.Alteration
-        YourElemState.External[i].Destruction += affection.Destruction
-      }
-    }
-  }
-}
-func InnerAffinization() {
-  // YourElemState.Empowered = ElementalAffinization{}
-  // YourElemState.Internal = ElementalAffinization{}
-  // You.ElemAff = ElementalAffinization{}
-  // Internal
-  for _, each := range YourStreams.List {
-    YourElemState.Internal[0].Creation += each.Creation // + YourElemState.Empowered[0].Creation)
-    YourElemState.Internal[0].Alteration += each.Alteration //  + YourElemState.Empowered[0].Alteration)
-    YourElemState.Internal[0].Destruction += each.Destruction //    + YourElemState.Empowered[0].Destruction)
-    if each.Element != "Common" {
-      YourElemState.Internal[primitives.ElemToInt(each.Element)].Creation += each.Creation // + YourElemState.Empowered[0].Creation)
-      YourElemState.Internal[primitives.ElemToInt(each.Element)].Alteration += each.Alteration //  + YourElemState.Empowered[0].Alteration)
-      YourElemState.Internal[primitives.ElemToInt(each.Element)].Destruction += each.Destruction //    + YourElemState.Empowered[0].Destruction)
-    }
-  }
-  // External basic
-  YourElemState.Empowered[1].Creation    = YourStreams.Bender * ( YourElemState.External[1].Creation    + YourElemState.External[3].Destruction) - YourElemState.External[2].Destruction * YourStreams.Herald
-  YourElemState.Empowered[1].Alteration  = YourStreams.Bender * ( YourElemState.External[1].Alteration  + YourElemState.External[3].Alteration)  - YourElemState.External[2].Alteration  * YourStreams.Herald
-  YourElemState.Empowered[1].Destruction = YourStreams.Bender * ( YourElemState.External[1].Destruction + YourElemState.External[3].Creation)    - YourElemState.External[2].Creation    * YourStreams.Herald
-  YourElemState.Empowered[2].Creation    = YourStreams.Bender * ( YourElemState.External[2].Creation    + YourElemState.External[1].Destruction) - YourElemState.External[4].Destruction * YourStreams.Herald
-  YourElemState.Empowered[2].Alteration  = YourStreams.Bender * ( YourElemState.External[2].Alteration  + YourElemState.External[1].Alteration)  - YourElemState.External[4].Alteration  * YourStreams.Herald
-  YourElemState.Empowered[2].Destruction = YourStreams.Bender * ( YourElemState.External[2].Destruction + YourElemState.External[1].Creation)    - YourElemState.External[4].Creation    * YourStreams.Herald
-  YourElemState.Empowered[3].Creation    = YourStreams.Bender * ( YourElemState.External[3].Creation    + YourElemState.External[4].Destruction) - YourElemState.External[1].Destruction * YourStreams.Herald
-  YourElemState.Empowered[3].Alteration  = YourStreams.Bender * ( YourElemState.External[3].Alteration  + YourElemState.External[4].Alteration)  - YourElemState.External[1].Alteration  * YourStreams.Herald
-  YourElemState.Empowered[3].Destruction = YourStreams.Bender * ( YourElemState.External[3].Destruction + YourElemState.External[4].Creation)    - YourElemState.External[1].Creation    * YourStreams.Herald
-  YourElemState.Empowered[4].Creation    = YourStreams.Bender * ( YourElemState.External[4].Creation    + YourElemState.External[2].Destruction) - YourElemState.External[3].Destruction * YourStreams.Herald
-  YourElemState.Empowered[4].Alteration  = YourStreams.Bender * ( YourElemState.External[4].Alteration  + YourElemState.External[2].Alteration)  - YourElemState.External[3].Alteration  * YourStreams.Herald
-  YourElemState.Empowered[4].Destruction = YourStreams.Bender * ( YourElemState.External[4].Destruction + YourElemState.External[2].Creation)    - YourElemState.External[3].Creation    * YourStreams.Herald
-  // v void - extra consumption
-  YourElemState.Empowered[5].Creation    = YourStreams.Bender * ( YourElemState.External[5].Creation) //    + YourElemState.Empowered[5].Creation)
-  YourElemState.Empowered[5].Alteration  = YourStreams.Bender * ( YourElemState.External[5].Alteration) //  + YourElemState.Empowered[5].Alteration)
-  YourElemState.Empowered[5].Destruction = YourStreams.Bender * ( YourElemState.External[5].Destruction) // + YourElemState.Empowered[5].Destruction)
-  // v deviant - extra overheat
-  YourElemState.Empowered[6].Creation    = YourStreams.Bender * ( YourElemState.External[6].Creation    + 2 * math.Sqrt(YourElemState.External[4].Creation    * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Creation    )
-  YourElemState.Empowered[6].Alteration  = YourStreams.Bender * ( YourElemState.External[6].Alteration  + 2 * math.Sqrt(YourElemState.External[4].Alteration  * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Alteration  )
-  YourElemState.Empowered[6].Destruction = YourStreams.Bender * ( YourElemState.External[6].Destruction + 2 * math.Sqrt(YourElemState.External[4].Destruction * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Destruction )
-  YourElemState.Empowered[7].Creation    = YourStreams.Bender * ( YourElemState.External[7].Creation    + 2 * math.Sqrt(YourElemState.External[3].Creation    * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Creation    )
-  YourElemState.Empowered[7].Alteration  = YourStreams.Bender * ( YourElemState.External[7].Alteration  + 2 * math.Sqrt(YourElemState.External[3].Alteration  * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Alteration  )
-  YourElemState.Empowered[7].Destruction = YourStreams.Bender * ( YourElemState.External[7].Destruction + 2 * math.Sqrt(YourElemState.External[3].Destruction * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Destruction )
-  // v rarest - extra overheat and consumption
-  YourElemState.Empowered[8].Creation    = YourStreams.Bender * ( YourElemState.External[8].Alteration + YourElemState.External[8].Creation   )//  + YourElemState.Empowered[8].Creation)
-  YourElemState.Empowered[8].Alteration  = YourStreams.Bender * ( YourElemState.External[8].Creation   + YourElemState.External[8].Destruction)//  + YourElemState.Empowered[8].Alteration)
-  YourElemState.Empowered[8].Destruction = YourStreams.Bender * ( YourElemState.External[8].Alteration + YourElemState.External[8].Destruction) // + YourElemState.Empowered[8].Destruction)
-  // Finalizing
-  YourElemState.Empowered[0].Creation = YourStreams.Bender * YourElemState.External[8].Creation - YourElemState.External[5].Destruction * YourStreams.Herald + YourElemState.Internal[0].Creation
-  YourElemState.Empowered[0].Alteration = YourStreams.Bender * YourElemState.External[8].Alteration - YourElemState.External[5].Alteration * YourStreams.Herald + YourElemState.Internal[0].Alteration
-  YourElemState.Empowered[0].Destruction = YourStreams.Bender * YourElemState.External[8].Destruction - YourElemState.External[5].Creation * YourStreams.Herald + YourElemState.Internal[0].Destruction
-  for i:=1; i<9; i++ {
-    // if YourElemState.Empowered[i].Creation != 0 {
-    //   You.ElemAff[i].Creation += YourElemState.Empowered[i].Creation + YourElemState.Internal[i].Creation
-    //   You.ElemAff[i].Alteration += YourElemState.Empowered[i].Alteration + YourElemState.Internal[i].Alteration
-    //   You.ElemAff[i].Destruction += YourElemState.Empowered[i].Destruction + YourElemState.Internal[i].Destruction
-    // }
-    if YourElemState.Internal[i].Creation*YourElemState.Internal[i].Destruction != 0 { You.Resistance[i-1] = YourElemState.Internal[i].Destruction * YourElemState.Internal[i].Creation }
-  }
-}
+// func Orienting() {
+//   var affectingPlaces []Stream
+//   for _, place := range Environment.Wells {
+//     for _, being := range place.XYZs {
+//       distance := math.Sqrt(math.Pow(You.XYZ[0]-being[0],2)+math.Pow(You.XYZ[1]-being[1],2)+math.Pow(You.XYZ[2]-being[2],2))/place.Area
+//       if distance <= 1 {
+//         // fmt.Printf(" %1.2f from %s ",distance,place.Description)
+//         for _, affection := range place.Nature {
+//           if place.Concentrated {
+//             buffer := Stream{
+//               Element: affection.Element,
+//               Creation: affection.Creation * math.Pow(1-distance, 2), // creation amount
+//               Alteration: affection.Alteration * math.Pow(1-distance, 2), //creation quality
+//               Destruction: affection.Destruction * math.Pow(1-distance, 2), // loose amount
+//             }
+//             affectingPlaces = append(affectingPlaces, buffer)
+//           } else {
+//             buffer := Stream{
+//               Element: affection.Element,
+//               Creation: affection.Creation * math.Sqrt(1-distance), // creation amount
+//               Alteration: affection.Alteration * math.Sqrt(1-distance), //creation quality
+//               Destruction: affection.Destruction * math.Sqrt(1-distance), // loose amount
+//             }
+//             affectingPlaces = append(affectingPlaces, buffer)
+//           }
+//         }
+//       }
+//     }
+//   }
+//   YourElemState = player.ElementalState{}
+//   for _, affection := range affectingPlaces {
+//     for i:=1;i<9;i++ {
+//       if affection.Element == AllElements[i] {
+//         YourElemState.External[i].Creation += affection.Creation
+//         YourElemState.External[i].Alteration += affection.Alteration
+//         YourElemState.External[i].Destruction += affection.Destruction
+//       }
+//     }
+//   }
+// }
+// func InnerAffinization() {
+//   // YourElemState.Empowered = ElementalAffinization{}
+//   // YourElemState.Internal = ElementalAffinization{}
+//   // You.ElemAff = ElementalAffinization{}
+//   // Internal
+//   for _, each := range YourStreams.List {
+//     YourElemState.Internal[0].Creation += each.Creation // + YourElemState.Empowered[0].Creation)
+//     YourElemState.Internal[0].Alteration += each.Alteration //  + YourElemState.Empowered[0].Alteration)
+//     YourElemState.Internal[0].Destruction += each.Destruction //    + YourElemState.Empowered[0].Destruction)
+//     if each.Element != "Common" {
+//       YourElemState.Internal[primitives.ElemToInt(each.Element)].Creation += each.Creation // + YourElemState.Empowered[0].Creation)
+//       YourElemState.Internal[primitives.ElemToInt(each.Element)].Alteration += each.Alteration //  + YourElemState.Empowered[0].Alteration)
+//       YourElemState.Internal[primitives.ElemToInt(each.Element)].Destruction += each.Destruction //    + YourElemState.Empowered[0].Destruction)
+//     }
+//   }
+//   // External basic
+//   YourElemState.Empowered[1].Creation    = YourStreams.Bender * ( YourElemState.External[1].Creation    + YourElemState.External[3].Destruction) - YourElemState.External[2].Destruction * YourStreams.Herald
+//   YourElemState.Empowered[1].Alteration  = YourStreams.Bender * ( YourElemState.External[1].Alteration  + YourElemState.External[3].Alteration)  - YourElemState.External[2].Alteration  * YourStreams.Herald
+//   YourElemState.Empowered[1].Destruction = YourStreams.Bender * ( YourElemState.External[1].Destruction + YourElemState.External[3].Creation)    - YourElemState.External[2].Creation    * YourStreams.Herald
+//   YourElemState.Empowered[2].Creation    = YourStreams.Bender * ( YourElemState.External[2].Creation    + YourElemState.External[1].Destruction) - YourElemState.External[4].Destruction * YourStreams.Herald
+//   YourElemState.Empowered[2].Alteration  = YourStreams.Bender * ( YourElemState.External[2].Alteration  + YourElemState.External[1].Alteration)  - YourElemState.External[4].Alteration  * YourStreams.Herald
+//   YourElemState.Empowered[2].Destruction = YourStreams.Bender * ( YourElemState.External[2].Destruction + YourElemState.External[1].Creation)    - YourElemState.External[4].Creation    * YourStreams.Herald
+//   YourElemState.Empowered[3].Creation    = YourStreams.Bender * ( YourElemState.External[3].Creation    + YourElemState.External[4].Destruction) - YourElemState.External[1].Destruction * YourStreams.Herald
+//   YourElemState.Empowered[3].Alteration  = YourStreams.Bender * ( YourElemState.External[3].Alteration  + YourElemState.External[4].Alteration)  - YourElemState.External[1].Alteration  * YourStreams.Herald
+//   YourElemState.Empowered[3].Destruction = YourStreams.Bender * ( YourElemState.External[3].Destruction + YourElemState.External[4].Creation)    - YourElemState.External[1].Creation    * YourStreams.Herald
+//   YourElemState.Empowered[4].Creation    = YourStreams.Bender * ( YourElemState.External[4].Creation    + YourElemState.External[2].Destruction) - YourElemState.External[3].Destruction * YourStreams.Herald
+//   YourElemState.Empowered[4].Alteration  = YourStreams.Bender * ( YourElemState.External[4].Alteration  + YourElemState.External[2].Alteration)  - YourElemState.External[3].Alteration  * YourStreams.Herald
+//   YourElemState.Empowered[4].Destruction = YourStreams.Bender * ( YourElemState.External[4].Destruction + YourElemState.External[2].Creation)    - YourElemState.External[3].Creation    * YourStreams.Herald
+//   // v void - extra consumption
+//   YourElemState.Empowered[5].Creation    = YourStreams.Bender * ( YourElemState.External[5].Creation) //    + YourElemState.Empowered[5].Creation)
+//   YourElemState.Empowered[5].Alteration  = YourStreams.Bender * ( YourElemState.External[5].Alteration) //  + YourElemState.Empowered[5].Alteration)
+//   YourElemState.Empowered[5].Destruction = YourStreams.Bender * ( YourElemState.External[5].Destruction) // + YourElemState.Empowered[5].Destruction)
+//   // v deviant - extra overheat
+//   YourElemState.Empowered[6].Creation    = YourStreams.Bender * ( YourElemState.External[6].Creation    + 2 * math.Sqrt(YourElemState.External[4].Creation    * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Creation    )
+//   YourElemState.Empowered[6].Alteration  = YourStreams.Bender * ( YourElemState.External[6].Alteration  + 2 * math.Sqrt(YourElemState.External[4].Alteration  * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Alteration  )
+//   YourElemState.Empowered[6].Destruction = YourStreams.Bender * ( YourElemState.External[6].Destruction + 2 * math.Sqrt(YourElemState.External[4].Destruction * YourElemState.External[2].Creation)) // + YourElemState.Empowered[6].Destruction )
+//   YourElemState.Empowered[7].Creation    = YourStreams.Bender * ( YourElemState.External[7].Creation    + 2 * math.Sqrt(YourElemState.External[3].Creation    * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Creation    )
+//   YourElemState.Empowered[7].Alteration  = YourStreams.Bender * ( YourElemState.External[7].Alteration  + 2 * math.Sqrt(YourElemState.External[3].Alteration  * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Alteration  )
+//   YourElemState.Empowered[7].Destruction = YourStreams.Bender * ( YourElemState.External[7].Destruction + 2 * math.Sqrt(YourElemState.External[3].Destruction * YourElemState.External[1].Creation)) //  + YourElemState.Empowered[7].Destruction )
+//   // v rarest - extra overheat and consumption
+//   YourElemState.Empowered[8].Creation    = YourStreams.Bender * ( YourElemState.External[8].Alteration + YourElemState.External[8].Creation   )//  + YourElemState.Empowered[8].Creation)
+//   YourElemState.Empowered[8].Alteration  = YourStreams.Bender * ( YourElemState.External[8].Creation   + YourElemState.External[8].Destruction)//  + YourElemState.Empowered[8].Alteration)
+//   YourElemState.Empowered[8].Destruction = YourStreams.Bender * ( YourElemState.External[8].Alteration + YourElemState.External[8].Destruction) // + YourElemState.Empowered[8].Destruction)
+//   // Finalizing
+//   YourElemState.Empowered[0].Creation = YourStreams.Bender * YourElemState.External[8].Creation - YourElemState.External[5].Destruction * YourStreams.Herald + YourElemState.Internal[0].Creation
+//   YourElemState.Empowered[0].Alteration = YourStreams.Bender * YourElemState.External[8].Alteration - YourElemState.External[5].Alteration * YourStreams.Herald + YourElemState.Internal[0].Alteration
+//   YourElemState.Empowered[0].Destruction = YourStreams.Bender * YourElemState.External[8].Destruction - YourElemState.External[5].Creation * YourStreams.Herald + YourElemState.Internal[0].Destruction
+//   for i:=1; i<9; i++ {
+//     // if YourElemState.Empowered[i].Creation != 0 {
+//     //   You.ElemAff[i].Creation += YourElemState.Empowered[i].Creation + YourElemState.Internal[i].Creation
+//     //   You.ElemAff[i].Alteration += YourElemState.Empowered[i].Alteration + YourElemState.Internal[i].Alteration
+//     //   You.ElemAff[i].Destruction += YourElemState.Empowered[i].Destruction + YourElemState.Internal[i].Destruction
+//     // }
+//     if YourElemState.Internal[i].Creation*YourElemState.Internal[i].Destruction != 0 { You.Resistance[i-1] = YourElemState.Internal[i].Destruction * YourElemState.Internal[i].Creation }
+//   }
+// }
 // func PlotEnvAff() {
 //   i := 0
 //   if verbose {
@@ -357,7 +357,7 @@ func PlayerBorn(class float64) {
   // YourStreams.List = stringsMatrix
   You.Health.Max += 100
   ExtendPools()
-  InnerAffinization()
+  player.InnerAffinization(&YourElemState, YourStreams.Bender, YourStreams.Herald)
   player.PlotStreamList(YourStreams, verbose)
 }
 // func ListStrings() {

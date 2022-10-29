@@ -26,8 +26,8 @@ func PlotStreamList(list Streams, verbose bool) {
     counter.Creation += stream.Creation
     counter.Alteration += stream.Alteration
     counter.Destruction += stream.Destruction
-    fmt.Printf(" │ %d'%s %1.1f'len ── %1.2f'wid ── %1.3f'pow ──", i+1, primitives.ES(stream.Element), stream.LWP[0], stream.LWP[1], stream.LWP[2])
-    if verbose {fmt.Printf(" %1.2f'len ── %1.2f'wid ── %1.2f'pow ── Volume:%1.1f ──", stream.Creation, stream.Alteration, stream.Destruction, (stream.Alteration)*(stream.Destruction)*(stream.Creation))}
+    fmt.Printf(" │ %d'%s %1.0f'len ── %1.1f'wid ── %1.2f'pow ──", i+1, primitives.ES(stream.Element), stream.LWP[0], stream.LWP[1], stream.LWP[2])
+    if verbose {fmt.Printf(" %1.2f'cre ── %1.2f'alt ── %1.2f'des ── Volume:%1.1f ──", stream.Creation, stream.Alteration, stream.Destruction, (stream.Alteration)*(stream.Destruction)*(stream.Creation))}
     fmt.Println()
   }
   fmt.Printf(" ├── Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.1f ──\n", counter.Creation, counter.Alteration, counter.Destruction, vols)
@@ -67,7 +67,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
     strings.Alteration  = wids[i] / swid * standart
     strings.Destruction = pows[i] / empowering / spow * standart
     strings.HeatPrint   = strings.Destruction/strings.Creation
-    strings.LWP = [3]float64{ strings.Creation*1024, strings.Alteration/(1+strings.Creation), strings.Destruction/(strings.Alteration+1)/(strings.Creation+1) }
+    strings.LWP = [3]float64{ strings.Creation*1024, 32*strings.Alteration/primitives.Vector(strings.Alteration, strings.Creation), 10*strings.Destruction/primitives.Vector(strings.Destruction, strings.Alteration, strings.Creation) }
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }
   *yourStreams = stringsMatrix

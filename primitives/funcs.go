@@ -37,3 +37,9 @@ func ChancedRound(a float64) int {
   if RNF() < c {return int(b)} else {return int(l)}
   return 0
 }
+
+func Vector(props ...float64) float64 {
+  sum := 0.0
+  for _, each := range props { sum += each*each }
+  return math.Sqrt(sum)
+}
