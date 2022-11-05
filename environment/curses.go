@@ -5,6 +5,7 @@ import "fmt"
 
 // emulation, in future get from db
 func Cursing(environment *Location) {
+  return
   fmt.Printf(" ┌──── DEBUG [Location init][Cursing]: reading bunch of negative power states - start.\n")
   // state where fires are much dangerous
   driesFire := primitives.Stream{Element: "Fire", Creation: 5, Destruction: 8, Alteration: 3}

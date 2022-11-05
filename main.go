@@ -57,6 +57,7 @@ var (
   // player-related
   YourElemState player.ElementalState
   YourStreams player.Streams
+  YourPool player.Pool
   // cosmetical
   You Player
   verbose = false
@@ -68,7 +69,7 @@ func init() {
   environment.Cursing(&Environment) // and here
   PlayerBorn(0)
   go func() { // passive prcoesses block
-    go func() { for You.Health.Current > 0 {Regenerate()}    ; fmt.Println("FATAL: You are dead.")}()
+    go func() { for You.Health.Current > 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) }    ; fmt.Println("FATAL: You are dead.")}()
     go func() { for You.Health.Current > 0 {Transferrence()} ; fmt.Println("FATAL: You are dead.")}()
   }()
   fmt.Printf("SYSTEM [Start]:%s Welcome to the world, %s@%1.0f.\n", ebr, You.Name, YourStreams.Class*100000)
@@ -79,7 +80,7 @@ func main() {
   Move(3, -17.2)
   for {
     if primitives.RNF() < 0.25 {EnergeticSurge(0.11)}
-    EnergyStatus()
+    player.PlotEnergyStatus(YourPool, verbose)
     time.Sleep( time.Second * time.Duration( 10 ))
     // if len(You.Pool.Dots) =
   }
@@ -356,7 +357,7 @@ func PlayerBorn(class float64) {
   // fmt.Println("DEBUG: Max health:", You.Health.Max)
   // YourStreams.List = stringsMatrix
   You.Health.Max += 100
-  ExtendPools()
+  player.ExtendPools(&YourPool, YourStreams.List, verbose)
   player.ReadStatesFromEnv(&YourElemState, You.XYZ, YourStreams, Environment)
   player.InnerAffinization(&YourElemState, YourStreams.Bender, YourStreams.Herald)
   player.PlotStreamList(YourStreams, verbose)
@@ -377,89 +378,90 @@ func PlayerBorn(class float64) {
 //   if verbose == false {PlotEnvAff()}
 //   fmt.Printf("%s Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.1f\n", ebr, counter.Creation, counter.Alteration, counter.Destruction, vols)
 // }
-func ExtendPools() {
-  fmt.Printf("INFO [Extend dot capacity to maximum]:")
-  old := You.Pool.MaxVol
-  for _, stream := range YourStreams.List {
-    You.Pool.MaxVol += 32*math.Sqrt(1+stream.Creation)
-  }
-  You.Pool.MaxVol = math.Round(You.Pool.MaxVol)
-  if verbose {
-    fmt.Printf("\nDEBUG [Pool]: %1.0f'dots\n", You.Pool.MaxVol)
-  } else {
-    if old == 0 {old = You.Pool.MaxVol/2}
-    fmt.Printf("%s INFO [Pool]: %+2.1f%%'dots\n", ebr, (You.Pool.MaxVol/old-1)*100)
-  }
-}
-func EnergyStatus() {
-  sum, mean := 0.0, 0.0
-  fmt.Printf("\nINFO [List dots]:%s", elbr)
-  count := 0
-  span := int(math.Sqrt(2)*math.Sqrt( float64(len(You.Pool.Dots)+1) ))
-  if span > 61 {span = 61}
-  if verbose {span = 10}
-  for e:=0; e<9; e++ {
-    for _, dot := range You.Pool.Dots {
-      if dot.Element == AllElements[e] {
-        if (count)%span == 0 && count != 0 {
-          fmt.Printf("%s",elbr)
-        }
-        if verbose {fmt.Printf("─%5.2f'%s ──", dot.Weight, primitives.ES(dot.Element))} else {fmt.Printf("%s",primitives.ES(dot.Element))}
-        sum += dot.Weight
-        mean += 1/dot.Weight
-        count++
-      }
-    }
-    // if verbose && count != 0 {fmt.Printf("%s", elbr)}
-  }
-  // if (count)%span == 0 {
-  //   if count != len(You.Pool.Dots) {fmt.Printf("%s",elbr)}
-  // }
-  // if verbose != true {
-  //   for e:=0; e<int(You.Pool.MaxVol)-len(You.Pool.Dots); e++ {
-  //     if (count)%span == 0 && count != len(You.Pool.Dots) {
-  //       fmt.Printf("%s",elbr)
-  //     }
-  //     fmt.Printf("◯ ")
-  //     count++
-  //   }
-  // }
-  fmt.Printf("\n")
-  fmt.Printf("INFO [Energy status]:%s Total energy level: %2.1f%%", ebr, float64(len(You.Pool.Dots))/You.Pool.MaxVol*100)
-  if verbose {fmt.Printf(" ─ mean:avg = %2.1f%%, %1.2f / %1.2f ─── Life: %2.1f%%", float64(len(You.Pool.Dots))/mean/(sum/float64(len(You.Pool.Dots)))*100, float64(len(You.Pool.Dots))/mean, sum/float64(len(You.Pool.Dots)), You.Health.Current/You.Health.Max*100)}
-}
+// func ExtendPools() {
+//   fmt.Printf("INFO [Extend dot capacity to maximum]:")
+//   old := You.Pool.MaxVol
+//   for _, stream := range YourStreams.List {
+//     You.Pool.MaxVol += 32*math.Sqrt(1+stream.Creation)
+//   }
+//   You.Pool.MaxVol = math.Round(You.Pool.MaxVol)
+//   if verbose {
+//     fmt.Printf("\nDEBUG [Pool]: %1.0f'dots\n", You.Pool.MaxVol)
+//   } else {
+//     if old == 0 {old = You.Pool.MaxVol/2}
+//     fmt.Printf("%s INFO [Pool]: %+2.1f%%'dots\n", ebr, (You.Pool.MaxVol/old-1)*100)
+//   }
+// }
+// func EnergyStatus() {
+//   sum, mean := 0.0, 0.0
+//   fmt.Printf("\nINFO [List dots]:%s", elbr)
+//   count := 0
+//   span := int(math.Sqrt(2)*math.Sqrt( float64(len(You.Pool.Dots)+1) ))
+//   if span > 61 {span = 61}
+//   if verbose {span = 10}
+//   for e:=0; e<9; e++ {
+//     for _, dot := range You.Pool.Dots {
+//       if dot.Element == AllElements[e] {
+//         if (count)%span == 0 && count != 0 {
+//           fmt.Printf("%s",elbr)
+//         }
+//         if verbose {fmt.Printf("─%5.2f'%s ──", dot.Weight, primitives.ES(dot.Element))} else {fmt.Printf("%s",primitives.ES(dot.Element))}
+//         sum += dot.Weight
+//         mean += 1/dot.Weight
+//         count++
+//       }
+//     }
+//     // if verbose && count != 0 {fmt.Printf("%s", elbr)}
+//   }
+//   // if (count)%span == 0 {
+//   //   if count != len(You.Pool.Dots) {fmt.Printf("%s",elbr)}
+//   // }
+//   // if verbose != true {
+//   //   for e:=0; e<int(You.Pool.MaxVol)-len(You.Pool.Dots); e++ {
+//   //     if (count)%span == 0 && count != len(You.Pool.Dots) {
+//   //       fmt.Printf("%s",elbr)
+//   //     }
+//   //     fmt.Printf("◯ ")
+//   //     count++
+//   //   }
+//   // }
+//   fmt.Printf("\n")
+//   fmt.Printf("INFO [Energy status]:%s Total energy level: %2.1f%%", ebr, float64(len(You.Pool.Dots))/You.Pool.MaxVol*100)
+//   if verbose {fmt.Printf(" ─ mean:avg = %2.1f%%, %1.2f / %1.2f ─── Life: %2.1f%%", float64(len(You.Pool.Dots))/mean/(sum/float64(len(You.Pool.Dots)))*100, float64(len(You.Pool.Dots))/mean, sum/float64(len(You.Pool.Dots)), You.Health.Current/You.Health.Max*100)}
+// }
 
-func GainDot() {
-  if len(You.Pool.Dots) >= int(You.Pool.MaxVol) { time.Sleep( time.Millisecond * time.Duration( 4000 )) ; return }
-  picker := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(YourStreams.List))
-  element := YourStreams.List[picker].Element
-  weight := primitives.Log1479( YourStreams.List[picker].Alteration ) * (1 + primitives.RNF()) / 2
-  dot := Dot{Element: element, Weight: weight}
-  You.Pool.Dots = append(You.Pool.Dots, dot)
-  if You.Health.Current < You.Health.Max {
-    heal := math.Sqrt(weight)
-    You.Health.Current += heal
-    // if verbose {fmt.Printf("  %1.1f %1.1f  ", heal, weight)}
-  } else { You.Health.Current = You.Health.Max }
-  time.Sleep( time.Millisecond * time.Duration( 1000*primitives.Log1479(You.Pool.MaxVol)/math.Sqrt(You.Pool.MaxVol)*math.Sqrt(weight) ))
-}
-func Regenerate() {
-  if len(You.Pool.Dots) >= int(You.Pool.MaxVol) {
-    if verbose {fmt.Printf("\nDEBUG [regenerating]: nothing to regenerate. ")}
-    time.Sleep( time.Millisecond * time.Duration( 4000 ))
-    return
-  }
-  mana := int( math.Sqrt(You.Pool.MaxVol-float64(len(You.Pool.Dots))) )
-  if verbose {fmt.Printf("\nDEBUG [regenerating]: +%d dots. ", mana)}
-  for i:=0; i<mana; i++ {
-    if len(You.Pool.Dots) >= int(You.Pool.MaxVol) {
-      if verbose {fmt.Printf("\nDEBUG [regenerating]: nothing to regenerate. ")}
-      time.Sleep( time.Millisecond * time.Duration( 4000 ))
-      break
-    }
-    GainDot()
-  }
-}
+// func GainDot() {
+//   if len(You.Pool.Dots) >= int(You.Pool.MaxVol) { time.Sleep( time.Millisecond * time.Duration( 4000 )) ; return }
+//   picker := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(YourStreams.List))
+//   element := YourStreams.List[picker].Element
+//   weight := primitives.Log1479( YourStreams.List[picker].Alteration ) * (1 + primitives.RNF()) / 2
+//   dot := Dot{Element: element, Weight: weight}
+//   You.Pool.Dots = append(You.Pool.Dots, dot)
+//   if You.Health.Current < You.Health.Max {
+//     heal := math.Sqrt(weight)
+//     You.Health.Current += heal
+//     // if verbose {fmt.Printf("  %1.1f %1.1f  ", heal, weight)}
+//   } else { You.Health.Current = You.Health.Max }
+//   time.Sleep( time.Millisecond * time.Duration( 1000*primitives.Log1479(You.Pool.MaxVol)/math.Sqrt(You.Pool.MaxVol)*math.Sqrt(weight) ))
+// }
+// func Regenerate() {
+//   if len(You.Pool.Dots) >= int(You.Pool.MaxVol) {
+//     if verbose {fmt.Printf("\nDEBUG [regenerating]: nothing to regenerate. ")}
+//     time.Sleep( time.Millisecond * time.Duration( 4000 ))
+//     return
+//   }
+//   mana := int( math.Sqrt(You.Pool.MaxVol-float64(len(You.Pool.Dots))) )
+//   if verbose {fmt.Printf("\nDEBUG [regenerating]: +%d dots. ", mana)}
+//   for i:=0; i<mana; i++ {
+//     if len(You.Pool.Dots) >= int(You.Pool.MaxVol) {
+//       if verbose {fmt.Printf("\nDEBUG [regenerating]: nothing to regenerate. ")}
+//       time.Sleep( time.Millisecond * time.Duration( 4000 ))
+//       break
+//     }
+//     GainDot()
+//   }
+// }
+
 func CrackStream(stream primitives.Stream) { // need heat {
   element := stream.Element
   weight := primitives.Log1479( stream.Destruction ) * (primitives.RNF() + primitives.RNF()) / 2
@@ -482,6 +484,7 @@ func EnergeticSurge(doze float64) { // need in time
     }
   }
 }
+
 func MinusDot(index int) (string, float64) {
   if index >= len(You.Pool.Dots) { index = rand.New(rand.NewSource(time.Now().UnixNano())).Intn( len(You.Pool.Dots) ) }
   ddelement := You.Pool.Dots[index].Element

@@ -76,8 +76,8 @@ func PlotElementalState(estate ElementalState, verbose bool) {
   }
   fmt.Println()
   fmt.Printf(" ├── INFO [resistances]: ")
-  fmt.Printf("%s:%1.2f ──", ElemSigns[0], math.Sqrt( math.Pow(estate.Internal[0].Creation, 2) + math.Pow(estate.Internal[0].Alteration, 2) + math.Pow(estate.Internal[0].Destruction, 2)) )
-  for i:=0; i<8; i++ { if estate.Resistances[i] != 0 { fmt.Printf(" %s:%1.2f ", ElemSigns[i+1], estate.Resistances[i] ) } }
+  fmt.Printf("\n │ %s:%1.2f   ──  ", ElemSigns[0], math.Sqrt( math.Pow(estate.Internal[0].Creation, 2) + math.Pow(estate.Internal[0].Alteration, 2) + math.Pow(estate.Internal[0].Destruction, 2)) )
+  for i:=0; i<8; i++ { if estate.Resistances[i] != 0 { fmt.Printf(" %s:%1.2f  ", ElemSigns[i+1], estate.Resistances[i] ) } }
   fmt.Println()
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
