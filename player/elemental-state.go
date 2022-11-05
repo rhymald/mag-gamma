@@ -111,25 +111,29 @@ func ReadStatesFromEnv(elementalState *ElementalState, position [3]float64, floc
     }
   }
   estate := ElementalState{}
-  for _, affection := range affectingPlaces {
-    for i:=1;i<9;i++ {
-      if affection.Element == AllElements[i] {
-        estate.External[i].Creation += affection.Creation
-        estate.External[i].Alteration += affection.Alteration
-        estate.External[i].Destruction += affection.Destruction
-      }
-    }
+  // for _, affection := range affectingPlaces {
+  //   for i:=1;i<9;i++ {
+  //     if affection.Element == AllElements[i] {
+  //       estate.External[i].Creation += affection.Creation
+  //       estate.External[i].Alteration += affection.Alteration
+  //       estate.External[i].Destruction += affection.Destruction
+  //     }
+  //   }
+  // }
+  for i, element := range AllElements {
+    estate.Internal[i] = primitives.StreamSum(element, flock.List)
+    if i!=0 {estate.External[i] = primitives.StreamSum(element, affectingPlaces)}
   }
-  for _, each := range flock.List {
-    estate.Internal[0].Creation += each.Creation // + estate.Empowered[0].Creation)
-    estate.Internal[0].Alteration += each.Alteration //  + estate.Empowered[0].Alteration)
-    estate.Internal[0].Destruction += each.Destruction //    + estate.Empowered[0].Destruction)
-    if each.Element != "Common" {
-      estate.Internal[primitives.ElemToInt(each.Element)].Creation += each.Creation // + estate.Empowered[0].Creation)
-      estate.Internal[primitives.ElemToInt(each.Element)].Alteration += each.Alteration //  + estate.Empowered[0].Alteration)
-      estate.Internal[primitives.ElemToInt(each.Element)].Destruction += each.Destruction //    + estate.Empowered[0].Destruction)
-    }
-  }
+  // for _, each := range flock.List {
+  //   estate.Internal[0].Creation += each.Creation // + estate.Empowered[0].Creation)
+  //   estate.Internal[0].Alteration += each.Alteration //  + estate.Empowered[0].Alteration)
+  //   estate.Internal[0].Destruction += each.Destruction //    + estate.Empowered[0].Destruction)
+  //   if each.Element != "Common" {
+  //     estate.Internal[primitives.ElemToInt(each.Element)].Creation += each.Creation // + estate.Empowered[0].Creation)
+  //     estate.Internal[primitives.ElemToInt(each.Element)].Alteration += each.Alteration //  + estate.Empowered[0].Alteration)
+  //     estate.Internal[primitives.ElemToInt(each.Element)].Destruction += each.Destruction //    + estate.Empowered[0].Destruction)
+  //   }
+  // }
   *elementalState = estate
 }
 
