@@ -80,8 +80,8 @@ func main() {
   Move(3, -17.2)
   for {
     if primitives.RNF() < 0.25 { player.EnergeticSurge(&YourPool, YourStreams.List, 0) }
-    player.PlotEnergyStatus(YourPool, verbose)
-    time.Sleep( time.Second * time.Duration( 2 ))
+    if primitives.RNF() < 0.25 { player.PlotEnergyStatus(YourPool, verbose) }
+    time.Sleep( time.Millisecond * time.Duration( primitives.RegenerateFullTimeOut() ))
     // if len(You.Pool.Dots) =
   }
   fmt.Scanln()
@@ -120,7 +120,7 @@ func Move(x float64, y float64) {
     player.InnerAffinization(&YourElemState, YourStreams.Bender, YourStreams.Herald)
   }
   if verbose {player.PlotElementalState(YourElemState, verbose)}
-  fmt.Printf("%s Here I am: %1.2f'long-, %1.2f'graditude.\n", ebr, You.XYZ[0],You.XYZ[1])
+  fmt.Printf("%s Here I am: %1.2f'long-, %1.2f'graditude.", ebr, You.XYZ[0],You.XYZ[1])
 }
 // func Orienting() {
 //   var affectingPlaces []Stream

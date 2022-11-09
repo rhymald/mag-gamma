@@ -14,7 +14,7 @@ type Pool struct {
 
 func ExtendPools(pool *Pool, streams []primitives.Stream, verbose bool) {
 
-  fmt.Printf(" ───── INFO [Extend dot capacity to maximum]: ")
+  fmt.Printf(" ╶──── INFO [Extend dot capacity to maximum]: ")
   old := *&pool.MaxVol
   new := primitives.MaxVolFromStreams(streams)
   // for _, stream := range streams {
@@ -32,7 +32,7 @@ func ExtendPools(pool *Pool, streams []primitives.Stream, verbose bool) {
 
 func PlotEnergyStatus(pool Pool, verbose bool) {
   sum, mean := 0.0, 0.0
-  fmt.Printf(" ┌──── INFO [List dots]:")
+  fmt.Printf("\n ┌──── INFO [List dots]:")
   if verbose == false { fmt.Printf("\n │") }
   if verbose { fmt.Printf("\n ├") }
   count := 0
@@ -44,7 +44,7 @@ func PlotEnergyStatus(pool Pool, verbose bool) {
       if dot.Element == AllElements[e] {
         if verbose == false && (count)%span == 0 && count != 0 { fmt.Printf("\n │") }
         if verbose && (count)%span == 0 && count != 0 { fmt.Printf("\n ├") }
-        if verbose {fmt.Printf("─%5.2f'%s ─", dot.Weight, primitives.ES(dot.Element))} else {fmt.Printf("%s",primitives.ES(dot.Element))}
+        if verbose {fmt.Printf("─ %1.2f'%s ─", dot.Weight, primitives.ES(dot.Element))} else {fmt.Printf("%s",primitives.ES(dot.Element))}
         sum += dot.Weight
         mean += 1/dot.Weight
         count++
@@ -55,7 +55,7 @@ func PlotEnergyStatus(pool Pool, verbose bool) {
   fmt.Printf(" ├── INFO [Energy status]: Total energy level: %2.1f%%", float64(len(pool.Dots))/pool.MaxVol*100)
   if verbose {fmt.Printf(" ─ mean:avg = %2.1f%%, %1.2f / %1.2f ─── ", float64(len(pool.Dots))/mean/(sum/float64(len(pool.Dots)))*100, float64(len(pool.Dots))/mean, sum/float64(len(pool.Dots)))}
   fmt.Printf("\n")
-  fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
+  fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────")
 }
 
 func EmitDot(pool *Pool, streams []primitives.Stream) {
@@ -76,15 +76,15 @@ func EmitDot(pool *Pool, streams []primitives.Stream) {
 func RegenerateDots(pool *Pool, streams []primitives.Stream, verbose bool) {
   fulltimeout := primitives.RegenerateFullTimeOut()
   if len(*&pool.Dots) >= int(*&pool.MaxVol) {
-    if verbose {fmt.Printf("\n ───── DEBUG [regenerating]: nothing to regenerate. \n")}
+    if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Regenerating]: nothing to regenerate. ")}
     time.Sleep( time.Millisecond * time.Duration( fulltimeout ))
     return
   }
   mana := primitives.RegenerationPortionFromPool(*&pool.MaxVol, len(*&pool.Dots))
-  if verbose {fmt.Printf("\n ───── DEBUG [regenerating]: +%d dots. \n", mana)}
+  if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Regenerating]: +%d dots. ", mana)}
   for i:=0; i<mana; i++ {
     if len(*&pool.Dots) >= int(*&pool.MaxVol) {
-      if verbose {fmt.Printf("\n ───── DEBUG [regenerating]: nothing to regenerate. \n")}
+      if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Regenerating]: nothing to regenerate. ")}
       time.Sleep( time.Millisecond * time.Duration( fulltimeout ))
       break
     }
@@ -102,7 +102,7 @@ func CrackStream(pool *Pool, stream primitives.Stream) {
 }
 
 func EnergeticSurge(pool *Pool, streams []primitives.Stream, doze float64) {
-  fmt.Println("  ▲ YOU [yelling around]: CHEERS! A-ah...")
+  fmt.Printf("\n  ▲ YOU [yelling around]: CHEERS! A-ah...")
   if doze == 0 { doze = 1 / streams[0].Destruction ; for _, string := range streams { doze = math.Max(doze, 1 / string.Destruction) } }
   for _, string := range streams {
     i := 0.0
@@ -126,49 +126,49 @@ func MinusDot(pool *Pool, index int) (string, float64) {
 }
 
 func DotTransferIn(pool *Pool, estate ElementalState, verbose bool, e int) {
-  if verbose {fmt.Printf("Absorbing dots:")}
+  if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Absorbing dots]:")}
   element := AllElements[e]
-  if float64(len(*&pool.Dots)) >= *&pool.MaxVol+math.Sqrt(float64(len(*&pool.Dots))) { if verbose {fmt.Printf(" Full is energy.\n")} ; time.Sleep( time.Millisecond * time.Duration( primitives.RegenerateFullTimeOut() )) ; return }
-  weight := primitives.Log1479( estate.Empowered[e].Alteration ) * (1 + primitives.RNF()) / 2
+  if float64(len(*&pool.Dots)) >= *&pool.MaxVol+math.Sqrt(float64(len(*&pool.Dots))) { if verbose {fmt.Printf(" Full is energy.")} ; time.Sleep( time.Millisecond * time.Duration( primitives.RegenerateFullTimeOut() )) ; return }
+  weight, pause := primitives.DotWeightAndTimeoutForTrasferenceFromState(estate.Empowered[e])
   dot := primitives.Dot{Element: element, Weight: weight}
   *&pool.Dots = append(*&pool.Dots, dot)
-  step := 32*math.Sqrt(1+math.Abs(estate.Empowered[e].Creation))
   if verbose {fmt.Printf(" +%s'%1.2f", primitives.ES(element), weight )}
-  if verbose {fmt.Printf(", - dot absorbed for %1.3fs.\n", math.Log2(step)/math.Sqrt(step)*math.Sqrt(weight))}
-  time.Sleep( time.Millisecond * time.Duration( 1000* math.Log2(step)/math.Sqrt(step) *math.Sqrt(weight) ))
+  if verbose {fmt.Printf(" for %1.3fs. ", pause/1000)}
+  time.Sleep( time.Millisecond * time.Duration( pause ))
 }
 
 func DotTransferOut(pool *Pool, estate ElementalState, verbose bool, e int) {
-  if verbose {fmt.Printf("Losing dots:")}
+  if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Losing dots]:")}
   element := AllElements[e]
   presense := []int{}
   for i, dot := range *&pool.Dots { if dot.Element == element {presense = append(presense, i)} }
-  if len(presense) == 0 { if verbose{fmt.Printf(" No such dots.\n")} ; time.Sleep( time.Millisecond * time.Duration( primitives.RegenerateFullTimeOut() )) ; return }
+  if len(presense) == 0 { if verbose{fmt.Printf(" No such dots.")} ; time.Sleep( time.Millisecond * time.Duration( primitives.RegenerateFullTimeOut() )) ; return }
   killer := presense[rand.New(rand.NewSource(time.Now().UnixNano())).Intn( len(presense) )]
   _, weight := MinusDot(pool, killer)
-  step := 32*math.Sqrt(1+math.Abs(estate.Empowered[e].Destruction)) //primitives.Log1479(math.Abs(estate.Empowered[e].Destruction)) * (1 + primitives.RNF()) / 2
+  pause := primitives.TimeoutForTrasferenceFromWeightAndState(weight, estate.Empowered[e]) //primitives.Log1479(math.Abs(estate.Empowered[e].Destruction)) * (1 + primitives.RNF()) / 2
   if verbose {fmt.Printf(" -%s'%1.2f", primitives.ES(element), weight)}
-  if verbose {fmt.Printf(", - dot is lost for %1.3fs.\n", math.Log2(step)/math.Sqrt(step)/math.Sqrt(weight))}
-  time.Sleep( time.Millisecond * time.Duration( 1000* math.Log2(step)/math.Sqrt(step) /math.Sqrt(weight) ))
+  if verbose {fmt.Printf(" for %1.3fs.", pause/1000)}
+  time.Sleep( time.Millisecond * time.Duration( pause ))
 }
 
 func Transferrence(pool *Pool, estate ElementalState, verbose bool) {
   demand := [9]int{}
-  cooldown := 0.0
+  // cooldown := 0.0
   for i, source := range estate.Empowered {
-    count := 0.0
-    if source.Creation < 0 { count = - math.Sqrt(1+math.Abs(source.Destruction)) * (1 + primitives.RNF()) / 2 } else { count = math.Sqrt(1+math.Abs(source.Creation)) * (1 + primitives.RNF()) / 2 }
+    count := primitives.DotCountForTransferFromState(source)
+    // if source.Creation < 0 { count = - math.Sqrt(1+math.Abs(source.Destruction)) * (1 + primitives.RNF()) / 2 } else { count = math.Sqrt(1+math.Abs(source.Creation)) * (1 + primitives.RNF()) / 2 }
     if i == 0 { count = 0 }
     demand[i] = primitives.ChancedRound(count * primitives.Sign(estate.External[i].Creation))
-    cooldown = math.Max(math.Abs(count) * 500, cooldown)
+    // cooldown = math.Max(math.Abs(count) * 500, cooldown)
   }
-  if cooldown == 0 { cooldown = 2000 }
-  if verbose {fmt.Printf("\nDEBUG [transferrence]: %v dots, cooldown: %1.3fs \n", demand, cooldown/1000)}
+  // if cooldown == 0 { cooldown = 2000 }
+  cooldown := primitives.TotalTransferCooldownFromDemand(demand)
+  if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Transference][Demand calculation]: %v dots, cooldown: %1.3fs ", demand, cooldown/1000)}
   wg := sync.WaitGroup{}
   for e, _ := range demand {
     amount := demand[e]
     if demand[e] > 0 {
-      if verbose {fmt.Println("Gaining", amount, AllElements[e])}
+      if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Transference][Gaining]: %d %s", amount, AllElements[e])}
       wg.Add(1)
       go func(e int){
         defer wg.Done()
@@ -176,7 +176,7 @@ func Transferrence(pool *Pool, estate ElementalState, verbose bool) {
       }(e)
     } else if demand[e] < 0 {
       amount = 0 - demand[e]
-      if verbose {fmt.Println("Loosing", amount, AllElements[e])}
+      if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Transference][Loosing] %d %s", amount, AllElements[e])}
       wg.Add(1)
       go func(e int){
         defer wg.Done()

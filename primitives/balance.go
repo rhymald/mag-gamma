@@ -24,3 +24,25 @@ func DotWeightAndTimeoutForRegenerationFromStreamAndMaxVol(stream Stream, maxvol
   health  := 0.0
   return weight, timeout, health
 }
+func DotCountForTransferFromState(state Stream) float64 {
+  count := 0.0
+  if state.Creation < 0 { return math.Sqrt(1+math.Abs(state.Destruction)) * (1 + RNF()) / -2 }
+  if state.Creation > 0 { return math.Sqrt(1+math.Abs(state.Creation)) * (1 + RNF()) / 2 }
+  return count+RegenerateFullTimeOut()
+}
+func DotWeightAndTimeoutForTrasferenceFromState(state Stream) (float64, float64) {
+  weight := Log1479( state.Alteration ) * (1 + RNF()) / 2
+  step   := 32*math.Sqrt(1+math.Abs(state.Creation))
+  pause  := 1000*math.Log2(step)/math.Sqrt(step)*math.Sqrt(weight)
+  return weight, pause
+}
+func TimeoutForTrasferenceFromWeightAndState(weight float64, state Stream) (float64) {
+  step   := 32*math.Sqrt(1+math.Abs(state.Destruction))
+  pause  := 1000*math.Log2(step)/math.Sqrt(step)*math.Sqrt(weight)
+  return pause
+}
+func TotalTransferCooldownFromDemand(demand [9]int) float64 {
+  sum := 0.0
+  for _, i := range demand { sum += math.Abs(float64(i))*500 }
+  return sum
+}

@@ -23,12 +23,12 @@ func PlotElementalState(estate ElementalState, verbose bool) {
   if verbose {
     fmt.Println()
     fmt.Printf(" ┌──── DEBUG [fundamental attribute stats]:")
-    if estate.Empowered[0].Creation != 0 {fmt.Printf(" ✳️  ──  %1.2f'vitality ── %1.2f'concentration ── %1.2f'power", estate.Empowered[0].Creation, estate.Empowered[0].Alteration, estate.Empowered[0].Destruction)}
+    if estate.Empowered[0].Creation != 0 {fmt.Printf("\n │ ✳️  ── %1.2f'vitality ── %1.2f'concentration ── %1.2f'power", estate.Empowered[0].Creation, estate.Empowered[0].Alteration, estate.Empowered[0].Destruction)}
   } else {
     fmt.Println()
     fmt.Printf(" ┌──── INFO [fundamental attribute balance]:")
     summ := estate.Empowered[0].Creation+estate.Empowered[0].Alteration+estate.Empowered[0].Destruction
-    if estate.Empowered[0].Creation != 0 {fmt.Printf(" ✳️  ──  %2.1f%%'vitality ── %2.1f%%'concentration ── %2.1f%%'power", estate.Empowered[0].Creation/summ*100, estate.Empowered[0].Alteration/summ*100, estate.Empowered[0].Destruction/summ*100)}
+    if estate.Empowered[0].Creation != 0 {fmt.Printf("\n │ ✳️  ── %2.1f%%'vitality ── %2.1f%%'concentration ── %2.1f%%'power", estate.Empowered[0].Creation/summ*100, estate.Empowered[0].Alteration/summ*100, estate.Empowered[0].Destruction/summ*100)}
   }
   if verbose {
     fmt.Println()
@@ -76,10 +76,10 @@ func PlotElementalState(estate ElementalState, verbose bool) {
   }
   fmt.Println()
   fmt.Printf(" ├── INFO [resistances]: ")
-  fmt.Printf("\n │ %s:%1.2f   ──  ", ElemSigns[0], math.Sqrt( math.Pow(estate.Internal[0].Creation, 2) + math.Pow(estate.Internal[0].Alteration, 2) + math.Pow(estate.Internal[0].Destruction, 2)) )
-  for i:=0; i<8; i++ { if estate.Resistances[i] != 0 { fmt.Printf(" %s:%1.2f  ", ElemSigns[i+1], estate.Resistances[i] ) } }
+  fmt.Printf("\n │ %s:%1.2f ── ", ElemSigns[0], math.Sqrt( math.Pow(estate.Internal[0].Creation, 2) + math.Pow(estate.Internal[0].Alteration, 2) + math.Pow(estate.Internal[0].Destruction, 2)) )
+  for i:=0; i<8; i++ { if estate.Resistances[i] != 0 { fmt.Printf("%s:%1.2f ", ElemSigns[i+1], estate.Resistances[i] ) } }
   fmt.Println()
-  fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
+  fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────")
 }
 
 func ReadStatesFromEnv(elementalState *ElementalState, position [3]float64, flock Streams, location environment.Location) {
