@@ -94,7 +94,7 @@ func RegenerateDots(pool *Pool, streams []primitives.Stream, verbose bool) {
 
 func CrackStream(pool *Pool, stream primitives.Stream) {
   element := stream.Element
-  weight := primitives.Log1479( stream.Destruction ) * (primitives.RNF() + primitives.RNF()) / 2
+  weight := primitives.DotWeightForSurgeFromState(stream)
   dot := primitives.Dot{Element: element, Weight: weight}
   *&pool.Dots = append(*&pool.Dots, dot)
   // return heat[element] = sqrt(sqr(d+1)/sqr(l-1)/sqr(w-1)+1)

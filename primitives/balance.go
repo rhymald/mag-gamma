@@ -17,6 +17,7 @@ func MaxVolFromStreams(streams []Stream) float64 { buffer := 0.0 ; for _, each :
 
 // dots
 func RegenerateFullTimeOut() float64 { return 4000 }
+func DotWeightForSurgeFromState(state Stream) float64 { return Log1479( state.Destruction ) * (RNF() + RNF()) / 2 }
 func RegenerationPortionFromPool(max float64, current int) int { return int( math.Sqrt(max-float64(current)) ) }
 func DotWeightAndTimeoutForRegenerationFromStreamAndMaxVol(stream Stream, maxvol float64) (float64, float64, float64) {
   weight  := Log1479( stream.Alteration ) * (1 + RNF()) / 2
