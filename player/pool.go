@@ -13,7 +13,7 @@ type Pool struct {
 
 func ExtendPools(pool *Pool, streams []primitives.Stream, verbose bool) {
 
-  fmt.Printf(" ┌──── INFO [Extend dot capacity to maximum]:\n │ ")
+  fmt.Printf(" ───── INFO [Extend dot capacity to maximum]: ")
   old := *&pool.MaxVol
   new := primitives.MaxVolFromStreams(streams)
   // for _, stream := range streams {
@@ -21,13 +21,12 @@ func ExtendPools(pool *Pool, streams []primitives.Stream, verbose bool) {
   // }
   *&pool.MaxVol = math.Round(new)
   if verbose {
-    fmt.Printf("DEBUG [Pool]: = %1.0f'dots\n", new)
+    fmt.Printf("= %1.0f'dots\n", new)
   } else {
     if old == 0 {old = new/2}
-    fmt.Printf("INFO [Pool]: %+2.1f%%'dots\n", (new/old-1)*100)
+    fmt.Printf("%+2.1f%%'dots\n", (new/old-1)*100)
   }
-  fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
-
+  // fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
 
 func PlotEnergyStatus(pool Pool, verbose bool) {
@@ -77,18 +76,41 @@ func EmitDot(pool *Pool, streams []primitives.Stream) {
 func RegenerateDots(pool *Pool, streams []primitives.Stream, verbose bool) {
   fulltimeout := primitives.RegenerateFullTimeOut()
   if len(*&pool.Dots) >= int(*&pool.MaxVol) {
-    if verbose {fmt.Printf("\nDEBUG [regenerating]: nothing to regenerate. ")}
+    if verbose {fmt.Printf("\n ───── DEBUG [regenerating]: nothing to regenerate. \n")}
     time.Sleep( time.Millisecond * time.Duration( fulltimeout ))
     return
   }
   mana := primitives.RegenerationPortionFromPool(*&pool.MaxVol, len(*&pool.Dots))
-  if verbose {fmt.Printf("\nDEBUG [regenerating]: +%d dots. ", mana)}
+  if verbose {fmt.Printf("\n ───── DEBUG [regenerating]: +%d dots. \n", mana)}
   for i:=0; i<mana; i++ {
     if len(*&pool.Dots) >= int(*&pool.MaxVol) {
-      if verbose {fmt.Printf("\nDEBUG [regenerating]: nothing to regenerate. ")}
+      if verbose {fmt.Printf("\n ───── DEBUG [regenerating]: nothing to regenerate. \n")}
       time.Sleep( time.Millisecond * time.Duration( fulltimeout ))
       break
     }
     EmitDot(pool, streams)
   }
+}
+
+func CrackStream(pool *Pool, stream primitives.Stream) {
+  element := stream.Element
+  weight := primitives.Log1479( stream.Destruction ) * (primitives.RNF() + primitives.RNF()) / 2
+  dot := primitives.Dot{Element: element, Weight: weight}
+  *&pool.Dots = append(*&pool.Dots, dot)
+  // return heat[element] = sqrt(sqr(d+1)/sqr(l-1)/sqr(w-1)+1)
+  // generate heat
+}
+
+func EnergeticSurge(pool *Pool, streams []primitives.Stream, doze float64) {
+  fmt.Println("  ▲ YOU [yelling around]: CHEERS! A-ah...")
+  if doze == 0 { doze = 1 / streams[0].Destruction ; for _, string := range streams { doze = math.Max(doze, 1 / string.Destruction) } }
+  for _, string := range streams {
+    i := 0.0
+    for {
+      CrackStream(pool, string) // compose heat
+      i += 1 / doze
+      if string.Destruction < i { break }
+    }
+  }
+  // apply heat
 }

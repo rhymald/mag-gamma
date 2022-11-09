@@ -69,7 +69,7 @@ func init() {
   environment.Cursing(&Environment) // and here
   PlayerBorn(0)
   go func() { // passive prcoesses block
-    go func() { for You.Health.Current > 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) }    ; fmt.Println("FATAL: You are dead.")}()
+    go func() { for You.Health.Current > 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) } ; fmt.Println("FATAL: You are dead.")}()
     go func() { for You.Health.Current > 0 {Transferrence()} ; fmt.Println("FATAL: You are dead.")}()
   }()
   fmt.Printf("SYSTEM [Start]:%s Welcome to the world, %s@%1.0f.\n", ebr, You.Name, YourStreams.Class*100000)
@@ -79,7 +79,7 @@ func main() {
   fmt.Println("▼ EUA growling [from everywhere]:", ebr, "I smell you... your soul, your being. LEAVE!")
   Move(3, -17.2)
   for {
-    if primitives.RNF() < 0.25 {EnergeticSurge(0.11)}
+    if primitives.RNF() < 0.25 { player.EnergeticSurge(&YourPool, YourStreams.List, 0) }
     player.PlotEnergyStatus(YourPool, verbose)
     time.Sleep( time.Second * time.Duration( 10 ))
     // if len(You.Pool.Dots) =
@@ -120,7 +120,7 @@ func Move(x float64, y float64) {
     player.InnerAffinization(&YourElemState, YourStreams.Bender, YourStreams.Herald)
   }
   if verbose {player.PlotElementalState(YourElemState, verbose)}
-  fmt.Printf("%s Here I am: %1.2f'long-, %1.2f'graditude.", ebr, You.XYZ[0],You.XYZ[1])
+  fmt.Printf("%s Here I am: %1.2f'long-, %1.2f'graditude.\n", ebr, You.XYZ[0],You.XYZ[1])
 }
 // func Orienting() {
 //   var affectingPlaces []Stream
@@ -461,29 +461,29 @@ func PlayerBorn(class float64) {
 //     GainDot()
 //   }
 // }
-
-func CrackStream(stream primitives.Stream) { // need heat {
-  element := stream.Element
-  weight := primitives.Log1479( stream.Destruction ) * (primitives.RNF() + primitives.RNF()) / 2
-  dot := Dot{Element: element, Weight: weight}
-  You.Pool.Dots = append(You.Pool.Dots, dot)
-  // return heat[element] = sqrt(sqr(d+1)/sqr(l-1)/sqr(w-1)+1)
-}
-func EnergeticSurge(doze float64) { // need in time
-  fmt.Printf("\n▲ YOU yelling [around]:%s CHEERS! A-ah...", ebr)
-  if doze == 0 {
-    doze = 1 / YourStreams.List[0].Destruction
-    for _, string := range YourStreams.List { doze = math.Max(doze, 1 / string.Destruction) }
-  }
-  for _, string := range YourStreams.List {
-    i := 0.0
-    for {
-      CrackStream(string)
-      i += 1 / doze
-      if string.Destruction < i { break }
-    }
-  }
-}
+//
+// func CrackStream(stream primitives.Stream) { // need heat {
+//   element := stream.Element
+//   weight := primitives.Log1479( stream.Destruction ) * (primitives.RNF() + primitives.RNF()) / 2
+//   dot := Dot{Element: element, Weight: weight}
+//   You.Pool.Dots = append(You.Pool.Dots, dot)
+//   // return heat[element] = sqrt(sqr(d+1)/sqr(l-1)/sqr(w-1)+1)
+// }
+// func EnergeticSurge(doze float64) { // need in time
+//   fmt.Printf("\n▲ YOU yelling [around]:%s CHEERS! A-ah...", ebr)
+//   if doze == 0 {
+//     doze = 1 / YourStreams.List[0].Destruction
+//     for _, string := range YourStreams.List { doze = math.Max(doze, 1 / string.Destruction) }
+//   }
+//   for _, string := range YourStreams.List {
+//     i := 0.0
+//     for {
+//       CrackStream(string)
+//       i += 1 / doze
+//       if string.Destruction < i { break }
+//     }
+//   }
+// }
 
 func MinusDot(index int) (string, float64) {
   if index >= len(You.Pool.Dots) { index = rand.New(rand.NewSource(time.Now().UnixNano())).Intn( len(You.Pool.Dots) ) }
@@ -496,7 +496,7 @@ func MinusDot(index int) (string, float64) {
 func DotTransferIn(e int) {
   if verbose {fmt.Printf("Absorbing dots:")}
   element := AllElements[e]
-  if float64(len(You.Pool.Dots)) >= You.Pool.MaxVol+primitives.Log1479(You.Pool.MaxVol) { if verbose {fmt.Printf(" Full is energy.\n")} ; time.Sleep( time.Millisecond * time.Duration( 4000 )) ; return }
+  if float64(len(You.Pool.Dots)) >= You.Pool.MaxVol+math.Sqrt(float64(len(You.Pool.Dots))) { if verbose {fmt.Printf(" Full is energy.\n")} ; time.Sleep( time.Millisecond * time.Duration( 4000 )) ; return }
   weight := primitives.Log1479( YourElemState.Empowered[e].Alteration ) * (1 + primitives.RNF()) / 2
   dot := Dot{Element: element, Weight: weight}
   You.Pool.Dots = append(You.Pool.Dots, dot)
