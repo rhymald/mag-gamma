@@ -45,7 +45,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
       stringsMatrix.Class += (primitives.RNF()*6+0.499999) / playerCountInDB
     }
   }
-  stringsMatrix.Bender, stringsMatrix.Herald = primitives.BendHeraldFromClass(stringsMatrix.Class)
+  stringsMatrix.Bender, stringsMatrix.Herald = primitives.NewBornStreams_BendHeraldFromClass(stringsMatrix.Class)
   countOfStreams := math.Round(stringsMatrix.Class)
   standart = standart
   empowering := ( - countOfStreams + stringsMatrix.Class )
@@ -66,7 +66,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
     strings.Alteration  = wids[i] / swid * standart
     strings.Destruction = pows[i] / empowering / spow * standart
     strings.HeatPrint   = strings.Destruction/strings.Creation
-    strings.LWP = [3]float64{ primitives.LenFromStream(strings), primitives.WidFromStream(strings), primitives.PowFromStream(strings) }
+    strings.LWP = [3]float64{ primitives.NewBornStreams_LenFromStream(strings), primitives.NewBornStreams_WidFromStream(strings), primitives.NewBornStreams_PowFromStream(strings) }
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }
   *yourStreams = stringsMatrix

@@ -81,7 +81,7 @@ func main() {
   for {
     if primitives.RNF() < 0.25 { player.EnergeticSurge(&YourPool, YourStreams.List, 0) }
     if primitives.RNF() < 0.25 { player.PlotEnergyStatus(YourPool, verbose) }
-    time.Sleep( time.Millisecond * time.Duration( primitives.RegenerateFullTimeOut() ))
+    time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() ))
     // if len(You.Pool.Dots) =
   }
   fmt.Scanln()
@@ -357,7 +357,7 @@ func PlayerBorn(class float64) {
   // fmt.Println("DEBUG: Max health:", You.Health.Max)
   // YourStreams.List = stringsMatrix
   You.Health.Max += 100
-  player.ExtendPools(&YourPool, YourStreams.List, verbose)
+  player.ExtendPool(&YourPool, YourStreams.List, verbose)
   player.ReadStatesFromEnv(&YourElemState, You.XYZ, YourStreams, Environment)
   player.InnerAffinization(&YourElemState, YourStreams.Bender, YourStreams.Herald)
   player.PlotStreamList(YourStreams, verbose)
