@@ -58,13 +58,14 @@ var (
   YourElemState player.ElementalState
   YourStreams player.Streams
   YourPool player.Pool
+  YourHeat player.Heat
   // cosmetical
   You Player
   verbose = false
 )
 
 func init() {
-  // WorldInit()
+  // some login, and middleware: regen and blockchain sync WorldInit()
   environment.Welling(&Environment) // fix to partial stack
   environment.Cursing(&Environment) // and here
   PlayerBorn(0)
@@ -76,13 +77,14 @@ func init() {
 }
 
 func main() {
+  // here must be an interface
   fmt.Println("▼ EUA growling [from everywhere]:", ebr, "I smell you... your soul, your being. LEAVE!")
   Move(3, -17.2)
   for {
-    if primitives.RNF() < 0.25 { player.EnergeticSurge(&YourPool, YourStreams.List, 0) }
+    player.PlotHeatState(YourHeat)
+    if primitives.RNF() < 0.25 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams.List, 100, verbose) }
     if primitives.RNF() < 0.25 { player.PlotEnergyStatus(YourPool, verbose) }
     time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() ))
-    // if len(You.Pool.Dots) =
   }
   fmt.Scanln()
 }
@@ -110,7 +112,7 @@ func Move(x float64, y float64) {
   fmt.Printf("▲ YOU moving, hurry [to people in front of you]:%s I am coming! ", cbr)
   if verbose {player.PlotElementalState(YourElemState, verbose)}
   fmt.Printf("%s", elbr)
-  distance := math.Sqrt(x*x+y*y)
+  distance := primitives.Vector(x,y)
   for t:=0.0; t<distance/0.7; t+=0.7 {
     You.XYZ[0] += x*0.7/distance
     You.XYZ[1] += y*0.7/distance
@@ -310,7 +312,8 @@ func PlayerBorn(class float64) {
   if You.Name == "Rhymald" || You.Name == "" {verbose = true}
   You.Health.Current = 1
 
-  player.NewBorn(&YourStreams, class, 0.35, 4917)
+  YourHeat = player.Heat{}
+  player.NewBorn(&YourStreams, class, 0.35, 5)
   // Class randomizing
   // if class < 6.5 && class >= 0.5 {
   //   YourStreams.Class = class

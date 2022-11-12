@@ -17,7 +17,7 @@ func ExtendPool_MaxVolFromStreams(streams []Stream) float64 { buffer := 0.0 ; fo
 
 // dots
 func Pool_RegenerateFullTimeOut() float64 { return 4000 }
-func CrackStream_DotWeightFromState(state Stream) float64 { return Log1479( state.Destruction ) * (RNF() + RNF()) / 2 }
+func CrackStream_DotWeightFromStream(stream Stream) float64 { return Log1479( stream.Destruction ) * (RNF() + RNF()) / 2 }
 func RegenerateDots_PortionFromPool(max float64, current int) int { return int( math.Sqrt(max-float64(current)) ) }
 func EmitDot_DotWeightAndTimeoutFromStreamAndMaxVol(stream Stream, maxvol float64) (float64, float64, float64) {
   weight  := Log1479( stream.Alteration ) * (1 + RNF()) / 2
@@ -56,4 +56,30 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream) (fl
   if cooldown == 0 { cooldown = Pool_RegenerateFullTimeOut() }
   // cooldown := primitives.Transference_TotalCooldownFromDemand(demand)
   return cooldown, demand
+}
+
+// heat
+func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Log1479(Vector(stream.Destruction,dot.Weight)+1) }
+func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
+  resume := [9]float64{}
+  for i, h := range heat {
+    if i == 0 {
+      resume[i] = 0
+    } else if i == 5 {
+      resume[1] += - math.Sqrt(h)
+      resume[2] += - math.Sqrt(h)
+      resume[3] += - math.Sqrt(h)
+      resume[4] += - math.Sqrt(h)
+      resume[6] += - math.Sqrt(h)
+      resume[7] += - math.Sqrt(h)
+      resume[8] += - h
+      resume[5] += h
+    } else if i == 8 {
+      resume[i] += resume[i] + h
+      for j:=0; j<8; j++ { resume[j] *= (RNF() + RNF()) }
+    } else {
+      resume[i] += h
+    }
+  }
+  return resume
 }

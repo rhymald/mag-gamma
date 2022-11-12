@@ -91,27 +91,33 @@ func RegenerateDots(pool *Pool, streams []primitives.Stream, verbose bool) {
   }
 }
 
-func CrackStream(pool *Pool, stream primitives.Stream) {
+func CrackStream(pool *Pool, stream primitives.Stream) [9]float64 {
   element := stream.Element
-  weight := primitives.CrackStream_DotWeightFromState(stream)
+  heat := [9]float64{}
+  weight := primitives.CrackStream_DotWeightFromStream(stream)
   dot := primitives.Dot{Element: element, Weight: weight}
   *&pool.Dots = append(*&pool.Dots, dot)
-  // return heat[element] = sqrt(sqr(d+1)/sqr(l-1)/sqr(w-1)+1)
-  // generate heat
+  // element = primitives.RNDElem()
+  heat[primitives.ElemToInt(element)] += primitives.GenerateHeat_FromStreamAndDot(stream, dot)
+  return heat
 }
 
-func EnergeticSurge(pool *Pool, streams []primitives.Stream, doze float64) {
+func EnergeticSurge(pool *Pool, heat *Heat, streams []primitives.Stream, doze float64, verbose bool) {
+  verbose = true
+  heatGenerated := [9]float64{}
   fmt.Printf("\n  ▲ YOU [yelling around]: CHEERS! A-ah...")
   if doze == 0 { doze = 1 / streams[0].Destruction ; for _, string := range streams { doze = math.Max(doze, 1 / string.Destruction) } }
   for _, string := range streams {
     i := 0.0
     for {
-      CrackStream(pool, string) // compose heat
+      heat := CrackStream(pool, string) // compose heat
       i += 1 / doze
+      heatGenerated = primitives.CollectHeat(heatGenerated, heat)
       if string.Destruction < i { break }
     }
   }
-  // apply heat
+  heatGenerated = primitives.GenerateHeat_ComposeHeat(heatGenerated)
+  ConsumeHeat(heat, heatGenerated)
 }
 
 func MinusDot(pool *Pool, index int) (string, float64) {
@@ -125,7 +131,7 @@ func MinusDot(pool *Pool, index int) (string, float64) {
 }
 
 func DotTransferIn(pool *Pool, estate ElementalState, verbose bool, e int) {
-  if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Absorbing dots]:")}
+  if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Transference][Absorbing dots]:")}
   element := AllElements[e]
   if float64(len(*&pool.Dots)) >= *&pool.MaxVol+math.Sqrt(float64(len(*&pool.Dots))) { if verbose {fmt.Printf(" Full is energy.")} ; time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() )) ; return }
   weight, pause := primitives.DotTransferIn_DotWeightAndTimeoutFromState(estate.Empowered[e])
@@ -137,7 +143,7 @@ func DotTransferIn(pool *Pool, estate ElementalState, verbose bool, e int) {
 }
 
 func DotTransferOut(pool *Pool, estate ElementalState, verbose bool, e int) {
-  if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Losing dots]:")}
+  if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Transference][Losing dots]:")}
   element := AllElements[e]
   presense := []int{}
   for i, dot := range *&pool.Dots { if dot.Element == element {presense = append(presense, i)} }

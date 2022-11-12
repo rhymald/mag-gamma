@@ -43,3 +43,5 @@ func Vector(props ...float64) float64 {
   for _, each := range props { sum += each*each }
   return math.Sqrt(sum)
 }
+
+func CollectHeat(a [9]float64, b [9]float64) [9]float64 { sum := [9]float64{} ; for i:=0; i<9; i++ { sum[i] = a[i] + b[i] } ; return sum }
