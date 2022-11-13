@@ -117,7 +117,7 @@ func EnergeticSurge(pool *Pool, heat *Heat, streams []primitives.Stream, doze fl
     }
   }
   heatGenerated = primitives.GenerateHeat_ComposeHeat(heatGenerated)
-  ConsumeHeat(heat, heatGenerated)
+  ConsumeHeat(heat, streams, heatGenerated)
 }
 
 func MinusDot(pool *Pool, index int) (string, float64) {

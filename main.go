@@ -81,8 +81,7 @@ func main() {
   fmt.Println("▼ EUA growling [from everywhere]:", ebr, "I smell you... your soul, your being. LEAVE!")
   Move(3, -17.2)
   for {
-    player.PlotHeatState(YourHeat)
-    if primitives.RNF() < 0.25 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams.List, 100, verbose) }
+    if primitives.RNF() < 0.25 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams.List, 0, verbose) ; player.PlotHeatState(YourHeat)}
     if primitives.RNF() < 0.25 { player.PlotEnergyStatus(YourPool, verbose) }
     time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() ))
   }
@@ -116,7 +115,7 @@ func Move(x float64, y float64) {
   for t:=0.0; t<distance/0.7; t+=0.7 {
     You.XYZ[0] += x*0.7/distance
     You.XYZ[1] += y*0.7/distance
-    time.Sleep( time.Millisecond * time.Duration( math.Sqrt(0.5)*1000 ))
+    time.Sleep( time.Millisecond * time.Duration( math.Sqrt(0.5)*100 ))
     if verbose {fmt.Printf(" 🐾")} else {fmt.Printf(" 🐾")}
     player.ReadStatesFromEnv(&YourElemState, You.XYZ, YourStreams, Environment)
     player.InnerAffinization(&YourElemState, YourStreams.Bender, YourStreams.Herald)

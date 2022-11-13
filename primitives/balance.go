@@ -59,7 +59,7 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream) (fl
 }
 
 // heat
-func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Log1479(Vector(stream.Destruction,dot.Weight)+1) }
+func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Vector(Log1479(stream.Destruction),Log1479(dot.Weight)) }
 func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
   resume := [9]float64{}
   for i, h := range heat {
@@ -82,4 +82,19 @@ func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
     }
   }
   return resume
+}
+func GenerateHeat_CompareHeat(heat [9]float64, flock []Stream) [9]float64 {
+  limits, counter := [9]float64{}, 0
+  for _, each := range flock {
+    limits[ElemToInt(each.Element)] += Vector(each.Alteration+1,each.Destruction+1,each.Destruction+1,each.Creation+1)
+  }
+  for i:=1; i<9; i++ {
+    if limits[i]!=0 {
+      counter++
+      limits[0] += 1 / limits[i]
+    }
+  }
+  limits[0] = float64(counter) * float64(counter) / limits[0] // heat[0]
+  // for i:=1; i<9; i++ { if limits[i]!=0 { limits[i] =  heat[i] /limits[i] / limits[0] }}
+  return limits
 }
