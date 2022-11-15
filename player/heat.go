@@ -7,6 +7,8 @@ import "fmt"
 type Heat struct {
   Current [9]float64
   Compared [9]float64
+  Unstable [9]float64
+  Danger [9]float64
 }
 
 func ConsumeHeat(heatState *Heat, streams []primitives.Stream, heat [9]float64) {
@@ -19,14 +21,14 @@ func ConsumeHeat(heatState *Heat, streams []primitives.Stream, heat [9]float64) 
     if bufferHeat[i] <= 0 {
       bufferHeat[i] = 0
     } else {
-      avg += bufferHeat[i]
+      avg += 1 / bufferHeat[i]
       counter++
     }
   }
   fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Current heat rates]: "); for i, h:=range bufferHeat { if h!=0 { fmt.Printf(" %1.0f'%s ", h, ElemSigns[i]) } }
   // mean = float64(counter) * float64(counter) / mean
   // bufferOverheat = bufferHeat
-  bufferHeat[0] = avg
+  bufferHeat[0] = float64(counter) / avg 
   // fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Overheat calculatings]: %s:%1.0f ", ElemSigns[0], mean); for i, h:=range bufferOverheat { if h!=0 { fmt.Printf(" %1.0f'%s ", h, ElemSigns[i]) } }
   // for i, oh := range bufferOverheat { bufferOverheat[i] = oh/mean }
   // fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Overheat comparsion]: %s:%1.0f ", ElemSigns[0], mean); for i, h:=range bufferOverheat { if h>0 && i!=0 { fmt.Printf(" %1.2f'%s ", h, ElemSigns[i]) } }
@@ -37,10 +39,10 @@ func ConsumeHeat(heatState *Heat, streams []primitives.Stream, heat [9]float64) 
 func PlotHeatState(heat Heat) {
   fmt.Printf("\n ┌──── INFO [heat state]:")
   for i:=0 ; i<9; i++ {
-    if i==0 {fmt.Printf("\n │ %s Average: %1.0f : ", ElemSigns[0], heat.Current[0])}
-    if i==0 && heat.Compared[i]>0 {fmt.Printf("%1.2f = %1.1f%% ", heat.Compared[0], heat.Current[0]/heat.Compared[0]*100)}
-    if i!=0 && heat.Current[i]>0 {fmt.Printf("\n │ %s Rate: %1.0f : ", ElemSigns[i], heat.Current[i])}
-    if i!=0 && heat.Compared[i]>0 && heat.Current[i]>0 {fmt.Printf("%1.2f = %1.1f%% ─── ", heat.Compared[i], (heat.Current[i]/heat.Compared[i]-heat.Current[0]/heat.Compared[0])*100)}
+    if i==0 {fmt.Printf("\n │ %s Average: %1.2f : ", ElemSigns[0], heat.Current[0])}
+    if i==0 && heat.Compared[i]>0 {fmt.Printf("%1.2f ", heat.Compared[0])}
+    if i!=0 && heat.Current[i]>0 {fmt.Printf("\n │ %s Rate: %1.2f : ", ElemSigns[i], heat.Current[i])}
+    if i!=0 && heat.Compared[i]>0 && heat.Current[i]>0 {fmt.Printf("%1.2f ─── ", heat.Compared[i])}
     // if i!=0 && (heat.Current[i]/heat.Compared[i])/(heat.Current[0]/heat.Compared[0])>1 && heat.Current[i]>0 {
     //   fmt.Printf("Close: %1.1f%% ─── ", (math.Sqrt(1-1/(1+heat.Compared[i])))*100)
     // } else if i!=0 && (heat.Current[i]/heat.Compared[i])/(heat.Current[0]/heat.Compared[0])>0.7 && heat.Current[i]>0 {

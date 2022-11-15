@@ -84,17 +84,15 @@ func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
   return resume
 }
 func GenerateHeat_CompareHeat(heat [9]float64, flock []Stream) [9]float64 {
-  limits, counter := [9]float64{}, 0
-  for _, each := range flock {
-    limits[ElemToInt(each.Element)] += Vector(each.Alteration+1,each.Destruction+1,each.Destruction+1,each.Creation+1)
-  }
-  for i:=1; i<9; i++ {
-    if limits[i]!=0 {
-      counter++
-      limits[0] += 1 / limits[i]
-    }
-  }
-  limits[0] = float64(counter) * float64(counter) / limits[0] // heat[0]
+  limits := [9]float64{}
+  // // cres, alts, dess := 0.0, 0.0, 0.0
+  // for _, each := range flock {
+  //   // alts += each.Alteration
+  //   // dess += each.Destruction
+  //   // cres += each.Creation
+  //   limits[ElemToInt(each.Element)] += 1
+  // }
+  // limits[0] = Vector(alts+1,dess+1,dess+1,cres+1)
   // for i:=1; i<9; i++ { if limits[i]!=0 { limits[i] =  heat[i] /limits[i] / limits[0] }}
   return limits
 }
