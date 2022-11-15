@@ -59,7 +59,7 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream) (fl
 }
 
 // heat
-func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Vector(Log1479(stream.Destruction),Log1479(dot.Weight)) }
+func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Log1479(Vector(stream.Destruction,dot.Weight)) }
 func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
   resume := [9]float64{}
   for i, h := range heat {
@@ -76,23 +76,23 @@ func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
       resume[5] += h
     } else if i == 8 {
       resume[i] += resume[i] + h
-      for j:=0; j<8; j++ { resume[j] *= (RNF() + RNF()) }
+      for j:=0; j<8; j++ { resume[j] *= math.Sqrt(RNF() + RNF()) }
     } else {
       resume[i] += h
     }
   }
   return resume
 }
-func GenerateHeat_CompareHeat(heat [9]float64, flock []Stream) [9]float64 {
+func GenerateHeat_CompareHeat(heat [9]float64, flockState [9]Stream) [9]float64 {
   limits := [9]float64{}
   // // cres, alts, dess := 0.0, 0.0, 0.0
-  // for _, each := range flock {
+  for i, each := range flockState {
   //   // alts += each.Alteration
   //   // dess += each.Destruction
   //   // cres += each.Creation
-  //   limits[ElemToInt(each.Element)] += 1
-  // }
-  // limits[0] = Vector(alts+1,dess+1,dess+1,cres+1)
+    // limits[i] = 1
+    if heat[i]!=0 { limits[i] = Vector( Vector( Log1479(each.Creation), Log1479(each.Destruction), Log1479(each.Alteration)), limits[0], math.Sqrt(heat[0])) }
+  }
   // for i:=1; i<9; i++ { if limits[i]!=0 { limits[i] =  heat[i] /limits[i] / limits[0] }}
   return limits
 }

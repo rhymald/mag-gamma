@@ -46,7 +46,7 @@ type Dot struct {
 
 const (
   cbr  = "\n  ├─"   // subtitle
-  elbr = "\n  ├───" // list
+  elbr = "\n  │" // list
   ebr  = "\n  └─"   // end message
 )
 var (
@@ -69,6 +69,7 @@ func init() {
   environment.Welling(&Environment) // fix to partial stack
   environment.Cursing(&Environment) // and here
   PlayerBorn(0)
+  // player.PlotElementalState(YourStreams.InternalElementalState, "Internal elemental state", verbose)
   go func() { // passive prcoesses block
     go func() { for You.Health.Current > 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) } ; fmt.Println("FATAL: You are dead.")}()
     go func() { for You.Health.Current > 0 { player.Transferrence(&YourPool, YourElemState, verbose) }     ; fmt.Println("FATAL: You are dead.")}()
@@ -81,7 +82,7 @@ func main() {
   fmt.Println("▼ EUA growling [from everywhere]:", ebr, "I smell you... your soul, your being. LEAVE!")
   Move(3, -17.2)
   for {
-    if primitives.RNF() < 0.25 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams.List, 0, verbose) ; player.PlotHeatState(YourHeat)}
+    if primitives.RNF() < 0.25 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams, 0, verbose) ; player.PlotHeatState(YourHeat)}
     if primitives.RNF() < 0.25 { player.PlotEnergyStatus(YourPool, verbose) }
     time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() ))
   }
@@ -109,7 +110,9 @@ func main() {
 
 func Move(x float64, y float64) {
   fmt.Printf("▲ YOU moving, hurry [to people in front of you]:%s I am coming! ", cbr)
-  if verbose {player.PlotElementalState(YourElemState, verbose)}
+  if verbose {player.PlotElementalState(YourStreams.InternalElementalState, "Internal elemental state", verbose)}
+  if verbose {player.PlotElementalState(YourElemState.ExternalWells, "Wells around", verbose)}
+  // if verbose {player.PlotElementalState(YourElemState.Empowered, "Wells' affection",verbose)}
   fmt.Printf("%s", elbr)
   distance := primitives.Vector(x,y)
   for t:=0.0; t<distance/0.7; t+=0.7 {
@@ -117,10 +120,11 @@ func Move(x float64, y float64) {
     You.XYZ[1] += y*0.7/distance
     time.Sleep( time.Millisecond * time.Duration( math.Sqrt(0.5)*100 ))
     if verbose {fmt.Printf(" 🐾")} else {fmt.Printf(" 🐾")}
-    player.ReadStatesFromEnv(&YourElemState, You.XYZ, YourStreams, Environment)
+    player.ReadStatesFromEnv(&YourElemState, You.XYZ, &YourStreams, Environment)
     player.InnerAffinization(&YourElemState, YourStreams.Bender, YourStreams.Herald)
   }
-  if verbose {player.PlotElementalState(YourElemState, verbose)}
+  if verbose {player.PlotElementalState(YourElemState.ExternalWells, "Wells around", verbose)}
+  if verbose {player.PlotElementalState(YourElemState.Empowered, "Wells' affection",verbose)}
   fmt.Printf("%s Here I am: %1.2f'long-, %1.2f'graditude.", ebr, You.XYZ[0],You.XYZ[1])
 }
 // func Orienting() {
@@ -312,7 +316,7 @@ func PlayerBorn(class float64) {
   You.Health.Current = 1
 
   YourHeat = player.Heat{}
-  player.NewBorn(&YourStreams, class, 0.35, 5)
+  player.NewBorn(&YourStreams, class, 10240*.35, 5)
   // Class randomizing
   // if class < 6.5 && class >= 0.5 {
   //   YourStreams.Class = class
@@ -360,7 +364,7 @@ func PlayerBorn(class float64) {
   // YourStreams.List = stringsMatrix
   You.Health.Max += 100
   player.ExtendPool(&YourPool, YourStreams.List, verbose)
-  player.ReadStatesFromEnv(&YourElemState, You.XYZ, YourStreams, Environment)
+  player.ReadStatesFromEnv(&YourElemState, You.XYZ, &YourStreams, Environment)
   player.InnerAffinization(&YourElemState, YourStreams.Bender, YourStreams.Herald)
   player.PlotStreamList(YourStreams, verbose)
 }

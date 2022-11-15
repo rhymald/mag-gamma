@@ -55,7 +55,7 @@ func PlotEnergyStatus(pool Pool, verbose bool) {
     }
   }
   fmt.Printf("\n")
-  fmt.Printf(" ├── INFO [Energy status]: Total energy level: %2.1f%%", float64(len(pool.Dots))/pool.MaxVol*100)
+  fmt.Printf(" │ Total energy level: %2.1f%%", float64(len(pool.Dots))/pool.MaxVol*100)
   if verbose {fmt.Printf(" ─ mean:avg = %2.1f%%, %1.2f / %1.2f ─── ", float64(len(pool.Dots))/mean/(sum/float64(len(pool.Dots)))*100, float64(len(pool.Dots))/mean, sum/float64(len(pool.Dots)))}
   fmt.Printf("\n")
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────")
@@ -106,12 +106,12 @@ func CrackStream(pool *Pool, stream primitives.Stream) [9]float64 {
   return heat
 }
 
-func EnergeticSurge(pool *Pool, heat *Heat, streams []primitives.Stream, doze float64, verbose bool) {
+func EnergeticSurge(pool *Pool, heat *Heat, streams Streams, doze float64, verbose bool) {
   verbose = true
   heatGenerated := [9]float64{}
   fmt.Printf("\n  ▲ YOU [yelling around]: CHEERS! A-ah...")
-  if doze == 0 { doze = 1 / streams[0].Destruction ; for _, string := range streams { doze = math.Max(doze, 1 / string.Destruction) } }
-  for _, string := range streams {
+  if doze == 0 { doze = 1 / streams.List[0].Destruction ; for _, string := range streams.List { doze = math.Max(doze, 1 / string.Destruction) } }
+  for _, string := range streams.List {
     i := 0.0
     for {
       heat := CrackStream(pool, string) // compose heat
@@ -121,7 +121,7 @@ func EnergeticSurge(pool *Pool, heat *Heat, streams []primitives.Stream, doze fl
     }
   }
   heatGenerated = primitives.GenerateHeat_ComposeHeat(heatGenerated)
-  ConsumeHeat(heat, streams, heatGenerated)
+  ConsumeHeat(heat, streams.InternalElementalState, heatGenerated)
 }
 
 func MinusDot(pool *Pool, index int) (string, float64) {
@@ -137,12 +137,12 @@ func MinusDot(pool *Pool, index int) (string, float64) {
 func DotTransferIn(pool *Pool, estate ElementalState, verbose bool, e int) {
   if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Transference][Absorbing dots]:")}
   element := AllElements[e]
-  if float64(len(*&pool.Dots)) >= *&pool.MaxVol+math.Sqrt(float64(len(*&pool.Dots))) { if verbose {fmt.Printf(" Full is energy.")} ; time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() )) ; return }
+  if float64(len(*&pool.Dots)) >= *&pool.MaxVol+math.Sqrt(float64(len(*&pool.Dots))) { if verbose {fmt.Printf(" Energy full")} ; time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() )) ; return }
   weight, pause := primitives.DotTransferIn_DotWeightAndTimeoutFromState(estate.Empowered[e])
   dot := primitives.Dot{Element: element, Weight: weight}
   *&pool.Dots = append(*&pool.Dots, dot)
   if verbose {fmt.Printf(" +%s'%1.2f", primitives.ES(element), weight )}
-  if verbose {fmt.Printf(" for %1.3fs. ", pause/1000)}
+  if verbose {fmt.Printf(" for %1.3fs", pause/1000)}
   time.Sleep( time.Millisecond * time.Duration( pause ))
 }
 
@@ -151,12 +151,12 @@ func DotTransferOut(pool *Pool, estate ElementalState, verbose bool, e int) {
   element := AllElements[e]
   presense := []int{}
   for i, dot := range *&pool.Dots { if dot.Element == element {presense = append(presense, i)} }
-  if len(presense) == 0 { if verbose{fmt.Printf(" No such dots.")} ; time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() )) ; return }
+  if len(presense) == 0 { if verbose{fmt.Printf(" No such dots")} ; time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() )) ; return }
   killer := presense[rand.New(rand.NewSource(time.Now().UnixNano())).Intn( len(presense) )]
   _, weight := MinusDot(pool, killer)
   pause := primitives.DotTransferOut_TimeoutFromWeightAndState(weight, estate.Empowered[e]) //primitives.Log1479(math.Abs(estate.Empowered[e].Destruction)) * (1 + primitives.RNF()) / 2
   if verbose {fmt.Printf(" -%s'%1.2f", primitives.ES(element), weight)}
-  if verbose {fmt.Printf(" for %1.3fs.", pause/1000)}
+  if verbose {fmt.Printf(" for %1.3fs", pause/1000)}
   time.Sleep( time.Millisecond * time.Duration( pause ))
 }
 

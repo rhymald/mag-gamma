@@ -31,7 +31,7 @@ func PlotStreamList(list Streams, verbose bool) {
     if verbose {fmt.Printf(" %1.2f'cre ── %1.2f'alt ── %1.2f'des ── Volume: %1.2f ──", stream.Creation, stream.Alteration, stream.Destruction, primitives.Vector(stream.Alteration,stream.Destruction,stream.Creation))}
     fmt.Println()
   }
-  fmt.Printf(" ├── Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.2f ──\n", counter.Creation, counter.Alteration, counter.Destruction, primitives.Vector(counter.Creation,counter.Alteration,counter.Destruction,))
+  fmt.Printf(" │ Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.2f ──\n", counter.Creation, counter.Alteration, counter.Destruction, primitives.Vector(counter.Creation,counter.Alteration,counter.Destruction,))
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
 
