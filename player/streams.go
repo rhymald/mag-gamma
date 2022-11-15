@@ -9,6 +9,7 @@ type Streams struct {
   Class  float64
   Herald float64
   Bender float64
+  InternalElementalState [9]primitives.Stream
 }
 
 var (

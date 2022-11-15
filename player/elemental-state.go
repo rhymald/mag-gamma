@@ -7,14 +7,14 @@ import "math"
 
 //Player things
 type ElementalState struct {
-  External    [9]primitives.Stream
-  Empowered   [9]primitives.Stream
+  External    [9]primitives.Stream // for transference
+  Empowered   [9]primitives.Stream // for transfer also
   // ^ both for gains from env
-  Internal    [9]primitives.Stream
-  Deminished  [9]primitives.Stream
+  Internal    [9]primitives.Stream // for overheat
+  Deminished  [9]primitives.Stream // for curses?
   Resistances [9]float64
   // ^ two for resistance supression
-  Total [9]primitives.Stream
+  Total [9]primitives.Stream // for cast
   // ^ for casts
 }
 

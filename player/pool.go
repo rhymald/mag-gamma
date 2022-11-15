@@ -10,6 +10,10 @@ import "sync"
 type Pool struct {
   Dots []primitives.Dot
   MaxVol float64
+  PositiveElementalState struct {
+    FromEnv  [9]primitives.Stream
+    Composed [9]primitives.Stream
+  }
 }
 
 func ExtendPool(pool *Pool, streams []primitives.Stream, verbose bool) {
