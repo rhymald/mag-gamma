@@ -41,7 +41,7 @@ func PlotHeatState(heat Heat) {
     // fatal := heat.Current[i]/heat.Compared[i]>math.Sqrt2 && heat.Current[i]>0
     // danger := heat.Current[i]>heat.Compared[i] && heat.Current[i]>0
     close := heat.Current[i]/heat.Compared[i]>math.Sqrt2/2 && heat.Current[i]>0
-    danger := heat.Current[i]/heat.Compared[i]>math.Sqrt2 && heat.Current[i]>0
+    danger := heat.Current[i]/heat.Compared[i]>1 && heat.Current[i]>0
     stability, damage := primitives.GenerateHeat_EffectFromCurrentAndThresholds(heat.Current[i], heat.Compared[i])
     if i!=0 && danger {
     //   fmt.Printf("Unstable: %1.1f%% ─── Danger: %1.1f%% ─── Fatal: %1.1f%% ─── ", 100/(heat.Current[i]/heat.Compared[i]+0.3), math.Sqrt(math.Log10(1+heat.Current[i]-heat.Compared[i])/10)*100, math.Sqrt(math.Log10(1+heat.Current[i]-heat.Compared[i])/10)*100 )

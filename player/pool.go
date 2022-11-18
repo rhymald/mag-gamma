@@ -114,6 +114,7 @@ func CrackStream(pool *Pool, stream primitives.Stream) [9]float64 {
   dot := primitives.Dot{Element: element, Weight: weight}
   *&pool.Dots = append(*&pool.Dots, dot)
   // element = primitives.RNDElem()
+  if len(*&pool.Dots) > int(*&pool.MaxVol) {dot.Weight *= float64(len(*&pool.Dots)) / *&pool.MaxVol }
   heat[primitives.ElemToInt(element)] += primitives.GenerateHeat_FromStreamAndDot(stream, dot)
   return heat
 }

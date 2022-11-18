@@ -89,8 +89,8 @@ func GenerateHeat_CompareHeat(heat [9]float64, flockState [9]Stream) [9]float64 
   return limits
 }
 func GenerateHeat_EffectFromCurrentAndThresholds(current float64, threshold float64) (float64, float64) {
-  stabilityChance := math.Sqrt(0+1/(current/threshold+1-math.Sqrt2/2))
-  selfDestruction := math.Sqrt(1-1/(current/threshold+1-math.Sqrt2/2)) + math.Log2(current-threshold+1)/100
+  stabilityChance := math.Sqrt(1/(current/threshold+1-math.Sqrt2/2))
+  selfDestruction := 1-1/(current/threshold/math.Sqrt(math.Sqrt2)) // 1-math.Sqrt2/2)
   // fatality :=
   return stabilityChance, selfDestruction
 }

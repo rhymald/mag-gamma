@@ -17,6 +17,13 @@ var (
   ElemSigns   = primitives.ElemSigns
 )
 
+func CountStreamssByElements(streams Streams) [9]int {
+  counter := [9]int{}
+  for _, each := range streams.List { counter[primitives.ElemToInt(each.Element)]++ }
+  // for e, count := range counter { balance[e] = int(math.Round(float64(count)*100/pool.MaxVol)) }
+  return counter //, balance
+}
+
 func PlotStreamList(list Streams, verbose bool) {
   var counter primitives.Stream
   fmt.Printf(" ┌──── INFO [List strings]:\n")
@@ -41,7 +48,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   if class < 6.5 && class >= 0.5 {
     stringsMatrix.Class = class
   } else {
-    playerCountInDB := math.Round(math.Log10( float64(playerCount) )+3.5)
+    playerCountInDB := math.Round( float64(playerCount)*math.Cos(float64(playerCount)) +3.5)
     for j:=0; j<int(playerCountInDB); j++ {
       stringsMatrix.Class += (primitives.RNF()*6+0.499999) / playerCountInDB
     }
