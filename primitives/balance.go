@@ -47,8 +47,8 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream) (fl
   cooldown := 0.0
   for i, source := range estate {
     // count := primitives.Transference_DotCountFromState(source)
-    if source.Creation < 0 { count = math.Abs(source.Destruction) * (1 + RNF()) / -2 }
-    if source.Creation > 0 { count = math.Abs(source.Creation) * (1 + RNF()) / 2 }
+    if source.Creation < 0 { count = math.Sqrt(math.Sqrt(1024*math.Abs(source.Destruction))) * Sign(source.Creation) }
+    if source.Creation > 0 { count = math.Sqrt(math.Sqrt(1024*math.Abs(source.Creation))) * Sign(source.Creation) }
     if i == 0 { count = 0 }
     demand[i] = ChancedRound(count * Sign(source.Creation))
     cooldown = math.Max(math.Abs(count) * 500, cooldown)
