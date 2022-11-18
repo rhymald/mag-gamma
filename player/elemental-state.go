@@ -123,8 +123,12 @@ func ReadStatesFromEnv(elementalState *ElementalState, position [3]float64, floc
   //   }
   // }
   for i, element := range AllElements {
-    *&flock.InternalElementalState[i] = primitives.StreamSum(element, *&flock.List)
-    if i!=0 {estate.ExternalWells[i] = primitives.StreamSum(element, affectingPlaces)}
+    if i!=0 {
+      *&flock.InternalElementalState[i] = primitives.StreamSum(element, *&flock.List)
+      estate.ExternalWells[i] = primitives.StreamSum(element, affectingPlaces)
+    } else {
+      *&flock.InternalElementalState[i] = primitives.StreamSum(element, *&flock.List)
+    }
   }
   // for _, each := range flock.List {
   //   estate.Internal[0].Creation += each.Creation // + estate.Empowered[0].Creation)

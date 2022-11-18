@@ -28,7 +28,7 @@ func ConsumeHeat(heatState *Heat, streams [9]primitives.Stream, heat [9]float64)
   fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Current heat rates]: "); for i, h:=range bufferHeat { if h!=0 { fmt.Printf(" %1.0f'%s ", h, ElemSigns[i]) } }
   // mean = float64(counter) * float64(counter) / mean
   // bufferOverheat = bufferHeat
-  bufferHeat[0] = float64(counter) / avg
+  bufferHeat[0] = float64(counter) / avg //* float64(counter)
   // fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Overheat calculatings]: %s:%1.0f ", ElemSigns[0], mean); for i, h:=range bufferOverheat { if h!=0 { fmt.Printf(" %1.0f'%s ", h, ElemSigns[i]) } }
   // for i, oh := range bufferOverheat { bufferOverheat[i] = oh/mean }
   // fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Overheat comparsion]: %s:%1.0f ", ElemSigns[0], mean); for i, h:=range bufferOverheat { if h>0 && i!=0 { fmt.Printf(" %1.2f'%s ", h, ElemSigns[i]) } }
