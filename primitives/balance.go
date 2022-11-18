@@ -59,24 +59,24 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream) (fl
 }
 
 // heat
-func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Vector(dot.Weight,math.Sqrt(stream.Destruction+1)) }
+func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Vector(1+dot.Weight,(1+stream.Destruction)*stream.Alteration/stream.Creation)-1 }
 func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
   resume := [9]float64{}
   for i, h := range heat {
     if i == 0 {
       resume[i] = 0
     } else if i == 5 {
-      resume[1] += - math.Sqrt(h)
-      resume[2] += - math.Sqrt(h)
-      resume[3] += - math.Sqrt(h)
-      resume[4] += - math.Sqrt(h)
-      resume[6] += - math.Sqrt(h)
-      resume[7] += - math.Sqrt(h)
-      resume[8] += - h
+      resume[1] += - h/math.Sqrt2
+      resume[2] += - h/math.Sqrt2
+      resume[3] += - h/math.Sqrt2
+      resume[4] += - h/math.Sqrt2
+      resume[6] += - h/math.Pi
+      resume[7] += - h/math.Pi
+      resume[8] += - h/math.Phi
       resume[5] += h
     } else if i == 8 {
       resume[i] += resume[i] + h
-      for j:=0; j<8; j++ { resume[j] *= math.Sqrt(RNF() + RNF()) }
+      for j:=0; j<8; j++ { resume[j] *= math.Sqrt( 1-RNF()+RNF()) }
     } else {
       resume[i] += h
     }
@@ -85,14 +85,12 @@ func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
 }
 func GenerateHeat_CompareHeat(heat [9]float64, flockState [9]Stream) [9]float64 {
   limits := [9]float64{}
-  // // cres, alts, dess := 0.0, 0.0, 0.0
-  for i, each := range flockState {
-  //   // alts += each.Alteration
-  //   // dess += each.Destruction
-  //   // cres += each.Creation
-    // limits[i] = 1
-    if heat[i]!=0 { limits[i] = Vector( Vector( each.Creation,each.Destruction,each.Alteration ), limits[0], math.Sqrt(heat[0]) ) }
-  }
-  // for i:=1; i<9; i++ { if limits[i]!=0 { limits[i] =  heat[i] /limits[i] / limits[0] }}
+  for i, each := range flockState { if heat[i]!=0 { limits[i] = Vector( Vector(1+each.Creation,1+each.Destruction,1+each.Alteration), limits[0]*math.Log2(10-float64(i)) ) } }
   return limits
+}
+func GenerateHeat_EffectFromCurrentAndThresholds(current float64, threshold float64) (float64, float64) {
+  stabilityChance := math.Sqrt(0+1/(current/threshold+1-math.Sqrt2/2))
+  selfDestruction := math.Sqrt(1-1/(current/threshold+1-math.Sqrt2/2)) + math.Log2(current-threshold+1)/100
+  // fatality :=
+  return stabilityChance, selfDestruction
 }

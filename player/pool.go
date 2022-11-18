@@ -16,6 +16,13 @@ type Pool struct {
   }
 }
 
+func CountDotsByElements(pool Pool) ([9]int, [9]int) {
+  counter, balance := [9]int{}, [9]int{}
+  for _, dot := range pool.Dots { counter[primitives.ElemToInt(dot.Element)]++ }
+  for e, count := range counter { balance[e] = int(math.Round(float64(count)*100/pool.MaxVol)) }
+  return counter, balance
+}
+
 func ExtendPool(pool *Pool, streams []primitives.Stream, verbose bool) {
   fmt.Printf(" ╶──── INFO [Extend dot capacity to maximum]: ")
   old := *&pool.MaxVol
@@ -59,6 +66,11 @@ func PlotEnergyStatus(pool Pool, verbose bool) {
   if verbose {fmt.Printf(" ─ mean:avg = %2.1f%%, %1.2f / %1.2f ─── ", float64(len(pool.Dots))/mean/(sum/float64(len(pool.Dots)))*100, float64(len(pool.Dots))/mean, sum/float64(len(pool.Dots)))}
   fmt.Printf("\n")
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────")
+  // _, bar := CountDotsByElements(pool)
+  // fmt.Printf("\n")
+  // for e:=0; e<9; e++ {
+  //   for i:=0; i<bar[e]; i++ {fmt.Printf("%s", primitives.ElemSigns[e] )}
+  // }
 }
 
 func EmitDot(pool *Pool, streams []primitives.Stream) {

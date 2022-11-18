@@ -316,7 +316,7 @@ func PlayerBorn(class float64) {
   You.Health.Current = 1
 
   YourHeat = player.Heat{}
-  player.NewBorn(&YourStreams, class, 1000.35, 5)
+  player.NewBorn(&YourStreams, class, .35, 5)
   // Class randomizing
   // if class < 6.5 && class >= 0.5 {
   //   YourStreams.Class = class
