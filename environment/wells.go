@@ -2,7 +2,7 @@ package environment
 
 import "rhymald/mag-gamma/primitives"
 import "fmt"
-import "math"
+// import "math"
 
 
 // emulation, in future get from db
@@ -14,7 +14,7 @@ func Welling(environment *Location) {
   CampFire.XYZs = append(CampFire.XYZs, [3]float64{1014.0, -16.5, 430.0})
   // elementalTree
   powerCore1 := primitives.Stream{Element: "Water", Creation: 25, Destruction: 16, Alteration: 9}
-  powerCore2 := primitives.Stream{Element: primitives.RNDElem(), Creation: 1+math.Abs(primitives.SRNF()), Destruction: 1+math.Abs(primitives.SRNF()), Alteration: 1+math.Abs(primitives.SRNF())}
+  powerCore2 := primitives.Stream{Element: "Void", Creation: 3, Destruction: 1, Alteration: 2}
   PowerCore     := PowerState{ Area: 25.0, Nature: []primitives.Stream{powerCore1, powerCore2}, Description: "Source of pure energy.", Concentrated: true}
   PowerCore.XYZs = append(PowerCore.XYZs, [3]float64{1011.1, -8.5, 430.0})
   fmt.Printf("DEBUG [Location init][Welling]: power core is randomized for emitting %s and %s energy...\n", primitives.ES(powerCore1.Element), primitives.ES(powerCore2.Element))

@@ -71,8 +71,8 @@ func init() {
   PlayerBorn(0)
   // player.PlotElementalState(YourStreams.InternalElementalState, "Internal elemental state", verbose)
   go func() { // passive prcoesses block
-    go func() { for You.Health.Current > 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) } ; fmt.Println("FATAL: You are dead.")}()
-    go func() { for You.Health.Current > 0 { player.Transferrence(&YourPool, YourElemState, verbose) }     ; fmt.Println("FATAL: You are dead.")}()
+    go func() { for You.Health.Current >= 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) } ; fmt.Println("FATAL: You are dead.")}()
+    go func() { for You.Health.Current >= 0 { player.Transferrence(&YourPool, YourStreams.InternalElementalState, YourElemState, verbose) }     ; fmt.Println("FATAL: You are dead.")}()
   }()
   fmt.Printf("SYSTEM [Start]:%s Welcome to the world, %s@%1.0f.\n", ebr, You.Name, YourStreams.Class*100000)
 }
@@ -82,8 +82,8 @@ func main() {
   fmt.Println("▼ EUA growling [from everywhere]:", ebr, "I smell you... your soul, your being. LEAVE!")
   Move(3, -17.2)
   for {
-    if primitives.RNF() < 0.25 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams, 0, verbose) ; player.PlotHeatState(YourHeat)}
-    if primitives.RNF() < 0.25 { player.PlotEnergyStatus(YourPool, verbose) }
+    if primitives.RNF() < 0 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams, 0, verbose) ; player.PlotHeatState(YourHeat)}
+    if primitives.RNF() < 0 { player.PlotEnergyStatus(YourPool, verbose) }
     time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() ))
   }
   fmt.Scanln()

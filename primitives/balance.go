@@ -41,18 +41,20 @@ func DotTransferOut_TimeoutFromWeightAndState(weight float64, state Stream) (flo
 //   for _, i := range demand { sum += math.Abs(float64(i))*500 }
 //   return sum
 // }
-func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream) (float64, [9]int) {
+func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream, istate [9]Stream) (float64, [9]int) {
   demand := [9]int{}
   count := 0.0
   cooldown := 0.0
+  counter := 0
   for i, source := range estate {
     // count := primitives.Transference_DotCountFromState(source)
-    if source.Creation < 0 { count = math.Sqrt(math.Sqrt(1024*math.Abs(source.Destruction))) * Sign(source.Creation) }
-    if source.Creation > 0 { count = math.Sqrt(math.Sqrt(1024*math.Abs(source.Creation))) * Sign(source.Creation) }
+    if source.Creation < 0 { count = math.Sqrt(math.Sqrt(1024*math.Abs(source.Destruction)))*Sign(istate[i].Creation) ; counter++ }
+    if source.Creation > 0 { count = math.Sqrt(math.Sqrt(1024*math.Abs(source.Creation)))*Sign(istate[i].Creation) ; counter++ }
     if i == 0 { count = 0 }
     demand[i] = ChancedRound(count * Sign(source.Creation))
-    cooldown = math.Max(math.Abs(count) * 500, cooldown)
+    cooldown += math.Abs(count) * 2048
   }
+  if counter != 0 { cooldown = cooldown / float64(counter) }
   if cooldown == 0 { cooldown = Pool_RegenerateFullTimeOut() }
   // cooldown := primitives.Transference_TotalCooldownFromDemand(demand)
   return cooldown, demand

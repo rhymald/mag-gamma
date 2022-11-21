@@ -173,7 +173,7 @@ func DotTransferOut(pool *Pool, estate ElementalState, verbose bool, e int) {
   time.Sleep( time.Millisecond * time.Duration( pause ))
 }
 
-func Transferrence(pool *Pool, estate ElementalState, verbose bool) {
+func Transferrence(pool *Pool, istate [9]primitives.Stream, estate ElementalState, verbose bool) {
   // demand := [9]int{}
   // // cooldown := 0.0
   // for i, source := range estate.Empowered {
@@ -185,7 +185,7 @@ func Transferrence(pool *Pool, estate ElementalState, verbose bool) {
   // }
   // // if cooldown == 0 { cooldown = 2000 }
   // cooldown := primitives.Transference_TotalCooldownFromDemand(demand)
-  cooldown, demand := primitives.Transference_DotCountDemandAndTotalCooldownFromStates(estate.Empowered)
+  cooldown, demand := primitives.Transference_DotCountDemandAndTotalCooldownFromStates(estate.Empowered, istate)
   if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Transference][Demand calculation]: %v dots, cooldown: %1.3fs ", demand, cooldown/1000)}
   wg := sync.WaitGroup{}
   for e, _ := range demand {
