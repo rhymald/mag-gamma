@@ -122,8 +122,8 @@ func CrackStream(pool *Pool, stream primitives.Stream) [9]float64 {
 func EnergeticSurge(pool *Pool, heat *Heat, streams Streams, doze float64, verbose bool) {
   verbose = true
   heatGenerated := [9]float64{}
-  fmt.Printf("\n  ▲ YOU [yelling around]: CHEERS! A-ah...")
   if doze == 0 { doze = 1 / streams.List[0].Destruction ; for _, string := range streams.List { doze = math.Max(doze, 1 / string.Destruction) } }
+  fmt.Printf("\n  ▲ YOU [yelling around]: CHEERS! A-ah... [drink %0.3f ml]", doze)
   for _, string := range streams.List {
     i := 0.0
     for {

@@ -73,6 +73,7 @@ func init() {
   go func() { // passive prcoesses block
     go func() { for You.Health.Current >= 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) } ; fmt.Println("FATAL: You are dead.")}()
     go func() { for You.Health.Current >= 0 { player.Transferrence(&YourPool, YourStreams.InternalElementalState, YourElemState, verbose) }     ; fmt.Println("FATAL: You are dead.")}()
+    go func() { time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() )) ; player.CalmDown(&YourHeat, YourStreams.InternalElementalState, verbose) }()
   }()
   fmt.Printf("SYSTEM [Start]:%s Welcome to the world, %s@%1.0f.\n", ebr, You.Name, YourStreams.Class*100000)
 }
@@ -81,10 +82,11 @@ func main() {
   // here must be an interface
   fmt.Println("▼ EUA growling [from everywhere]:", ebr, "I smell you... your soul, your being. LEAVE!")
   Move(3, -17.2)
+  ii := 0
   for {
-    if primitives.RNF() < 0 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams, 0, verbose) ; player.PlotHeatState(YourHeat)}
-    if primitives.RNF() < 0 { player.PlotEnergyStatus(YourPool, verbose) }
     time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() ))
+    if ii < 1 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams, 0, verbose) ; player.PlotHeatState(YourHeat) ; ii++}
+    if primitives.RNF() < 0.71 { player.PlotEnergyStatus(YourPool, verbose) ; player.PlotHeatState(YourHeat) }
   }
   fmt.Scanln()
 }
@@ -316,7 +318,7 @@ func PlayerBorn(class float64) {
   You.Health.Current = 1
 
   YourHeat = player.Heat{}
-  player.NewBorn(&YourStreams, class, .35, 5)
+  player.NewBorn(&YourStreams, class, 1000.35, 5)
   // Class randomizing
   // if class < 6.5 && class >= 0.5 {
   //   YourStreams.Class = class
