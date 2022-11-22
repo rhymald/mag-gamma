@@ -82,10 +82,11 @@ func main() {
   // here must be an interface
   fmt.Println("▼ EUA growling [from everywhere]:", ebr, "I smell you... your soul, your being. LEAVE!")
   Move(3, -17.2)
-  ii := 0
+  // ii := 0
+  player.EnergeticSurge(&YourPool, &YourHeat, YourStreams, 0.2, verbose) ; player.PlotHeatState(YourHeat)
   for {
     time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() ))
-    if ii < 1 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams, 0, verbose) ; player.PlotHeatState(YourHeat) ; ii++}
+    if primitives.RNF() < 0.71 { player.EnergeticSurge(&YourPool, &YourHeat, YourStreams, 0, verbose) ; player.PlotHeatState(YourHeat) }
     if primitives.RNF() < 0.71 { player.PlotEnergyStatus(YourPool, verbose) ; player.PlotHeatState(YourHeat) }
   }
   fmt.Scanln()
@@ -318,7 +319,7 @@ func PlayerBorn(class float64) {
   You.Health.Current = 1
 
   YourHeat = player.Heat{}
-  player.NewBorn(&YourStreams, class, 1000.35, 5)
+  player.NewBorn(&YourStreams, class, .35, 5)
   // Class randomizing
   // if class < 6.5 && class >= 0.5 {
   //   YourStreams.Class = class

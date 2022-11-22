@@ -21,17 +21,14 @@ func CalmDown(heatState *Heat, istate [9]primitives.Stream, verbose bool) {
 func CalmDown_CalmHeatState(heatState *Heat, element int, istate [9]primitives.Stream, verbose bool) {
   oldheat := *&heatState.Current[element]
   newheat := oldheat - (math.Sqrt(oldheat + *&heatState.Compared[0])*2 + 1) / 8
-
   pause := primitives.Pool_RegenerateFullTimeOut()
   if newheat < 0 || oldheat <= 1 {
     newheat = 0
-    if true {fmt.Printf("\n ◦◦◦◦◦ DEBUG The %s is chilled out", ElemSigns[element])}
-
+    if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG The %s is chilled out", ElemSigns[element])}
   } else {
     pause = 256 * (primitives.RNF()+1)
-    if true {fmt.Printf("\n ◦◦◦◦◦ DEBUG Chilling for %1.3f'%s for %1.3fs => Current = %1.2f", oldheat - newheat, ElemSigns[element], pause/1000, newheat)}
+    if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG Chilling for %1.3f'%s for %1.3fs => Current = %1.2f", oldheat - newheat, ElemSigns[element], pause/1000, newheat)}
   }
-
   *&heatState.Current[element] = newheat
   *&heatState.Compared = primitives.GenerateHeat_CompareHeat(*&heatState.Current, istate)
   time.Sleep( time.Millisecond * time.Duration( pause ))

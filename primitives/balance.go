@@ -61,7 +61,7 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream, ist
 }
 
 // heat
-func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Vector(1+dot.Weight,(1+stream.Destruction)*stream.Alteration/stream.Creation)-1 }
+func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Vector(1+dot.Weight,(1+stream.Destruction)*stream.Alteration/stream.Creation)/math.Pi }
 func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
   resume := [9]float64{}
   for i, h := range heat {
