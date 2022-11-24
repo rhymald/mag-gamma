@@ -107,34 +107,34 @@ func RegenerateDots(pool *Pool, streams []primitives.Stream, verbose bool) {
   }
 }
 
-func CrackStream(pool *Pool, stream primitives.Stream) [9]float64 {
+func CrackStream(pool *Pool, stream primitives.Stream) float64 {
   element := stream.Element
-  heat := [9]float64{}
   weight := primitives.CrackStream_DotWeightFromStream(stream)
+  if element == "Common" { weight = 1 - 1 / math.Phi }
   dot := primitives.Dot{Element: element, Weight: weight}
   *&pool.Dots = append(*&pool.Dots, dot)
   // element = primitives.RNDElem()
   if len(*&pool.Dots) > int(*&pool.MaxVol) {dot.Weight *= float64(len(*&pool.Dots)) / *&pool.MaxVol }
-  heat[primitives.ElemToInt(element)] += primitives.GenerateHeat_FromStreamAndDot(stream, dot)
+  heat := primitives.GenerateHeat_FromStreamAndDot(stream, dot)
   return heat
 }
 
-func EnergeticSurge(pool *Pool, streams Streams, doze float64, verbose bool) {
+func EnergeticSurge(pool *Pool, streams *Streams, doze float64, verbose bool) {
   verbose = true
-  heatGenerated := [9]float64{}
-  if doze == 0 { doze = 1 / streams.List[0].Destruction ; for _, string := range streams.List { doze = math.Max(doze, 1 / string.Destruction) } }
+  // heatGenerated := [9]float64{}
+  if doze == 0 { doze = 1 / *&streams.List[0].Destruction ; for _, string := range *&streams.List { doze = math.Max(doze, 1 / string.Destruction) } }
   fmt.Printf("\n  ▲ YOU [yelling around]: CHEERS! A-ah... [drink %0.3f ml]", doze)
-  for _, string := range streams.List {
+  for index, string := range streams.List {
     i := 0.0
     for {
-      heat := CrackStream(pool, string) // compose heat
+      // heat := CrackStream(pool, string) // compose heat
       i += 1 / doze
-      heatGenerated = primitives.CollectHeat(heatGenerated, heat)
-      if string.Destruction < i { break }
+      *&streams.List[index].Heat.Current = ConsumeHeat(string, CrackStream(pool, string))
+      // heatGenerated = primitives.CollectHeat(heatGenerated, heat)
+      if string.Destruction <= i { break }
     }
   }
   // heatGenerated = primitives.GenerateHeat_ComposeHeat(heatGenerated)
-  // ConsumeHeat(heat, streams.InternalElementalState, heatGenerated)
 }
 
 func MinusDot(pool *Pool, index int) (string, float64) {

@@ -61,33 +61,33 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream, ist
 }
 
 // heat
-func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Vector(1+dot.Weight,(1+stream.Destruction)*stream.Alteration/stream.Creation)/math.Pi }
-func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
-  resume := [9]float64{}
-  for i, h := range heat {
-    if i == 0 {
-      resume[i] = 0
-    } else if i == 5 {
-      resume[1] += - h/math.Sqrt2
-      resume[2] += - h/math.Sqrt2
-      resume[3] += - h/math.Sqrt2
-      resume[4] += - h/math.Sqrt2
-      resume[6] += - h/math.Pi
-      resume[7] += - h/math.Pi
-      resume[8] += - h/math.Phi
-      resume[5] += h
-    } else if i == 8 {
-      resume[i] += resume[i] + h
-      for j:=0; j<8; j++ { resume[j] *= math.Sqrt( 1-RNF()+RNF()) }
-    } else {
-      resume[i] += h
-    }
-  }
-  return resume
-}
-func GenerateHeat_CompareHeat(heat [9]float64, flockState [9]Stream) [9]float64 {
-  limits := [9]float64{}
-  for i, each := range flockState { if heat[i]!=0 { limits[i] = Vector( Vector(1+each.Creation,1+each.Destruction,1+each.Alteration), limits[0]*math.Log2(10-float64(i)) ) } }
+func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Vector(1+dot.Weight,(1+stream.Destruction)*stream.Alteration/stream.Creation) }///math.Pi }
+// func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
+//   resume := [9]float64{}
+//   for i, h := range heat {
+//     if i == 0 {
+//       resume[i] = 0
+//     } else if i == 5 {
+//       resume[1] += - h/math.Sqrt2
+//       resume[2] += - h/math.Sqrt2
+//       resume[3] += - h/math.Sqrt2
+//       resume[4] += - h/math.Sqrt2
+//       resume[6] += - h/math.Pi
+//       resume[7] += - h/math.Pi
+//       resume[8] += - h/math.Phi
+//       resume[5] += h
+//     } else if i == 8 {
+//       resume[i] += resume[i] + h
+//       for j:=0; j<8; j++ { resume[j] *= math.Sqrt( 1-RNF()+RNF()) }
+//     } else {
+//       resume[i] += h
+//     }
+//   }
+//   return resume
+// }
+func NewBorn_HeatThresholdFromStream(stream Stream, sum Stream) float64 {
+  limits := Vector(1+sum.Creation,sum.Destruction,1+sum.Alteration)
+  limits = Vector( Vector(1+stream.Creation,stream.Destruction,1+stream.Alteration), limits*math.Log2(10-float64(ElemToInt(stream.Element))) )
   return limits
 }
 func GenerateHeat_EffectFromCurrentAndThresholds(current float64, threshold float64) (float64, float64) {

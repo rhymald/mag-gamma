@@ -36,7 +36,7 @@ func PlotStreamList(list Streams, verbose bool) {
     counter.Alteration += stream.Alteration
     counter.Destruction += stream.Destruction
     fmt.Printf(" │ %d'%s %1.0f'len ── %1.1f'wid ── %1.2f'pow ──", i+1, primitives.ES(stream.Element), stream.InfoLWP[0], stream.InfoLWP[1], stream.InfoLWP[2])
-    if verbose {fmt.Printf(" %1.2f'cre ── %1.2f'alt ── %1.2f'des ── Volume: %1.2f ──", stream.Creation, stream.Alteration, stream.Destruction, primitives.Vector(stream.Alteration,stream.Destruction,stream.Creation))}
+    if verbose {fmt.Printf(" %1.2f'cre ── %1.2f'alt ── %1.2f'des ── Volume: %1.2f ──", stream.Creation, stream.Alteration, stream.Destruction, stream.Heat.Threshold)}
     fmt.Println()
   }
   fmt.Printf(" │ Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.2f ──\n", counter.Creation, counter.Alteration, counter.Destruction, primitives.Vector(counter.Creation,counter.Alteration,counter.Destruction,))
@@ -70,13 +70,15 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   }
   for i:=0; i<int(countOfStreams); i++ {
     var strings primitives.Stream
-    strings.Element     = AllElements[6-i]
+    strings.Element     = AllElements[i]
     strings.Creation    = lens[i] * empowering / slen * standart
     strings.Alteration  = wids[i] / swid * standart
     strings.Destruction = pows[i] / empowering / spow * standart
     strings.InfoLWP = [3]float64{ primitives.NewBornStreams_LenFromStream(strings), primitives.NewBornStreams_WidFromStream(strings), primitives.NewBornStreams_PowFromStream(strings) }
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }
+  totalVol := primitives.StreamMean(AllElements[0], stringsMatrix.List)
+  for i, _ := range stringsMatrix.List { stringsMatrix.List[i].Heat.Threshold = primitives.NewBorn_HeatThresholdFromStream(stringsMatrix.List[i], totalVol) }
   *yourStreams = stringsMatrix
   fmt.Printf(" │ DEBUG [Player creation][New initial streams]: done.\n")
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
