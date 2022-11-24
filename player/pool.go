@@ -10,10 +10,10 @@ import "sync"
 type Pool struct {
   Dots []primitives.Dot
   MaxVol float64
-  PositiveElementalState struct {
-    FromEnv  [9]primitives.Stream
-    Composed [9]primitives.Stream
-  }
+  // PositiveElementalState struct {
+  //   FromEnv  [9]primitives.Stream
+  //   Composed [9]primitives.Stream
+  // }
 }
 
 func CountDotsByElements(pool Pool) ([9]int, [9]int) {
@@ -119,7 +119,7 @@ func CrackStream(pool *Pool, stream primitives.Stream) [9]float64 {
   return heat
 }
 
-func EnergeticSurge(pool *Pool, heat *Heat, streams Streams, doze float64, verbose bool) {
+func EnergeticSurge(pool *Pool, streams Streams, doze float64, verbose bool) {
   verbose = true
   heatGenerated := [9]float64{}
   if doze == 0 { doze = 1 / streams.List[0].Destruction ; for _, string := range streams.List { doze = math.Max(doze, 1 / string.Destruction) } }
@@ -133,8 +133,8 @@ func EnergeticSurge(pool *Pool, heat *Heat, streams Streams, doze float64, verbo
       if string.Destruction < i { break }
     }
   }
-  heatGenerated = primitives.GenerateHeat_ComposeHeat(heatGenerated)
-  ConsumeHeat(heat, streams.InternalElementalState, heatGenerated)
+  // heatGenerated = primitives.GenerateHeat_ComposeHeat(heatGenerated)
+  // ConsumeHeat(heat, streams.InternalElementalState, heatGenerated)
 }
 
 func MinusDot(pool *Pool, index int) (string, float64) {

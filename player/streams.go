@@ -6,6 +6,7 @@ import "fmt"
 
 type Streams struct {
   List []primitives.Stream
+  SoulVolume float64
   Class  float64
   Herald float64
   Bender float64
@@ -17,12 +18,12 @@ var (
   ElemSigns   = primitives.ElemSigns
 )
 
-func CountStreamssByElements(streams Streams) [9]int {
-  counter := [9]int{}
-  for _, each := range streams.List { counter[primitives.ElemToInt(each.Element)]++ }
-  // for e, count := range counter { balance[e] = int(math.Round(float64(count)*100/pool.MaxVol)) }
-  return counter //, balance
-}
+// func CountStreamssByElements(streams Streams) [9]int {
+//   counter := [9]int{}
+//   for _, each := range streams.List { counter[primitives.ElemToInt(each.Element)]++ }
+//   // for e, count := range counter { balance[e] = int(math.Round(float64(count)*100/pool.MaxVol)) }
+//   return counter //, balance
+// }
 
 func PlotStreamList(list Streams, verbose bool) {
   var counter primitives.Stream
@@ -34,7 +35,7 @@ func PlotStreamList(list Streams, verbose bool) {
     counter.Creation += stream.Creation
     counter.Alteration += stream.Alteration
     counter.Destruction += stream.Destruction
-    fmt.Printf(" │ %d'%s %1.0f'len ── %1.1f'wid ── %1.2f'pow ──", i+1, primitives.ES(stream.Element), stream.LWP[0], stream.LWP[1], stream.LWP[2])
+    fmt.Printf(" │ %d'%s %1.0f'len ── %1.1f'wid ── %1.2f'pow ──", i+1, primitives.ES(stream.Element), stream.InfoLWP[0], stream.InfoLWP[1], stream.InfoLWP[2])
     if verbose {fmt.Printf(" %1.2f'cre ── %1.2f'alt ── %1.2f'des ── Volume: %1.2f ──", stream.Creation, stream.Alteration, stream.Destruction, primitives.Vector(stream.Alteration,stream.Destruction,stream.Creation))}
     fmt.Println()
   }
@@ -73,8 +74,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
     strings.Creation    = lens[i] * empowering / slen * standart
     strings.Alteration  = wids[i] / swid * standart
     strings.Destruction = pows[i] / empowering / spow * standart
-    strings.HeatPrint   = strings.Destruction/strings.Creation
-    strings.LWP = [3]float64{ primitives.NewBornStreams_LenFromStream(strings), primitives.NewBornStreams_WidFromStream(strings), primitives.NewBornStreams_PowFromStream(strings) }
+    strings.InfoLWP = [3]float64{ primitives.NewBornStreams_LenFromStream(strings), primitives.NewBornStreams_WidFromStream(strings), primitives.NewBornStreams_PowFromStream(strings) }
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }
   *yourStreams = stringsMatrix

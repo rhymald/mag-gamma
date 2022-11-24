@@ -5,8 +5,13 @@ type Stream struct {
   Alteration float64
   Destruction float64
   Element string
-  HeatPrint float64
-  LWP [3]float64
+  Heat struct {
+    Threshold float64
+    Current float64
+    Danger float64
+    Stability float64
+  }
+  InfoLWP [3]float64
 }
 
 func StreamSum(element string, list []Stream) Stream {
