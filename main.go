@@ -73,7 +73,7 @@ func init() {
   go func() { // passive prcoesses block
     go func() { for You.Health.Current >= 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) } ; fmt.Println("FATAL: You are dead.")}()
     go func() { for You.Health.Current >= 0 { player.Transferrence(&YourPool, YourStreams.InternalElementalState, YourElemState, verbose) }     ; fmt.Println("FATAL: You are dead.")}()
-    // go func() { time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() )) ; player.CalmDown(&YourHeat, YourStreams.InternalElementalState, verbose) }()
+    go func() { time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() )) ; player.CalmDown(&YourStreams, verbose) }()
   }()
   fmt.Printf("SYSTEM [Start]:%s Welcome to the world, %s@%1.0f.\n", ebr, You.Name, YourStreams.Class*100000)
 }
@@ -319,7 +319,7 @@ func PlayerBorn(class float64) {
   You.Health.Current = 1
 
   // YourHeat = player.Heat{}
-  player.NewBorn(&YourStreams, class, .35, 5)
+  player.NewBorn(&YourStreams, class, 1111.35, 5)
   // Class randomizing
   // if class < 6.5 && class >= 0.5 {
   //   YourStreams.Class = class

@@ -10,7 +10,7 @@ import (
 
 var (
   AllElements [9]string = [9]string{"Common", "Air", "Fire", "Earth", "Water", "Void", "Mallom", "Noise", "Resonance"}
-  ElemSigns [9]string = [9]string{"✳️ ", "☁️ ", "🔥", "⛰ ", "🧊", "🌑", "🩸", "🎶", "🌟"}
+  ElemSigns [9]string = [9]string{"✳️", "☁️", "🔥", "⛰ ", "🧊", "🌑", "🩸", "🎶", "🌟"}
 )
 
 func RNF() float64 {
@@ -26,7 +26,7 @@ func RNDElem() string { return AllElements[ rand.New(rand.NewSource(time.Now().U
 func ElemToInt(elem string) int { for i, each := range AllElements {if elem == each {return i}} ; return -1 }
 func ES(elem string) string { return ElemSigns[ElemToInt(elem)] }
 func Log1479(a float64) float64 { return math.Log2(math.Abs(a)+1)/math.Log2(1.1479) }
-func SRNF() float64 { return ( 4*RNF() - 3*RNF() + RNF() - 2*RNF() )/( 2*RNF() - 4*RNF() + 3*RNF() - RNF() ) } //NU
+// func SRNF() float64 { return ( 4*RNF() - 3*RNF() + RNF() - 2*RNF() )/( 2*RNF() - 4*RNF() + 3*RNF() - RNF() ) } //NU
 func Sign(a float64) float64 { if a != 0 {return a/math.Abs(a)} else {return 0} }
 
 func ChancedRound(a float64) int {

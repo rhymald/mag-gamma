@@ -3,7 +3,7 @@ package player
 import "rhymald/mag-gamma/primitives"
 import "fmt"
 import "math"
-// import "time"
+import "time"
 
 // type Heat struct {
 //   Current [9]float64
@@ -12,28 +12,28 @@ import "math"
 //   Danger [9]float64
 // }
 
-// func CalmDown(heatState *Heat, istate [9]primitives.Stream, verbose bool) {
-//   for i:=1; i<9; i++ {
-//     go func(e int){ for { CalmDown_CalmHeatState(heatState, e, istate, verbose) } }(i)
-//   }
-// }
+func CalmDown(streams *Streams, verbose bool) {
+  for index, _ := range *&streams.List {
+    go func(i int){ for { CalmDown_CalmHeatState(&streams.List[i], *&streams.Herald, verbose) } }(index)
+  }
+}
 
-// func CalmDown_CalmHeatState(stream *primitives.Stream, herald float64, verbose bool) {
-//   oldheat := *&stream.Heat.Current
-//   newheat := oldheat - (math.Sqrt(oldheat + *&heatState.Compared[0] )*2 + 1) / 8
-//   pause := primitives.Pool_RegenerateFullTimeOut()
-//   if newheat < 0 || oldheat <= 1 {
-//     newheat = 0
-//     if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG The %s is chilled out", ElemSigns[element])}
-//   } else {
-//     pause = 256 * (primitives.RNF()+1)
-//     if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG Chilling for %1.3f'%s for %1.3fs => Current = %1.2f", oldheat - newheat, ElemSigns[element], pause/1000, newheat)}
-//   }
-//   *&heatState.Current[element] = newheat
-//   *&heatState.Compared = primitives.GenerateHeat_CompareHeat(*&heatState.Current, istate)
-//   time.Sleep( time.Millisecond * time.Duration( pause ))
-// }
-//
+func CalmDown_CalmHeatState(stream *primitives.Stream, herald float64, verbose bool) {
+  oldheat := *&stream.Heat.Current
+  newheat := oldheat - (math.Sqrt(oldheat + *&stream.Heat.Threshold )*2 + 1) / 256 * herald
+  pause := primitives.Pool_RegenerateFullTimeOut()
+  if newheat < 0 || oldheat <= 1/100 {
+    newheat = 0
+    if true {fmt.Printf("\n ◦◦◦◦◦ DEBUG The %s is chilled out", ElemSigns[primitives.ElemToInt(*&stream.Element)])}
+  } else {
+    pause = 256 * (primitives.RNF()+1)
+    if true {fmt.Printf("\n ◦◦◦◦◦ DEBUG Chilling for %1.3f'%s for %1.3fs => Current = %1.2f", oldheat - newheat, ElemSigns[primitives.ElemToInt(*&stream.Element)], pause/1000, newheat)}
+  }
+  *&stream.Heat.Current = newheat
+  // *&heatState.Compared = primitives.GenerateHeat_CompareHeat(*&heatState.Current, istate)
+  time.Sleep( time.Millisecond * time.Duration( pause ))
+}
+
 func ConsumeHeat(stream primitives.Stream, heat float64) float64 {
   if stream.Element == "Common" {return 0}
   fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Incoming heat]: %+1.0f'%s ", heat, ElemSigns[primitives.ElemToInt(stream.Element)] )
