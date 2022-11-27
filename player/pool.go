@@ -129,7 +129,7 @@ func EnergeticSurge(pool *Pool, streams *Streams, doze float64, verbose bool) {
     for {
       // heat := CrackStream(pool, string) // compose heat
       i += 1 / doze
-      *&streams.List[index].Heat.Current = ConsumeHeat(string, CrackStream(pool, string))
+      *&streams.List[index].Heat.Current = ConsumeHeat(string, CrackStream(pool, string) / *&streams.Bender )
       // heatGenerated = primitives.CollectHeat(heatGenerated, heat)
       if string.Destruction <= i { break }
     }

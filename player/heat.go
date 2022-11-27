@@ -18,7 +18,7 @@ import "math"
 //   }
 // }
 
-// func CalmDown_CalmHeatState(stream *primitives.Stream, volume float64, verbose bool) {
+// func CalmDown_CalmHeatState(stream *primitives.Stream, herald float64, verbose bool) {
 //   oldheat := *&stream.Heat.Current
 //   newheat := oldheat - (math.Sqrt(oldheat + *&heatState.Compared[0] )*2 + 1) / 8
 //   pause := primitives.Pool_RegenerateFullTimeOut()

@@ -70,7 +70,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   }
   for i:=0; i<int(countOfStreams); i++ {
     var strings primitives.Stream
-    strings.Element     = AllElements[i]
+    strings.Element     = primitives.RNDElem()//AllElements[i]
     strings.Creation    = lens[i] * empowering / slen * standart
     strings.Alteration  = wids[i] / swid * standart
     strings.Destruction = pows[i] / empowering / spow * standart
