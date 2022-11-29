@@ -29,8 +29,8 @@ func CalmDown_CalmHeatState(stream *primitives.Stream, herald float64, verbose b
 func ConsumeHeat(stream primitives.Stream, heat float64) float64 {
   if stream.Element == "Common" {return 0}
   fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Incoming heat]: %+1.0f'%s ", heat, ElemSigns[primitives.ElemToInt(stream.Element)] )
-  newheat := stream.Heat.Current + heat
-  fmt.Printf("Current heat rates: %1.0f ", newheat)
+  newheat := heat
+  // fmt.Printf("Current heat rates: %1.0f ", newheat)
   return newheat
 }
 
