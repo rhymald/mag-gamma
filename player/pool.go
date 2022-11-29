@@ -10,10 +10,6 @@ import "sync"
 type Pool struct {
   Dots []primitives.Dot
   MaxVol float64
-  // PositiveElementalState struct {
-  //   FromEnv  [9]primitives.Stream
-  //   Composed [9]primitives.Stream
-  // }
 }
 
 func CountDotsByElements(pool Pool) ([9]int, [9]int) {
@@ -27,9 +23,6 @@ func ExtendPool(pool *Pool, streams []primitives.Stream, verbose bool) {
   fmt.Printf(" ╶──── INFO [Extend dot capacity to maximum]: ")
   old := *&pool.MaxVol
   new := primitives.ExtendPool_MaxVolFromStreams(streams)
-  // for _, stream := range streams {
-  //   new += 32*math.Sqrt(1+stream.Creation)
-  // }
   *&pool.MaxVol = math.Round(new)
   if verbose {
     fmt.Printf("= %1.0f'dots\n", new)
@@ -37,7 +30,6 @@ func ExtendPool(pool *Pool, streams []primitives.Stream, verbose bool) {
     if old == 0 {old = new/2}
     fmt.Printf("%+2.1f%%'dots\n", (new/old-1)*100)
   }
-  // fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
 
 func PlotEnergyStatus(pool Pool, verbose bool) {
@@ -66,11 +58,6 @@ func PlotEnergyStatus(pool Pool, verbose bool) {
   if verbose {fmt.Printf(" ─ mean:avg = %2.1f%%, %1.2f / %1.2f ─── ", float64(len(pool.Dots))/mean/(sum/float64(len(pool.Dots)))*100, float64(len(pool.Dots))/mean, sum/float64(len(pool.Dots)))}
   fmt.Printf("\n")
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────")
-  // _, bar := CountDotsByElements(pool)
-  // fmt.Printf("\n")
-  // for e:=0; e<9; e++ {
-  //   for i:=0; i<bar[e]; i++ {fmt.Printf("%s", primitives.ElemSigns[e] )}
-  // }
 }
 
 func EmitDot(pool *Pool, streams []primitives.Stream) {
@@ -80,11 +67,6 @@ func EmitDot(pool *Pool, streams []primitives.Stream) {
   weight, pause, _ := primitives.EmitDot_DotWeightAndTimeoutFromStreamAndMaxVol(streams[picker], *&pool.MaxVol)
   dot := primitives.Dot{Element: element, Weight: weight}
   *&pool.Dots = append(*&pool.Dots, dot)
-  // if You.Health.Current < You.Health.Max {
-  //   heal := math.Sqrt(weight)
-  //   You.Health.Current += heal
-  //   // if verbose {fmt.Printf("  %1.1f %1.1f  ", heal, weight)}
-  // } else { You.Health.Current = You.Health.Max }
   time.Sleep( time.Millisecond * time.Duration( pause ))
 }
 
@@ -113,7 +95,6 @@ func CrackStream(pool *Pool, stream primitives.Stream) float64 {
   if element == "Common" { weight = 1 - 1 / math.Phi }
   dot := primitives.Dot{Element: element, Weight: weight}
   *&pool.Dots = append(*&pool.Dots, dot)
-  // element = primitives.RNDElem()
   if len(*&pool.Dots) > int(*&pool.MaxVol) {dot.Weight *= float64(len(*&pool.Dots)) / *&pool.MaxVol }
   heat := primitives.GenerateHeat_FromStreamAndDot(stream, dot)
   return heat
@@ -121,20 +102,16 @@ func CrackStream(pool *Pool, stream primitives.Stream) float64 {
 
 func EnergeticSurge(pool *Pool, streams *Streams, doze float64, verbose bool) {
   verbose = true
-  // heatGenerated := [9]float64{}
   if doze == 0 { doze = 1 / *&streams.List[0].Destruction ; for _, string := range *&streams.List { doze = math.Max(doze, 1 / string.Destruction) } }
   fmt.Printf("\n  ▲ YOU [yelling around]: CHEERS! A-ah... [drink %0.3f ml]", doze)
   for index, string := range streams.List {
     i := 0.0
     for {
-      // heat := CrackStream(pool, string) // compose heat
       i += 1 / doze
       *&streams.List[index].Heat.Current = ConsumeHeat(string, CrackStream(pool, string) / *&streams.Bender )
-      // heatGenerated = primitives.CollectHeat(heatGenerated, heat)
       if string.Destruction <= i { break }
     }
   }
-  // heatGenerated = primitives.GenerateHeat_ComposeHeat(heatGenerated)
 }
 
 func MinusDot(pool *Pool, index int) (string, float64) {
@@ -174,17 +151,6 @@ func DotTransferOut(pool *Pool, estate ElementalState, verbose bool, e int) {
 }
 
 func Transferrence(pool *Pool, istate [9]primitives.Stream, estate ElementalState, verbose bool) {
-  // demand := [9]int{}
-  // // cooldown := 0.0
-  // for i, source := range estate.Empowered {
-  //   count := primitives.Transference_DotCountFromState(source)
-  //   // if source.Creation < 0 { count = - math.Sqrt(1+math.Abs(source.Destruction)) * (1 + primitives.RNF()) / 2 } else { count = math.Sqrt(1+math.Abs(source.Creation)) * (1 + primitives.RNF()) / 2 }
-  //   if i == 0 { count = 0 }
-  //   demand[i] = primitives.ChancedRound(count * primitives.Sign(estate.External[i].Creation))
-  //   // cooldown = math.Max(math.Abs(count) * 500, cooldown)
-  // }
-  // // if cooldown == 0 { cooldown = 2000 }
-  // cooldown := primitives.Transference_TotalCooldownFromDemand(demand)
   cooldown, demand := primitives.Transference_DotCountDemandAndTotalCooldownFromStates(estate.Empowered, istate)
   if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Transference][Demand calculation]: %v dots, cooldown: %1.3fs ", demand, cooldown/1000)}
   wg := sync.WaitGroup{}

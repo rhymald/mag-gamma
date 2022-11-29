@@ -17,10 +17,10 @@ func CalmDown_CalmHeatState(stream *primitives.Stream, herald float64, verbose b
   pause := primitives.Pool_RegenerateFullTimeOut()
   if newheat < 0 || oldheat <= 1/100 {
     newheat = 0
-    if true {fmt.Printf("\n ◦◦◦◦◦ DEBUG The %s is chilled out", ElemSigns[primitives.ElemToInt(*&stream.Element)])}
+    if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG The %s is chilled out", ElemSigns[primitives.ElemToInt(*&stream.Element)])}
   } else {
     pause = 256 * (primitives.RNF()+1)
-    if true {fmt.Printf("\n ◦◦◦◦◦ DEBUG Chilling for %1.3f'%s for %1.3fs => Current = %1.2f", oldheat - newheat, ElemSigns[primitives.ElemToInt(*&stream.Element)], pause/1000, newheat)}
+    if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG Chilling for %1.3f'%s for %1.3fs => Current = %1.2f", oldheat - newheat, ElemSigns[primitives.ElemToInt(*&stream.Element)], pause/1000, newheat)}
   }
   *&stream.Heat.Current = newheat
   time.Sleep( time.Millisecond * time.Duration( pause ))

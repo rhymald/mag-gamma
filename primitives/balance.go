@@ -54,7 +54,7 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream, ist
 }
 
 // heat
-func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return 1 + (1+dot.Weight) * math.Log2(2+stream.Destruction*stream.Alteration/stream.Creation) }///math.Pi }
+func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return 1 + (1+dot.Weight) * math.Log2(2+stream.Destruction*stream.Alteration/stream.Creation) }
 func NewBorn_HeatThresholdFromStream(stream Stream, sum Stream) float64 {
   limits := Vector(1+sum.Creation,sum.Destruction,1+sum.Alteration)
   limits = Vector( Vector(1+stream.Creation,stream.Destruction,1+stream.Alteration), limits*math.Log10(10-float64(ElemToInt(stream.Element))) )
@@ -62,7 +62,6 @@ func NewBorn_HeatThresholdFromStream(stream Stream, sum Stream) float64 {
 }
 func GenerateHeat_EffectFromCurrentAndThresholds(current float64, threshold float64) (float64, float64) {
   stabilityChance := math.Sqrt(1/(current/threshold+1-math.Sqrt2/2))
-  selfDestruction := 1-1/(current/threshold/math.Sqrt(math.Sqrt2)) // 1-math.Sqrt2/2)
-  // fatality :=
+  selfDestruction := 1-1/(current/threshold/math.Sqrt(math.Sqrt2))
   return stabilityChance, selfDestruction
 }
