@@ -18,13 +18,6 @@ var (
   ElemSigns   = primitives.ElemSigns
 )
 
-// func CountStreamssByElements(streams Streams) [9]int {
-//   counter := [9]int{}
-//   for _, each := range streams.List { counter[primitives.ElemToInt(each.Element)]++ }
-//   // for e, count := range counter { balance[e] = int(math.Round(float64(count)*100/pool.MaxVol)) }
-//   return counter //, balance
-// }
-
 func PlotStreamList(list Streams, verbose bool) {
   var counter primitives.Stream
   fmt.Printf(" ┌──── INFO [List strings]:\n")

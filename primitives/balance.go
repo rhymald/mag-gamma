@@ -36,18 +36,12 @@ func DotTransferOut_TimeoutFromWeightAndState(weight float64, state Stream) (flo
   pause  := 1024*math.Log2(step)/math.Sqrt(step)*math.Sqrt(weight)
   return pause
 }
-// func Transference_TotalCooldownFromDemand(demand [9]int) float64 {
-//   sum := 0.0
-//   for _, i := range demand { sum += math.Abs(float64(i))*500 }
-//   return sum
-// }
 func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream, istate [9]Stream) (float64, [9]int) {
   demand := [9]int{}
   count := 0.0
   cooldown := 0.0
   counter := 0
   for i, source := range estate {
-    // count := primitives.Transference_DotCountFromState(source)
     if source.Creation < 0 { count = math.Sqrt(math.Sqrt(1024*math.Abs(source.Destruction)))*Sign(istate[i].Creation) ; counter++ }
     if source.Creation > 0 { count = math.Sqrt(math.Sqrt(1024*math.Abs(source.Creation)))*Sign(istate[i].Creation) ; counter++ }
     if i == 0 { count = 0 }
@@ -56,38 +50,14 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream, ist
   }
   if counter != 0 { cooldown = cooldown / float64(counter) }
   if cooldown == 0 { cooldown = Pool_RegenerateFullTimeOut() }
-  // cooldown := primitives.Transference_TotalCooldownFromDemand(demand)
   return cooldown, demand
 }
 
 // heat
-func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return Vector((1+dot.Weight)*(1+dot.Weight),(1+stream.Destruction)*stream.Alteration/stream.Creation) }///math.Pi }
-// func GenerateHeat_ComposeHeat(heat [9]float64) [9]float64 {
-//   resume := [9]float64{}
-//   for i, h := range heat {
-//     if i == 0 {
-//       resume[i] = 0
-//     } else if i == 5 {
-//       resume[1] += - h/math.Sqrt2
-//       resume[2] += - h/math.Sqrt2
-//       resume[3] += - h/math.Sqrt2
-//       resume[4] += - h/math.Sqrt2
-//       resume[6] += - h/math.Pi
-//       resume[7] += - h/math.Pi
-//       resume[8] += - h/math.Phi
-//       resume[5] += h
-//     } else if i == 8 {
-//       resume[i] += resume[i] + h
-//       for j:=0; j<8; j++ { resume[j] *= math.Sqrt( 1-RNF()+RNF()) }
-//     } else {
-//       resume[i] += h
-//     }
-//   }
-//   return resume
-// }
+func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return 1 + (1+dot.Weight) * math.Log2(2+stream.Destruction*stream.Alteration/stream.Creation) }///math.Pi }
 func NewBorn_HeatThresholdFromStream(stream Stream, sum Stream) float64 {
   limits := Vector(1+sum.Creation,sum.Destruction,1+sum.Alteration)
-  limits = Vector( Vector(1+stream.Creation,stream.Destruction,1+stream.Alteration), limits*math.Log2(10-float64(ElemToInt(stream.Element))) )
+  limits = Vector( Vector(1+stream.Creation,stream.Destruction,1+stream.Alteration), limits*math.Log10(10-float64(ElemToInt(stream.Element))) )
   return limits
 }
 func GenerateHeat_EffectFromCurrentAndThresholds(current float64, threshold float64) (float64, float64) {

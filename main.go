@@ -83,7 +83,7 @@ func main() {
   fmt.Println("▼ EUA growling [from everywhere]:", ebr, "I smell you... your soul, your being. LEAVE!")
   Move(3, -17.2)
   // ii := 0
-  player.EnergeticSurge(&YourPool, &YourStreams, 0.2, verbose) ; player.PlotHeatState(YourStreams.List)
+  player.EnergeticSurge(&YourPool, &YourStreams, 0, verbose) ; player.PlotHeatState(YourStreams.List)
   for {
     time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() ))
     if primitives.RNF() < 0.71 { player.EnergeticSurge(&YourPool, &YourStreams, 0, verbose) ; player.PlotHeatState(YourStreams.List) }

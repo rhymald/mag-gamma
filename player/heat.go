@@ -5,13 +5,6 @@ import "fmt"
 import "math"
 import "time"
 
-// type Heat struct {
-//   Current [9]float64
-//   Compared [9]float64
-//   Unstable [9]float64
-//   Danger [9]float64
-// }
-
 func CalmDown(streams *Streams, verbose bool) {
   for index, _ := range *&streams.List {
     go func(i int){ for { CalmDown_CalmHeatState(&streams.List[i], *&streams.Herald, verbose) } }(index)
@@ -20,7 +13,7 @@ func CalmDown(streams *Streams, verbose bool) {
 
 func CalmDown_CalmHeatState(stream *primitives.Stream, herald float64, verbose bool) {
   oldheat := *&stream.Heat.Current
-  newheat := oldheat - (math.Sqrt(oldheat + *&stream.Heat.Threshold )*2 + 1) / 256 * herald
+  newheat := oldheat - (math.Sqrt(oldheat)*2 + 1) / (32 + math.Log2(1+*&stream.Heat.Threshold)) * herald
   pause := primitives.Pool_RegenerateFullTimeOut()
   if newheat < 0 || oldheat <= 1/100 {
     newheat = 0
@@ -30,7 +23,6 @@ func CalmDown_CalmHeatState(stream *primitives.Stream, herald float64, verbose b
     if true {fmt.Printf("\n ◦◦◦◦◦ DEBUG Chilling for %1.3f'%s for %1.3fs => Current = %1.2f", oldheat - newheat, ElemSigns[primitives.ElemToInt(*&stream.Element)], pause/1000, newheat)}
   }
   *&stream.Heat.Current = newheat
-  // *&heatState.Compared = primitives.GenerateHeat_CompareHeat(*&heatState.Current, istate)
   time.Sleep( time.Millisecond * time.Duration( pause ))
 }
 
@@ -38,21 +30,7 @@ func ConsumeHeat(stream primitives.Stream, heat float64) float64 {
   if stream.Element == "Common" {return 0}
   fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Incoming heat]: %+1.0f'%s ", heat, ElemSigns[primitives.ElemToInt(stream.Element)] )
   newheat := stream.Heat.Current + heat
-  // avg, counter := 0.0, 0
-  // bufferHeat[0] = 0
-  // bufferOverheat := [9]float64{}
-  // for i, _ := range bufferHeat {
-  //   if bufferHeat[i] <= 0 {
-  //     bufferHeat[i] = 0
-  //   } else {
-  //     avg += 1 / bufferHeat[i]
-  //     counter++
-  //   }
-  // }
   fmt.Printf("Current heat rates: %1.0f ", newheat)
-  // // bufferHeat[0] = float64(counter) / avg //* float64(counter)
-  // *&heatState.Current = bufferHeat
-  // *&heatState.Compared = primitives.GenerateHeat_CompareHeat(bufferHeat, streams)
   return newheat
 }
 

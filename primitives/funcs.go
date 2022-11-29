@@ -10,7 +10,7 @@ import (
 
 var (
   AllElements [9]string = [9]string{"Common", "Air", "Fire", "Earth", "Water", "Void", "Mallom", "Noise", "Resonance"}
-  ElemSigns [9]string = [9]string{"✳️", "☁️", "🔥", "⛰ ", "🧊", "🌑", "🩸", "🎶", "🌟"}
+  ElemSigns [9]string = [9]string{"✳️ ", "☁️ ", "🔥", "⛰ ", "❄️ ", "🌑", "🩸", "🎶", "🌟"}
 )
 
 func RNF() float64 {
