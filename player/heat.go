@@ -10,7 +10,7 @@ func CalmDown(streams *Streams, verbose bool) {
     flockSize := len(*&streams.List)
     go func(i int){
       for {
-        if flockSize == len(*&streams.List) { break }
+        if flockSize != len(*&streams.List) { break }
         CalmDown_CalmHeatState(i, streams, verbose)
       }
     }(index)
