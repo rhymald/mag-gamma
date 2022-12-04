@@ -51,22 +51,23 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   countOfStreams := math.Round(stringsMatrix.Class)
   standart = standart
   empowering := ( - countOfStreams + stringsMatrix.Class )
-  if empowering < 0 { empowering = 1 / math.Cbrt(1 + math.Abs(empowering)) } else { empowering = math.Cbrt(1 + math.Abs(empowering)) }
-  empowering = math.Cbrt(empowering)
+  creUp, altUp, desUp := 1.0, 1.0, 1.0
+  if empowering > 0 { desUp = 1-empowering  } else { creUp = 1-empowering }
+  altUp = 1.5 + math.Abs(empowering)
   fmt.Printf("INFO [Player creation][New initial streams]: defined %d class (%d streams), %1.0f%% of power\n", int(stringsMatrix.Class*100000), int(countOfStreams), empowering*100)
   lens, wids, pows := []float64 {}, []float64 {}, []float64 {}
   slen, swid, spow := 0.0, 0.0, 0.0
   for i:=0; i<int(countOfStreams); i++ {
-    leni, widi, powi := math.Cbrt(1+primitives.RNF()), math.Cbrt(1+primitives.RNF()), math.Cbrt(1+primitives.RNF())
+    leni, widi, powi := 1+primitives.RNF(), 1+primitives.RNF(), 1+primitives.RNF()
     lens, wids, pows = append(lens, leni), append(wids, widi), append(pows, powi)
     slen += leni ; swid += widi ; spow += powi
   }
   for i:=0; i<int(countOfStreams); i++ {
     var strings primitives.Stream
     strings.Element     = primitives.RNDElem()//AllElements[0]
-    strings.Creation    = lens[i] * empowering / slen * standart
-    strings.Alteration  = wids[i] / swid * standart
-    strings.Destruction = pows[i] / empowering / spow * standart
+    strings.Creation    = lens[i] / slen * standart * creUp
+    strings.Alteration  = wids[i] / swid * standart * altUp
+    strings.Destruction = pows[i] / spow * standart * desUp
     strings.InfoLWP = [3]float64{ primitives.NewBornStreams_LenFromStream(strings), primitives.NewBornStreams_WidFromStream(strings), primitives.NewBornStreams_PowFromStream(strings) }
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }

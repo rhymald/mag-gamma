@@ -7,22 +7,28 @@ import "time"
 
 func CalmDown(streams *Streams, verbose bool) {
   for index, _ := range *&streams.List {
-    go func(i int){ for { CalmDown_CalmHeatState(&streams.List[i], *&streams.Herald, verbose) } }(index)
+    flockSize := len(*&streams.List)
+    go func(i int){
+      for {
+        if flockSize == len(*&streams.List) { break }
+        CalmDown_CalmHeatState(i, streams, verbose)
+      }
+    }(index)
   }
 }
 
-func CalmDown_CalmHeatState(stream *primitives.Stream, herald float64, verbose bool) {
-  oldheat := *&stream.Heat.Current
-  newheat := oldheat - (math.Sqrt(oldheat)*2 + 1) / (32 + math.Log2(1+*&stream.Heat.Threshold)) * herald
+func CalmDown_CalmHeatState(index int, streams *Streams, verbose bool) {
+  oldheat := *&streams.List[index].Heat.Current
+  newheat := oldheat - (math.Sqrt(oldheat)*2 + 1) / (32 + math.Log2(1+*&streams.List[index].Heat.Threshold)) * *&streams.Herald
   pause := primitives.Pool_RegenerateFullTimeOut()
   if newheat < 0 || oldheat <= 1/100 {
     newheat = 0
-    if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG The %s is chilled out", ElemSigns[primitives.ElemToInt(*&stream.Element)])}
+    if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG The %s is chilled out", ElemSigns[primitives.ElemToInt(*&streams.List[index].Element)])}
   } else {
     pause = 256 * (primitives.RNF()+1)
-    if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG Chilling for %1.3f'%s for %1.3fs => Current = %1.2f", oldheat - newheat, ElemSigns[primitives.ElemToInt(*&stream.Element)], pause/1000, newheat)}
+    if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG Chilling for %1.3f'%s for %1.3fs => Current = %1.2f", oldheat - newheat, ElemSigns[primitives.ElemToInt(*&streams.List[index].Element)], pause/1000, newheat)}
   }
-  *&stream.Heat.Current = newheat
+  *&streams.List[index].Heat.Current = newheat
   time.Sleep( time.Millisecond * time.Duration( pause ))
 }
 
@@ -30,7 +36,6 @@ func ConsumeHeat(stream primitives.Stream, heat float64) float64 {
   if stream.Element == "Common" {return 0}
   fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Incoming heat]: %+1.0f'%s ", heat, ElemSigns[primitives.ElemToInt(stream.Element)] )
   newheat := heat
-  // fmt.Printf("Current heat rates: %1.0f ", newheat)
   return newheat
 }
 
