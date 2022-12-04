@@ -15,8 +15,6 @@ type ElementalState struct {
   Deminished  [9]primitives.Stream // for curses
   Resistances [9]float64 // TBD move to health/def
   // ^ two for resistance supression
-  // Total [9]primitives.Stream // for cast
-  // ^ for casts
 }
 
 func PlotElementalState(estate [9]primitives.Stream, header string, verbose bool) {
@@ -44,43 +42,8 @@ func PlotElementalState(estate [9]primitives.Stream, header string, verbose bool
     if estate[8].Creation != 0 {fmt.Printf("\n ├────────────────────────────────────────────────────────────────────────────────────────────────────")}
     if estate[8].Creation != 0 {fmt.Printf("\n │ 🌟 ── %1.2f'mirage ── %1.2f'matter ── %1.2f'desintegration ", estate[8].Creation, estate[8].Alteration, estate[8].Destruction) ; i++}
     if i==0 {fmt.Printf("Totaly not attuned or affected by environment.")}
-    // fmt.Println()
-    // fmt.Printf(" ├── DEBUG [incoming elemental affection]: ")
-    // if estate.Empowered[1].Creation != 0 {fmt.Printf("\n │ ☁️  ── %1.2f'pressure ── %1.2f'spreading ── %1.2f'puncture ", estate.Empowered[1].Creation, estate.Empowered[1].Alteration, estate.Empowered[1].Destruction) }
-    // if estate.Empowered[2].Creation != 0 {fmt.Printf("\n │ 🔥 ── %1.2f'warming ── %1.2f'burning ── %1.2f'detonation ", estate.Empowered[2].Creation, estate.Empowered[2].Alteration, estate.Empowered[2].Destruction) }
-    // if estate.Empowered[3].Creation != 0 {fmt.Printf("\n │ ⛰  ── %1.2f'structure ── %1.2f'mass ── %1.2f'fragility ", estate.Empowered[3].Creation, estate.Empowered[3].Alteration, estate.Empowered[3].Destruction) }
-    // if estate.Empowered[4].Creation != 0 {fmt.Printf("\n │ 🧊 ── %1.2f'form ── %1.2f'direction ── %1.2f'calm ", estate.Empowered[4].Creation, estate.Empowered[4].Alteration, estate.Empowered[4].Destruction) }
-    // if estate.Empowered[5].Creation != 0 {fmt.Printf("\n │ 🌑 ── %1.2f'shadows ── %1.2f'curse ── %1.2f'pain ", estate.Empowered[5].Creation, estate.Empowered[5].Alteration, estate.Empowered[5].Destruction) }
-    // if estate.Empowered[6].Creation != 0 {fmt.Printf("\n │ 🩸 ── %1.2f'growing ── %1.2f'corruption ── %1.2f'consumption ", estate.Empowered[6].Creation, estate.Empowered[6].Alteration, estate.Empowered[6].Destruction) }
-    // if estate.Empowered[7].Creation != 0 {fmt.Printf("\n │ 🎶 ── %1.2f'inspiration ── %1.2f'echo ── %1.2f'roar ", estate.Empowered[7].Creation, estate.Empowered[7].Alteration, estate.Empowered[7].Destruction) }
-    // if estate.Empowered[8].Creation != 0 {fmt.Printf("\n │ 🌟 ── %1.2f'mirage ── %1.2f'matter ── %1.2f'desintegration ", estate.Empowered[8].Creation, estate.Empowered[8].Alteration, estate.Empowered[8].Destruction) }
-    // if i==0 {fmt.Printf("Totaly not affected by environment ")}
-    // // fmt.Printf("\n │DEBUG [finaly affecting elemental state]: ") -- dat will be curses
-    // // if You.ElemAff[1].Creation != 0 {fmt.Printf("\n │ ☁️   %1.2f'pressure  %1.2f'spreading  %1.2f'puncture ", You.ElemAff[1].Creation, You.ElemAff[1].Alteration, You.ElemAff[1].Destruction) }
-    // // if You.ElemAff[2].Creation != 0 {fmt.Printf("\n │ 🔥  %1.2f'warming  %1.2f'burning  %1.2f'detonation ", You.ElemAff[2].Creation, You.ElemAff[2].Alteration, You.ElemAff[2].Destruction) }
-    // // if You.ElemAff[3].Creation != 0 {fmt.Printf("\n │ ⛰   %1.2f'structure  %1.2f'mass  %1.2f'fragility ", You.ElemAff[3].Creation, You.ElemAff[3].Alteration, You.ElemAff[3].Destruction) }
-    // // if You.ElemAff[4].Creation != 0 {fmt.Printf("\n │ 🧊  %1.2f'form  %1.2f'direction  %1.2f'calm ", You.ElemAff[4].Creation, You.ElemAff[4].Alteration, You.ElemAff[4].Destruction) }
-    // // if You.ElemAff[5].Creation != 0 {fmt.Printf("\n │ 🌑  %1.2f'shadows  %1.2f'curse  %1.2f'pain ", You.ElemAff[5].Creation, You.ElemAff[5].Alteration, You.ElemAff[5].Destruction) }
-    // // if You.ElemAff[6].Creation != 0 {fmt.Printf("\n │ 🩸  %1.2f'growing  %1.2f'corruption  %1.2f'consumption ", You.ElemAff[6].Creation, You.ElemAff[6].Alteration, You.ElemAff[6].Destruction) }
-    // // if You.ElemAff[7].Creation != 0 {fmt.Printf("\n │ 🎶  %1.2f'inspiration  %1.2f'echo  %1.2f'roar ", You.ElemAff[7].Creation, You.ElemAff[7].Alteration, You.ElemAff[7].Destruction) }
-    // // if You.ElemAff[8].Creation != 0 {fmt.Printf("\n │ 🌟  %1.2f'mirage  %1.2f'matter  %1.2f'desintegration ", You.ElemAff[8].Creation, You.ElemAff[8].Alteration, You.ElemAff[8].Destruction) }
-    // // if i==0 {fmt.Printf("\n │ Totaly not affected by environment ", elbr)}
-    // fmt.Println()
-    // fmt.Printf(" ├── DEBUG [internal elemental state]: ")
-    // if estate.Internal[1].Creation != 0 {fmt.Printf("\n │ ☁️  ── %1.2f'pressure ── %1.2f'spreading ── %1.2f'puncture ", estate.Internal[1].Creation, estate.Internal[1].Alteration, estate.Internal[1].Destruction) }
-    // if estate.Internal[2].Creation != 0 {fmt.Printf("\n │ 🔥 ── %1.2f'warming ── %1.2f'burning ── %1.2f'detonation ", estate.Internal[2].Creation, estate.Internal[2].Alteration, estate.Internal[2].Destruction) }
-    // if estate.Internal[3].Creation != 0 {fmt.Printf("\n │ ⛰  ── %1.2f'structure ── %1.2f'mass ── %1.2f'fragility ", estate.Internal[3].Creation, estate.Internal[3].Alteration, estate.Internal[3].Destruction) }
-    // if estate.Internal[4].Creation != 0 {fmt.Printf("\n │ 🧊 ── %1.2f'form ── %1.2f'direction ── %1.2f'calm ", estate.Internal[4].Creation, estate.Internal[4].Alteration, estate.Internal[4].Destruction) }
-    // if estate.Internal[5].Creation != 0 {fmt.Printf("\n │ 🌑 ── %1.2f'shadows ── %1.2f'curse ── %1.2f'pain ", estate.Internal[5].Creation, estate.Internal[5].Alteration, estate.Internal[5].Destruction) }
-    // if estate.Internal[6].Creation != 0 {fmt.Printf("\n │ 🩸 ── %1.2f'growing ── %1.2f'corruption ── %1.2f'consumption ", estate.Internal[6].Creation, estate.Internal[6].Alteration, estate.Internal[6].Destruction) }
-    // if estate.Internal[7].Creation != 0 {fmt.Printf("\n │ 🎶 ── %1.2f'inspiration ── %1.2f'echo ── %1.2f'roar ", estate.Internal[7].Creation, estate.Internal[7].Alteration, estate.Internal[7].Destruction) }
-    // if estate.Internal[8].Creation != 0 {fmt.Printf("\n │ 🌟 ── %1.2f'mirage ── %1.2f'matter ── %1.2f'desintegration ", estate.Internal[8].Creation, estate.Internal[8].Alteration, estate.Internal[8].Destruction) }
   }
   fmt.Println()
-  // fmt.Printf(" ├── INFO [resistances]: ")
-  // fmt.Printf("\n │ %s:%1.2f ── ", ElemSigns[0], math.Sqrt( math.Pow(estate.Internal[0].Creation, 2) + math.Pow(estate.Internal[0].Alteration, 2) + math.Pow(estate.Internal[0].Destruction, 2)) )
-  // for i:=0; i<8; i++ { if estate.Resistances[i] != 0 { fmt.Printf("%s:%1.2f ", ElemSigns[i+1], estate.Resistances[i] ) } }
-  // fmt.Println()
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────")
 }
 
@@ -113,15 +76,6 @@ func ReadStatesFromEnv(elementalState *ElementalState, position [3]float64, floc
     }
   }
   estate := ElementalState{}
-  // for _, affection := range affectingPlaces {
-  //   for i:=1;i<9;i++ {
-  //     if affection.Element == AllElements[i] {
-  //       estate.ExternalWells[i].Creation += affection.Creation
-  //       estate.ExternalWells[i].Alteration += affection.Alteration
-  //       estate.ExternalWells[i].Destruction += affection.Destruction
-  //     }
-  //   }
-  // }
   for i, element := range AllElements {
     if i!=0 {
       *&flock.InternalElementalState[i] = primitives.StreamSum(element, *&flock.List)
@@ -130,16 +84,6 @@ func ReadStatesFromEnv(elementalState *ElementalState, position [3]float64, floc
       *&flock.InternalElementalState[i] = primitives.StreamSum(element, *&flock.List)
     }
   }
-  // for _, each := range flock.List {
-  //   estate.Internal[0].Creation += each.Creation // + estate.Empowered[0].Creation)
-  //   estate.Internal[0].Alteration += each.Alteration //  + estate.Empowered[0].Alteration)
-  //   estate.Internal[0].Destruction += each.Destruction //    + estate.Empowered[0].Destruction)
-  //   if each.Element != "Common" {
-  //     estate.Internal[primitives.ElemToInt(each.Element)].Creation += each.Creation // + estate.Empowered[0].Creation)
-  //     estate.Internal[primitives.ElemToInt(each.Element)].Alteration += each.Alteration //  + estate.Empowered[0].Alteration)
-  //     estate.Internal[primitives.ElemToInt(each.Element)].Destruction += each.Destruction //    + estate.Empowered[0].Destruction)
-  //   }
-  // }
   *elementalState = estate
 }
 
@@ -174,9 +118,9 @@ func InnerAffinization(elementalState *ElementalState, bender float64, herald fl
   estate.Empowered[8].Alteration  = bender * ( estate.ExternalWells[8].Creation   + estate.ExternalWells[8].Destruction)//  + estate.Empowered[8].Alteration)
   estate.Empowered[8].Destruction = bender * ( estate.ExternalWells[8].Alteration + estate.ExternalWells[8].Destruction) // + estate.Empowered[8].Destruction)
   // Finalizing
-  estate.Empowered[0].Creation = bender * estate.ExternalWells[8].Creation - estate.ExternalWells[5].Destruction * herald //+ estate.Internal[0].Creation
-  estate.Empowered[0].Alteration = bender * estate.ExternalWells[8].Alteration - estate.ExternalWells[5].Alteration * herald //+ estate.Internal[0].Alteration
-  estate.Empowered[0].Destruction = bender * estate.ExternalWells[8].Destruction - estate.ExternalWells[5].Creation * herald //+ estate.Internal[0].Destruction
+  // estate.Empowered[0].Creation = bender * estate.ExternalWells[8].Creation - estate.ExternalWells[5].Destruction * herald //+ estate.Internal[0].Creation
+  // estate.Empowered[0].Alteration = bender * estate.ExternalWells[8].Alteration - estate.ExternalWells[5].Alteration * herald //+ estate.Internal[0].Alteration
+  // estate.Empowered[0].Destruction = bender * estate.ExternalWells[8].Destruction - estate.ExternalWells[5].Creation * herald //+ estate.Internal[0].Destruction
   // for i:=1; i<9; i++ { if estate.Internal[i].Creation*estate.Internal[i].Destruction > 0 { estate.Resistances[i-1] = primitives.InnerAffinization_ResistanceFromState(estate.Internal[i]) }} // math.Sqrt( math.Pow(estate.Internal[i].Destruction, 2)*2 - 1 + math.Pow(estate.Internal[i].Creation, 2)) }}
   *elementalState = estate
 }

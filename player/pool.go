@@ -102,13 +102,14 @@ func CrackStream(pool *Pool, stream primitives.Stream) float64 {
 
 func EnergeticSurge(pool *Pool, streams *Streams, doze float64, verbose bool) {
   verbose = true
-  // if doze == 0 {
-  //   doze = math.Log2(2+*&streams.List[0].Destruction)
-  //   for _, string := range *&streams.List { doze = math.Min(doze, math.Log2(2+string.Destruction))  }
-  // }
+  if doze == 0 {
+    doze = math.Log2(2+*&streams.List[0].Destruction)
+    for _, string := range *&streams.List { doze = math.Max(doze, math.Log2(2+string.Destruction))  }
+  }
   fmt.Printf("\n  ▲ YOU [yelling around]: CHEERS! A-ah... [drink %0.1f ml]", doze)
   for index, string := range streams.List {
-    dotAmount := primitives.ChancedRound( doze / math.Log2(2+string.Destruction)  )
+    dotAmount := primitives.ChancedRound( doze / math.Log2(2+string.Destruction) )
+    fmt.Printf(" %1.1f doze/des", doze / math.Log2(2+string.Destruction) )
     heatGain := 0.0
     for i:=0; i<dotAmount; i++ {
       heatGain += ConsumeHeat(string, CrackStream(pool, string) / *&streams.Bender )
