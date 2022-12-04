@@ -33,17 +33,15 @@ func CalmDown_CalmHeatState(index int, streams *Streams, verbose bool) {
 }
 
 func ConsumeHeat(stream primitives.Stream, heat float64) float64 {
-  if stream.Element == "Common" {return 0}
   fmt.Printf("\n ◦◦◦◦◦ DEBUG [Consuming heat][Incoming heat]: %+1.0f'%s ", heat, ElemSigns[primitives.ElemToInt(stream.Element)] )
-  newheat := heat
-  return newheat
+  return heat
 }
 
 func PlotHeatState(streams []primitives.Stream) { // replace for flock
   fmt.Printf("\n ┌──── INFO [heat state]:")
   counter := 0
   for i, each := range streams {
-    if each.Heat.Current>0 && each.Element!="Common" {
+    if each.Heat.Current>0 {
       fmt.Printf("\n │ %s'%d Current %1.2f / %1.2f ─── ", ElemSigns[primitives.ElemToInt(each.Element)], i+1, each.Heat.Current, each.Heat.Threshold)
       counter++
       close := each.Heat.Current/each.Heat.Threshold>math.Sqrt2/2

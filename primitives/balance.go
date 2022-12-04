@@ -54,7 +54,11 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream, ist
 }
 
 // heat
-func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 { return 1 + (1+dot.Weight) * math.Log2(2+stream.Destruction*stream.Alteration/stream.Creation) }
+func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 {
+  heat := 1 + (1+dot.Weight) * math.Log2(2+stream.Destruction*stream.Alteration/stream.Creation)
+  if stream.Element == "Common" { return heat*math.Log2(2+heat) }
+  return heat
+}
 func NewBorn_HeatThresholdFromStream(stream Stream, sum Stream) float64 {
   limits := Vector(1+sum.Creation,sum.Destruction,1+sum.Alteration)
   limits = Vector( Vector(1+stream.Creation,stream.Destruction,1+stream.Alteration), limits*math.Log10(10-float64(ElemToInt(stream.Element))) )
