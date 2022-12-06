@@ -19,20 +19,19 @@ var (
 )
 
 func PlotStreamList(list Streams, verbose bool) {
-  var counter primitives.Stream
+  multiplier := 1.0
   fmt.Printf(" ┌──── INFO [List strings]:\n")
-  vols := 0.0
-  counter.Creation, counter.Alteration, counter.Destruction = 0.0, 0.0, 0.0
+  fmt.Printf(" │ Herald: %1.3f ─── Bender: %1.3f ─── Multiplier: %1.3f\n", list.Herald, list.Bender, list.Bender/list.Herald)
+  if verbose==false { multiplier = list.Bender/list.Herald }
   for i, stream := range list.List {
-    vols += (stream.Alteration)*(stream.Destruction)*(stream.Creation)
-    counter.Creation += stream.Creation
-    counter.Alteration += stream.Alteration
-    counter.Destruction += stream.Destruction
-    fmt.Printf(" │ %d'%s %1.0f'len ── %1.1f'wid ── %1.2f'pow ──", i+1, primitives.ES(stream.Element), stream.InfoLWP[0], stream.InfoLWP[1], stream.InfoLWP[2])
-    if verbose {fmt.Printf(" %1.2f'cre ── %1.2f'alt ── %1.2f'des ── Volume: %1.2f ──", stream.Creation, stream.Alteration, stream.Destruction, stream.Heat.Threshold)}
-    fmt.Println()
+    stats := primitives.StatsFromStream(stream)
+    fmt.Printf(" │ ┌─ %d'%s ─── Basical stats: ▣ %1.3f ◈ %1.3f ▦ %1.3f \n", i+1, primitives.ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction)
+    fmt.Printf(" │ │ Consumption time: %1.3f ms\n", stats["Quickness"]*multiplier)
+    fmt.Printf(" │ │ Consumption count: %1.3f \n", stats["Fuel"]*multiplier)
+    fmt.Printf(" │ │ Power: %1.3f\n", stats["Power"])
+    fmt.Printf(" │ │ Precision: %1.3f\n", stats["Precision"]/multiplier)
+    fmt.Printf(" │ └──── Overheat threshold: ◮ %1.3f\n", stream.Heat.Threshold)
   }
-  fmt.Printf(" │ Total: %1.2f'lens + %1.2f'wids + %1.2f'pows = Volume: %1.2f ──\n", counter.Creation, counter.Alteration, counter.Destruction, primitives.Vector(counter.Creation,counter.Alteration,counter.Destruction,))
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
 
@@ -42,23 +41,22 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   if class < 6.5 && class >= 0.5 {
     stringsMatrix.Class = class
   } else {
-    playerCountInDB := math.Round( float64(playerCount)*math.Cos(float64(playerCount)) +3.5)
-    for j:=0; j<int(playerCountInDB); j++ {
-      stringsMatrix.Class += (primitives.RNF()*6+0.499999) / playerCountInDB
-    }
+    for j:=0; j<2; j++ { stringsMatrix.Class += (primitives.RNF()*6+0.499999) / 2 }
   }
   stringsMatrix.Bender, stringsMatrix.Herald = primitives.NewBornStreams_BendHeraldFromClass(stringsMatrix.Class)
   countOfStreams := math.Round(stringsMatrix.Class)
   standart = standart
   empowering := ( - countOfStreams + stringsMatrix.Class )
   creUp, altUp, desUp := 1.0, 1.0, 1.0
-  if empowering > 0 { desUp = 1-empowering  } else { creUp = 1-empowering }
-  altUp = 1.5 + math.Abs(empowering)
-  fmt.Printf("INFO [Player creation][New initial streams]: defined %d class (%d streams), %1.0f%% of power\n", int(stringsMatrix.Class*100000), int(countOfStreams), empowering*100)
+  if empowering > 0 { desUp = (1+empowering) } else { creUp = (1-empowering) }
+  altUp = (1.5 - math.Abs(empowering))
+  fmt.Printf("INFO [Player creation][New initial streams]: defined %d class (%d streams), %+1.0f%% of power\n", int(stringsMatrix.Class*100000), int(countOfStreams), empowering*100)
   lens, wids, pows := []float64 {}, []float64 {}, []float64 {}
   slen, swid, spow := 0.0, 0.0, 0.0
   for i:=0; i<int(countOfStreams); i++ {
-    leni, widi, powi := 1+primitives.RNF(), 1+primitives.RNF(), 1+primitives.RNF()
+    leni := 1+primitives.RNF()
+    widi := 1+primitives.RNF()
+    powi := 1+primitives.RNF()
     lens, wids, pows = append(lens, leni), append(wids, widi), append(pows, powi)
     slen += leni ; swid += widi ; spow += powi
   }
@@ -68,7 +66,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
     strings.Creation    = lens[i] / slen * standart * creUp
     strings.Alteration  = wids[i] / swid * standart * altUp
     strings.Destruction = pows[i] / spow * standart * desUp
-    strings.InfoLWP = [3]float64{ primitives.NewBornStreams_LenFromStream(strings), primitives.NewBornStreams_WidFromStream(strings), primitives.NewBornStreams_PowFromStream(strings) }
+    // strings.InfoLWP = [3]float64{ primitives.NewBornStreams_LenFromStream(strings), primitives.NewBornStreams_WidFromStream(strings), primitives.NewBornStreams_PowFromStream(strings) }
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }
   totalVol := primitives.StreamMean(AllElements[0], stringsMatrix.List)

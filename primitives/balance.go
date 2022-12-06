@@ -4,16 +4,13 @@ import "math"
 //// Player stats
 
 // streams basics
-func NewBornStreams_BendHeraldFromClass(class float64) (float64, float64) { return math.Cbrt(7.5-class), math.Cbrt(0.5+class) }
-func NewBornStreams_LenFromStream(stream Stream) float64 { return math.Sqrt(1024*stream.Creation) }
-func NewBornStreams_WidFromStream(stream Stream) float64 { return math.Log2(1024*stream.Alteration) }
-func NewBornStreams_PowFromStream(stream Stream) float64 { return math.Log10(1024*stream.Destruction) }
+func NewBornStreams_BendHeraldFromClass(class float64) (float64, float64) { return math.Sqrt(7.5-class), math.Sqrt(0.5+class) }
 
 // elemental state
 func InnerAffinization_ResistanceFromState(state Stream) float64 { return Vector(state.Destruction,state.Destruction,state.Creation) }
 
 // pool
-func ExtendPool_MaxVolFromStreams(streams []Stream) float64 { buffer := 0.0 ; for _, each := range streams { buffer += NewBornStreams_LenFromStream(each) } ; return buffer }
+func ExtendPool_MaxVolFromStreams(streams []Stream) float64 { buffer := 0.0 ; for _, each := range streams { buffer += math.Sqrt(1024*each.Creation) } ; return buffer }
 
 // dots
 func Pool_RegenerateFullTimeOut() float64 { return 4096 }
@@ -56,7 +53,11 @@ func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream, ist
 // heat
 func GenerateHeat_FromStreamAndDot(stream Stream, dot Dot) float64 {
   heat := 1 + (1+dot.Weight) * math.Log2(2+stream.Destruction*stream.Alteration/stream.Creation)
-  if stream.Element == "Common" { return heat*math.Log2(2+heat) }
+  if stream.Element == "Common" { return heat*math.Log2(2+heat) } // does not care dot element
+  if dot.Element == "Common" { heat = heat/math.Phi }
+  // + poisoned prey eats pred -- less heat
+  // + same -- less heat
+  // TBD
   return heat
 }
 func NewBorn_HeatThresholdFromStream(stream Stream, sum Stream) float64 {

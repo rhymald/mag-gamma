@@ -1,5 +1,7 @@
 package primitives
 
+import "math"
+
 type Stream struct {
   Creation float64
   Alteration float64
@@ -8,10 +10,7 @@ type Stream struct {
   Heat struct {
     Threshold float64
     Current float64
-    Danger float64
-    Stability float64
   }
-  InfoLWP [3]float64
 }
 
 func StreamSum(element string, list []Stream) Stream {
@@ -43,5 +42,14 @@ func StreamMean(element string, list []Stream) Stream {
   buffer.Creation = float64(counter) / buffer.Creation
   buffer.Alteration = float64(counter) / buffer.Alteration
   buffer.Destruction = float64(counter) / buffer.Destruction
+  return buffer
+}
+
+func StatsFromStream(stream Stream) map[string]float64 {
+  buffer := make(map[string]float64)
+  buffer["Power"] = math.Log2(1+stream.Destruction)
+  buffer["Precision"] = math.Sqrt(stream.Alteration/Vector(stream.Creation,stream.Destruction,stream.Alteration))
+  buffer["Quickness"] = 1000/Vector(math.Log2(2+stream.Destruction),math.Log2(1+stream.Alteration))
+  buffer["Fuel"] = math.Log2(1024*Vector(stream.Destruction,stream.Creation))
   return buffer
 }
