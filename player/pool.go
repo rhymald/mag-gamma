@@ -92,7 +92,7 @@ func RegenerateDots(pool *Pool, streams []primitives.Stream, verbose bool) {
 func CrackStream(pool *Pool, stream primitives.Stream) float64 {
   element := stream.Element
   weight := primitives.CrackStream_DotWeightFromStream(stream)
-  if element == "Common" { weight = 1 - 1 / math.Phi }
+  if element == "Common" { weight = 1 / math.Phi }
   dot := primitives.Dot{Element: element, Weight: weight}
   *&pool.Dots = append(*&pool.Dots, dot)
   if len(*&pool.Dots) > int(*&pool.MaxVol) {dot.Weight *= float64(len(*&pool.Dots)) / *&pool.MaxVol }
