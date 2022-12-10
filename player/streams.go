@@ -22,14 +22,28 @@ func PlotStreamList(list Streams, verbose bool) {
   multiplier := 1.0
   fmt.Printf(" ┌──── INFO [List strings]:\n")
   fmt.Printf(" │ Herald: %1.3f ─── Bender: %1.3f ─── Multiplier: %1.3f\n", list.Herald, list.Bender, list.Bender/list.Herald)
-  if verbose==false { multiplier = list.Bender/list.Herald }
+  if verbose { multiplier = list.Bender/list.Herald }
   for i, stream := range list.List {
     stats := primitives.StatsFromStream(stream)
     fmt.Printf(" │ ┌─ %d'%s ─── Basical stats: ▣ %1.3f ◈ %1.3f ▦ %1.3f \n", i+1, primitives.ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction)
-    fmt.Printf(" │ │ Consumption time: %1.3f ms\n", stats["Quickness"]*multiplier)
-    fmt.Printf(" │ │ Consumption count: %1.3f \n", stats["Fuel"]*multiplier)
-    fmt.Printf(" │ │ Power: %1.3f\n", stats["Power"])
-    fmt.Printf(" │ │ Precision: %1.3f\n", stats["Precision"]/multiplier)
+    fmt.Printf(" │ │ Consumption time: %1.0f ms", stats["M-Quickness"])
+    if verbose { fmt.Printf(" %+1.0f ms ", stats["M-Quickness"]*(multiplier-1)) }
+    fmt.Println()
+    fmt.Printf(" │ │ Consumption count: %1.0f dots", stats["M-Fuel"])
+    if verbose { fmt.Printf(" %+1.0f dots ", stats["M-Fuel"]*(multiplier-1)) }
+    fmt.Println()
+    fmt.Printf(" │ │ ○ Creation: %1.3f\n", stats["C-Creation"])
+    if stats["Cd-Decay"] > 0 { fmt.Printf(" │ │   ◎ Decay: %1.3f\n", stats["Cd-Decay"]) }
+    if stats["Ca-Restoration"] > 0 { fmt.Printf(" │ │   ◎ Restoration: %1.3f\n", stats["Ca-Restoration"]) }
+    if stats["Cad-Summon"] > 0 { fmt.Printf(" │ │   ◉ Summon: %1.3f\n", stats["Cad-Summon"]) }
+    fmt.Printf(" │ │ ○ Concentration: %1.3f\n", stats["A-Concentration"])
+    if stats["Ad-Condition"] > 0 { fmt.Printf(" │ │   ◎ Condition: %1.3f\n", stats["Ad-Condition"]) }
+    if stats["Ac-Boon"] > 0 { fmt.Printf(" │ │   ◎ Boon: %1.3f\n", stats["Ac-Boon"]) }
+    if stats["Adc-Transformation"] > 0 { fmt.Printf(" │ │   ◉ Transformation: %1.3f\n", stats["Adc-Transformation"]) }
+    fmt.Printf(" │ │ ○ Power: %1.3f\n", stats["D-Power-Damage"])
+    if stats["Dc-Sharpening"] > 0 { fmt.Printf(" │ │   ◎ Sharpening: %1.3f\n", stats["Dc-Sharpening"]) }
+    if stats["Da-Barrier"] > 0 { fmt.Printf(" │ │   ◎ Barrier: %1.3f\n", stats["Da-Barrier"]) }
+    if stats["Dac-Disaster"] > 0 { fmt.Printf(" │ │   ◉ Disaster: %1.3f\n", stats["Dac-Disaster"]) }
     fmt.Printf(" │ └──── Overheat threshold: ◮ %1.3f\n", stream.Heat.Threshold)
   }
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
