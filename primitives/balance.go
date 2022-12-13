@@ -17,8 +17,8 @@ func Pool_RegenerateFullTimeOut() float64 { return 4096 }
 func CrackStream_DotWeightFromStream(stream Stream) float64 { return math.Log2(Vector(stream.Destruction+1,stream.Creation,stream.Alteration)/3.5+1) * (1 + RNF()) / 2 }
 func RegenerateDots_PortionFromPool(max float64, current int) int { return int( math.Sqrt(max-float64(current)) ) }
 func EmitDot_DotWeightAndTimeoutFromStreamAndMaxVol(stream Stream, maxvol float64) (float64, float64, float64) {
-  weight  := math.Log2(Vector(stream.Destruction,stream.Creation+1,stream.Alteration)/3.5+1) * (1 + RNF()) / 2
-  timeout := 1024*math.Log2(maxvol)/math.Sqrt(maxvol)*math.Sqrt(weight)
+  weight  := (math.Pow(math.Log2(Vector(stream.Destruction,stream.Creation+1,stream.Alteration)/3.5+1)+1, 2)-1) * (1 + RNF()) / 2
+  timeout := 256*math.Log2(maxvol)/math.Sqrt(maxvol)*math.Log10(weight+1)
   health  := 0.0
   return weight, timeout, health
 }

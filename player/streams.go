@@ -26,14 +26,14 @@ func PlotStreamList(list Streams, verbose bool) {
   for i, stream := range list.List {
     stats := primitives.StatsFromStream(stream)
     fmt.Printf(" │ ┌─ %d'%s ─── Basical stats: ▣ %1.3f ◈ %1.3f ▦ %1.3f \n", i+1, primitives.ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction)
-    dot := math.Log2(primitives.Vector(stream.Destruction,stream.Creation+1,stream.Alteration)/3.5+1) * 0.75
+    dot := math.Pow(math.Log2(primitives.Vector(stream.Destruction,stream.Creation+1,stream.Alteration)/3.5+1)+1, 2) * 0.75 - 0.75
     fmt.Printf(" │ │ Consumption count: %1.0f dots", stats["M-Fuel"])
     if verbose { fmt.Printf(" %+1.0f dots ", stats["M-Fuel"]*(multiplier-1)) }
     fmt.Printf(" for time: %1.0f ms", stats["M-Quickness"])
     if verbose { fmt.Printf(" %+1.0f ms ", stats["M-Quickness"]*(multiplier-1)) }
     fmt.Printf(" = avg weight: %1.3f avg\n", dot)
     // Creative
-    fmt.Printf(" │ │ ○ Creation: %2.1f \n", stats["C-Creation"])
+    fmt.Printf(" │ │ ○ Toughness: %2.1f \n", stats["C-Toughness"])
     if stats["Cd-Decay"] > 0 { fmt.Printf(" │ │   ◎ Decay: %+1.1f%%\n", 100*stats["Cd-Decay"]) }
     if stats["Ca-Restoration"] > 0 { fmt.Printf(" │ │   ◎ Restoration: %+1.1f%%\n", 100*stats["Ca-Restoration"]) }
     if stats["Cad-Summon"] > 0 { fmt.Printf(" │ │     ◉ Summon: %+1.1f%%\n", 100*stats["Cad-Summon"]) }
@@ -43,7 +43,7 @@ func PlotStreamList(list Streams, verbose bool) {
     if stats["Ac-Boon"] > 0 { fmt.Printf(" │ │   ◎ Boon: %+1.1f%%\n", 100*stats["Ac-Boon"]) }
     if stats["Adc-Transformation"] > 0 { fmt.Printf(" │ │     ◉ Transformation: %+1.1f%%\n", 100*stats["Adc-Transformation"]) }
     // Destructive
-    fmt.Printf(" │ │ ○ Power: %2.1f \n", stats["D-Power-Damage"])
+    fmt.Printf(" │ │ ○ Power: %2.1f \n", stats["D-Power"])
     if stats["Dc-Sharpening"] > 0 { fmt.Printf(" │ │   ◎ Sharpening: %+2.1f%%\n", 100*stats["Dc-Sharpening"]) }
     if stats["Da-Barrier"] > 0 { fmt.Printf(" │ │   ◎ Barrier: %+2.1f%%\n", 100*stats["Da-Barrier"]) }
     if stats["Dac-Disaster"] > 0 { fmt.Printf(" │ │     ◉ Disaster: %+2.1f%%\n", 100*stats["Dac-Disaster"]) }
@@ -65,23 +65,23 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   standart = standart
   empowering := ( - countOfStreams + stringsMatrix.Class )
   creUp, altUp, desUp := 1.0, 1+primitives.RNF()/2, 1.0
-  if empowering > 0 { desUp = (1+empowering) ; creUp = 3.5-altUp-desUp } else { creUp = (1-empowering) ; desUp = 3.5-altUp-creUp }
+  if empowering > 0 { desUp = (1+empowering)-1 ; creUp = 3.5-altUp-desUp-1 ; altUp += -1 } else { creUp = (1-empowering)-1 ; desUp = 3.5-altUp-creUp-1 ; altUp += -1 }
   fmt.Printf("INFO [Player creation][New initial streams]: defined %d class (%d streams), %+1.0f%% of power\n", int(stringsMatrix.Class*100000), int(countOfStreams), empowering*100)
   lens, wids, pows := []float64 {}, []float64 {}, []float64 {}
   slen, swid, spow := 0.0, 0.0, 0.0
   for i:=0; i<int(countOfStreams); i++ {
-    leni := 0.1+primitives.RNF()
-    widi := 0.1+primitives.RNF()
-    powi := 0.1+primitives.RNF()
+    leni := (7+9*primitives.RNF())*(1-creUp+primitives.RNF()*creUp+primitives.RNF()*creUp)
+    widi := (7+9*primitives.RNF())*(1-altUp+primitives.RNF()*altUp+primitives.RNF()*altUp)
+    powi := (7+9*primitives.RNF())*(1-desUp+primitives.RNF()*desUp+primitives.RNF()*desUp)
     lens, wids, pows = append(lens, leni), append(wids, widi), append(pows, powi)
     slen += leni ; swid += widi ; spow += powi
   }
   for i:=0; i<int(countOfStreams); i++ {
     var strings primitives.Stream
-    strings.Element     = AllElements[i%5+1]
-    strings.Creation    = lens[i] / slen * standart * creUp
-    strings.Alteration  = wids[i] / swid * standart * altUp
-    strings.Destruction = pows[i] / spow * standart * desUp
+    strings.Element     = AllElements[0]
+    strings.Creation    = lens[i] / slen * standart
+    strings.Alteration  = wids[i] / swid * standart
+    strings.Destruction = pows[i] / spow * standart
     // strings.InfoLWP = [3]float64{ primitives.NewBornStreams_LenFromStream(strings), primitives.NewBornStreams_WidFromStream(strings), primitives.NewBornStreams_PowFromStream(strings) }
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }

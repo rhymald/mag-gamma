@@ -46,51 +46,51 @@ func StreamMean(element string, list []Stream) Stream {
 }
 
 func StatsFromStream(stream Stream) map[string]float64 {
-  coefficiaent := 1.2
+  coefficiaent := 1.0+1/16
   // lowthres := 1/math.Sqrt(coefficiaent)
   buffer := make(map[string]float64)
   // volume := Vector(stream.Creation+1,stream.Destruction+1,stream.Alteration+1)
   // Destruction = damage, power
-  buffer["D-Power-Damage"] = math.Log2(1+stream.Destruction)
+  buffer["D-Power"] = Log1479(1+stream.Destruction)
   if StreamStructure2(stream.Destruction,stream.Creation,stream.Alteration,coefficiaent) {
     // Antibarrier = +AddDamage, +ticks, - if D>C close to each other
-    buffer["Dc-Sharpening"] = 1
+    buffer["Dc-Sharpening"] = StreamAffinity2(stream.Destruction,stream.Creation,coefficiaent)
   }
   if StreamStructure2(stream.Destruction,stream.Alteration,stream.Creation,coefficiaent) {
     // Permanent debuff (hard to clean) = +Speed, +effectiveness, - if D>A close to each other
-    buffer["Da-Barrier"] = 1
+    buffer["Da-Barrier"] = StreamAffinity2(stream.Destruction,stream.Alteration,coefficiaent)
   }
   if StreamStructure3(stream.Destruction,stream.Alteration,stream.Creation,coefficiaent) {
     // Pulsing damage = +efectiveness, +damage, +speed, - if D>(A=C) when ac close to each other
-    buffer["Dac-Disaster"] = 2
+    buffer["Dac-Disaster"] = StreamAffinity3(stream.Destruction,stream.Alteration,stream.Creation,coefficiaent)
   }
   // Alteration = luck, dexterity
-  buffer["A-Concentration"] = math.Sqrt(math.Log2(1+stream.Alteration))
+  buffer["A-Concentration"] = math.Sqrt(Log1479(1+stream.Alteration)+1)
   if StreamStructure2(stream.Alteration,stream.Destruction,stream.Creation,coefficiaent) {
     // Smooth damaging conditions (easy to clean) = +time, +damage : A>D
-    buffer["Ad-Condition"] = 1
+    buffer["Ad-Condition"] = StreamAffinity2(stream.Alteration,stream.Destruction,coefficiaent)
   }
   if StreamStructure2(stream.Alteration,stream.Creation,stream.Destruction,coefficiaent) {
     // Smooth buff (easy to rip-off) = +time, +edfectiveness : A>C
-    buffer["Ac-Boon"] = 1
+    buffer["Ac-Boon"] = StreamAffinity2(stream.Alteration,stream.Creation,coefficiaent)
   }
   if StreamStructure3(stream.Alteration,stream.Creation,stream.Destruction,coefficiaent) {
     // Permanent buff trigger = +effectiveness, +chance, +speed : A>(D=C)
-    buffer["Adc-Transformation"] = 2
+    buffer["Adc-Transformation"] = StreamAffinity3(stream.Alteration,stream.Destruction,stream.Creation,coefficiaent)
   }
   // Creation = give, intelligence
-  buffer["C-Creation"] = math.Sqrt(0.01+stream.Creation)
+  buffer["C-Toughness"] = math.Sqrt(1+stream.Creation)
   if StreamStructure2(stream.Creation,stream.Destruction,stream.Creation,coefficiaent) {
     // Shield = +amount, +time : C>D
-    buffer["Cd-Decay"] = 1
+    buffer["Cd-Decay"] = StreamAffinity2(stream.Creation,stream.Destruction,coefficiaent)
   }
   if StreamStructure2(stream.Creation,stream.Alteration,stream.Destruction,coefficiaent) {
     // Heal recovery = +efectiveness, +speed : C>A
-    buffer["Ca-Restoration"] = 1
+    buffer["Ca-Restoration"] = StreamAffinity2(stream.Creation,stream.Alteration,coefficiaent)
   }
   if StreamStructure3(stream.Creation,stream.Destruction,stream.Alteration,coefficiaent) {
     // Conjuration local shadows, wells = +volume, +activity, +efectiveness : C>(A=D)
-    buffer["Cad-Summon"] = 2
+    buffer["Cad-Summon"] = StreamAffinity3(stream.Creation,stream.Alteration,stream.Destruction,coefficiaent)
   }
   // Main meta
   buffer["M-Quickness"] = 1000/Vector(math.Log2(2+stream.Destruction),math.Log2(1+stream.Alteration))
@@ -101,3 +101,8 @@ func StatsFromStream(stream Stream) map[string]float64 {
 
 func StreamStructure2(a float64, b float64, c float64, t float64) bool { if a > b && b*math.Sqrt(t) > c && a/b > 1 && a/b < t { return true } ; return false }
 func StreamStructure3(a float64, b float64, c float64, t float64) bool { if ( StreamStructure2(a,b,c,t) || StreamStructure2(a,c,b,t) ) && math.Max(math.Max(a/b,a/c),b/c)<math.Cbrt(t)*math.Cbrt(t) && math.Max(b/c,c/b) < math.Sqrt(t) { return true } ; return false }
+func StreamAffinity2(a float64, b float64, t float64) float64 { return math.Pow(math.Log2(t/(a/b))/math.Log2(t), 2) }
+func StreamAffinity3(a float64, b float64, c float64, t float64) float64 {
+  ab, ca := math.Max(a,b)/math.Min(a,b), math.Max(a,c)/math.Min(a,c)
+  return math.Pow(math.Log2(t/(2/(1/ab+1/ca)))/math.Log2(t), 2)
+}

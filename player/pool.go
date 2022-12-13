@@ -39,7 +39,7 @@ func PlotEnergyStatus(pool Pool, verbose bool) {
   if verbose { fmt.Printf("\n ├") }
   count := 0
   span := int(math.Sqrt(2)*math.Sqrt( float64(len(pool.Dots)+1) ))
-  if span > 61 {span = 61}
+  if span > 63 {span = 63}
   if verbose {span = 10}
   for e:=0; e<9; e++ {
     for _, dot := range pool.Dots {
@@ -77,6 +77,7 @@ func RegenerateDots(pool *Pool, streams []primitives.Stream, verbose bool) {
     time.Sleep( time.Millisecond * time.Duration( fulltimeout ))
     return
   }
+  fulltimeout = 256*math.Log2(*&pool.MaxVol)/math.Sqrt(*&pool.MaxVol)
   mana := primitives.RegenerateDots_PortionFromPool(*&pool.MaxVol, len(*&pool.Dots))
   if verbose {fmt.Printf("\n ◦◦◦◦◦ DEBUG [Regenerating]: +%d dots. ", mana)}
   for i:=0; i<mana; i++ {
