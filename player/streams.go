@@ -26,24 +26,27 @@ func PlotStreamList(list Streams, verbose bool) {
   for i, stream := range list.List {
     stats := primitives.StatsFromStream(stream)
     fmt.Printf(" │ ┌─ %d'%s ─── Basical stats: ▣ %1.3f ◈ %1.3f ▦ %1.3f \n", i+1, primitives.ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction)
-    fmt.Printf(" │ │ Consumption time: %1.0f ms", stats["M-Quickness"])
-    if verbose { fmt.Printf(" %+1.0f ms ", stats["M-Quickness"]*(multiplier-1)) }
-    fmt.Println()
+    dot := math.Log2(primitives.Vector(stream.Destruction,stream.Creation+1,stream.Alteration)/3.5+1) * 0.75
     fmt.Printf(" │ │ Consumption count: %1.0f dots", stats["M-Fuel"])
     if verbose { fmt.Printf(" %+1.0f dots ", stats["M-Fuel"]*(multiplier-1)) }
-    fmt.Println()
-    fmt.Printf(" │ │ ○ Creation: %1.3f\n", stats["C-Creation"])
-    if stats["Cd-Decay"] > 0 { fmt.Printf(" │ │   ◎ Decay: %1.3f\n", stats["Cd-Decay"]) }
-    if stats["Ca-Restoration"] > 0 { fmt.Printf(" │ │   ◎ Restoration: %1.3f\n", stats["Ca-Restoration"]) }
-    if stats["Cad-Summon"] > 0 { fmt.Printf(" │ │   ◉ Summon: %1.3f\n", stats["Cad-Summon"]) }
-    fmt.Printf(" │ │ ○ Concentration: %1.3f\n", stats["A-Concentration"])
-    if stats["Ad-Condition"] > 0 { fmt.Printf(" │ │   ◎ Condition: %1.3f\n", stats["Ad-Condition"]) }
-    if stats["Ac-Boon"] > 0 { fmt.Printf(" │ │   ◎ Boon: %1.3f\n", stats["Ac-Boon"]) }
-    if stats["Adc-Transformation"] > 0 { fmt.Printf(" │ │   ◉ Transformation: %1.3f\n", stats["Adc-Transformation"]) }
-    fmt.Printf(" │ │ ○ Power: %1.3f\n", stats["D-Power-Damage"])
-    if stats["Dc-Sharpening"] > 0 { fmt.Printf(" │ │   ◎ Sharpening: %1.3f\n", stats["Dc-Sharpening"]) }
-    if stats["Da-Barrier"] > 0 { fmt.Printf(" │ │   ◎ Barrier: %1.3f\n", stats["Da-Barrier"]) }
-    if stats["Dac-Disaster"] > 0 { fmt.Printf(" │ │   ◉ Disaster: %1.3f\n", stats["Dac-Disaster"]) }
+    fmt.Printf(" for time: %1.0f ms", stats["M-Quickness"])
+    if verbose { fmt.Printf(" %+1.0f ms ", stats["M-Quickness"]*(multiplier-1)) }
+    fmt.Printf(" = avg weight: %1.3f avg\n", dot)
+    // Creative
+    fmt.Printf(" │ │ ○ Creation: %2.1f \n", stats["C-Creation"])
+    if stats["Cd-Decay"] > 0 { fmt.Printf(" │ │   ◎ Decay: %+1.1f%%\n", 100*stats["Cd-Decay"]) }
+    if stats["Ca-Restoration"] > 0 { fmt.Printf(" │ │   ◎ Restoration: %+1.1f%%\n", 100*stats["Ca-Restoration"]) }
+    if stats["Cad-Summon"] > 0 { fmt.Printf(" │ │     ◉ Summon: %+1.1f%%\n", 100*stats["Cad-Summon"]) }
+    // Alterative
+    fmt.Printf(" │ │ ○ Concentration: %2.1f \n", stats["A-Concentration"])
+    if stats["Ad-Condition"] > 0 { fmt.Printf(" │ │   ◎ Condition: %+1.1f%%\n", 100*stats["Ad-Condition"]) }
+    if stats["Ac-Boon"] > 0 { fmt.Printf(" │ │   ◎ Boon: %+1.1f%%\n", 100*stats["Ac-Boon"]) }
+    if stats["Adc-Transformation"] > 0 { fmt.Printf(" │ │     ◉ Transformation: %+1.1f%%\n", 100*stats["Adc-Transformation"]) }
+    // Destructive
+    fmt.Printf(" │ │ ○ Power: %2.1f \n", stats["D-Power-Damage"])
+    if stats["Dc-Sharpening"] > 0 { fmt.Printf(" │ │   ◎ Sharpening: %+2.1f%%\n", 100*stats["Dc-Sharpening"]) }
+    if stats["Da-Barrier"] > 0 { fmt.Printf(" │ │   ◎ Barrier: %+2.1f%%\n", 100*stats["Da-Barrier"]) }
+    if stats["Dac-Disaster"] > 0 { fmt.Printf(" │ │     ◉ Disaster: %+2.1f%%\n", 100*stats["Dac-Disaster"]) }
     fmt.Printf(" │ └──── Overheat threshold: ◮ %1.3f\n", stream.Heat.Threshold)
   }
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
@@ -61,16 +64,15 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   countOfStreams := math.Round(stringsMatrix.Class)
   standart = standart
   empowering := ( - countOfStreams + stringsMatrix.Class )
-  creUp, altUp, desUp := 1.0, 1.0, 1.0
-  if empowering > 0 { desUp = (1+empowering) } else { creUp = (1-empowering) }
-  altUp = (1.5 - math.Abs(empowering))
+  creUp, altUp, desUp := 1.0, 1+primitives.RNF()/2, 1.0
+  if empowering > 0 { desUp = (1+empowering) ; creUp = 3.5-altUp-desUp } else { creUp = (1-empowering) ; desUp = 3.5-altUp-creUp }
   fmt.Printf("INFO [Player creation][New initial streams]: defined %d class (%d streams), %+1.0f%% of power\n", int(stringsMatrix.Class*100000), int(countOfStreams), empowering*100)
   lens, wids, pows := []float64 {}, []float64 {}, []float64 {}
   slen, swid, spow := 0.0, 0.0, 0.0
   for i:=0; i<int(countOfStreams); i++ {
-    leni := 1+primitives.RNF()
-    widi := 1+primitives.RNF()
-    powi := 1+primitives.RNF()
+    leni := 0.1+primitives.RNF()
+    widi := 0.1+primitives.RNF()
+    powi := 0.1+primitives.RNF()
     lens, wids, pows = append(lens, leni), append(wids, widi), append(pows, powi)
     slen += leni ; swid += widi ; spow += powi
   }

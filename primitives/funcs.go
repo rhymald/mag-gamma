@@ -25,7 +25,7 @@ func RNF() float64 {
 func RNDElem() string { return AllElements[ rand.New(rand.NewSource(time.Now().UnixNano())).Intn( len(AllElements)-1 ) +1 ] }
 func ElemToInt(elem string) int { for i, each := range AllElements {if elem == each {return i}} ; return -1 }
 func ES(elem string) string { return ElemSigns[ElemToInt(elem)] }
-func Log1479(a float64) float64 { return math.Log2(math.Abs(a)+1)/math.Log2(1.1479) }
+func Log1479(a float64) float64 { return math.Log2(math.Abs(a)+1)/math.Log2(1.479) }
 func Sign(a float64) float64 { if a != 0 {return a/math.Abs(a)} else {return 0} }
 
 func ChancedRound(a float64) int {

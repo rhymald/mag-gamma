@@ -46,50 +46,51 @@ func StreamMean(element string, list []Stream) Stream {
 }
 
 func StatsFromStream(stream Stream) map[string]float64 {
-  coefficiaent := 1.05
+  coefficiaent := 1.2
+  // lowthres := 1/math.Sqrt(coefficiaent)
   buffer := make(map[string]float64)
-  volume := Vector(stream.Creation+1,stream.Destruction+1,stream.Alteration+1)
+  // volume := Vector(stream.Creation+1,stream.Destruction+1,stream.Alteration+1)
   // Destruction = damage, power
-  buffer["D-Power-Damage"] = (1+stream.Destruction)/volume
-  if stream.Destruction/stream.Creation > 1 && stream.Destruction/stream.Creation < coefficiaent {
+  buffer["D-Power-Damage"] = math.Log2(1+stream.Destruction)
+  if StreamStructure2(stream.Destruction,stream.Creation,stream.Alteration,coefficiaent) {
     // Antibarrier = +AddDamage, +ticks, - if D>C close to each other
-    buffer["Dc-Sharpening"] = Vector(stream.Destruction+1,stream.Creation)/volume/2
+    buffer["Dc-Sharpening"] = 1
   }
-  if stream.Destruction/stream.Alteration > 1 && stream.Destruction/stream.Alteration < coefficiaent {
+  if StreamStructure2(stream.Destruction,stream.Alteration,stream.Creation,coefficiaent) {
     // Permanent debuff (hard to clean) = +Speed, +effectiveness, - if D>A close to each other
-    buffer["Da-Barrier"] = Vector(stream.Destruction+1,stream.Alteration)/volume/2
+    buffer["Da-Barrier"] = 1
   }
-  if stream.Creation/stream.Alteration > math.Sqrt(1/coefficiaent) && stream.Creation/stream.Alteration < math.Sqrt(coefficiaent) && stream.Destruction/math.Max(stream.Creation,stream.Alteration)>coefficiaent {
+  if StreamStructure3(stream.Destruction,stream.Alteration,stream.Creation,coefficiaent) {
     // Pulsing damage = +efectiveness, +damage, +speed, - if D>(A=C) when ac close to each other
-    buffer["Dac-Disaster"] = Vector(stream.Destruction+1,stream.Creation,stream.Alteration)/volume/4
+    buffer["Dac-Disaster"] = 2
   }
   // Alteration = luck, dexterity
-  buffer["A-Concentration"] = (1+stream.Alteration)/volume
-  if stream.Alteration/stream.Destruction > 1 && stream.Alteration/stream.Destruction < coefficiaent {
+  buffer["A-Concentration"] = math.Sqrt(math.Log2(1+stream.Alteration))
+  if StreamStructure2(stream.Alteration,stream.Destruction,stream.Creation,coefficiaent) {
     // Smooth damaging conditions (easy to clean) = +time, +damage : A>D
-    buffer["Ad-Condition"] = Vector(stream.Destruction,stream.Alteration+1)/volume/2
+    buffer["Ad-Condition"] = 1
   }
-  if stream.Alteration/stream.Creation > 1 && stream.Alteration/stream.Creation < coefficiaent {
+  if StreamStructure2(stream.Alteration,stream.Creation,stream.Destruction,coefficiaent) {
     // Smooth buff (easy to rip-off) = +time, +edfectiveness : A>C
-    buffer["Ac-Boon"] = Vector(stream.Creation,stream.Alteration+1)/volume/2
+    buffer["Ac-Boon"] = 1
   }
-  if stream.Creation/stream.Destruction > math.Sqrt(1/coefficiaent) && stream.Creation/stream.Destruction < math.Sqrt(coefficiaent) && stream.Alteration/math.Max(stream.Creation,stream.Destruction)>coefficiaent {
+  if StreamStructure3(stream.Alteration,stream.Creation,stream.Destruction,coefficiaent) {
     // Permanent buff trigger = +effectiveness, +chance, +speed : A>(D=C)
-    buffer["Adc-Transformation"] = Vector(stream.Alteration+1,stream.Creation,stream.Destruction)/volume/4
+    buffer["Adc-Transformation"] = 2
   }
   // Creation = give, intelligence
-  buffer["C-Creation"] = (1+stream.Creation)/volume
-  if stream.Creation/stream.Destruction > 1 && stream.Creation/stream.Destruction < coefficiaent {
+  buffer["C-Creation"] = math.Sqrt(0.01+stream.Creation)
+  if StreamStructure2(stream.Creation,stream.Destruction,stream.Creation,coefficiaent) {
     // Shield = +amount, +time : C>D
-    buffer["Cd-Decay"] = Vector(stream.Creation,stream.Alteration+1)/volume/2
+    buffer["Cd-Decay"] = 1
   }
-  if stream.Creation/stream.Alteration > 1 && stream.Creation/stream.Alteration < coefficiaent {
+  if StreamStructure2(stream.Creation,stream.Alteration,stream.Destruction,coefficiaent) {
     // Heal recovery = +efectiveness, +speed : C>A
-    buffer["Ca-Restoration"] = Vector(stream.Creation,stream.Alteration+1)/volume/2
+    buffer["Ca-Restoration"] = 1
   }
-  if stream.Alteration/stream.Destruction > math.Sqrt(1/coefficiaent) && stream.Alteration/stream.Destruction < math.Sqrt(coefficiaent) && stream.Creation/math.Max(stream.Alteration,stream.Destruction)>coefficiaent {
+  if StreamStructure3(stream.Creation,stream.Destruction,stream.Alteration,coefficiaent) {
     // Conjuration local shadows, wells = +volume, +activity, +efectiveness : C>(A=D)
-    buffer["Cad-Summon"] = Vector(stream.Creation+1,stream.Alteration,stream.Destruction)/volume/4
+    buffer["Cad-Summon"] = 2
   }
   // Main meta
   buffer["M-Quickness"] = 1000/Vector(math.Log2(2+stream.Destruction),math.Log2(1+stream.Alteration))
@@ -97,3 +98,6 @@ func StatsFromStream(stream Stream) map[string]float64 {
   // buffer["M-Heat"]   = math.Log2(1024*Vector(stream.Destruction,stream.Creation))
   return buffer
 }
+
+func StreamStructure2(a float64, b float64, c float64, t float64) bool { if a > b && b*math.Sqrt(t) > c && a/b > 1 && a/b < t { return true } ; return false }
+func StreamStructure3(a float64, b float64, c float64, t float64) bool { if ( StreamStructure2(a,b,c,t) || StreamStructure2(a,c,b,t) ) && math.Max(math.Max(a/b,a/c),b/c)<math.Cbrt(t)*math.Cbrt(t) && math.Max(b/c,c/b) < math.Sqrt(t) { return true } ; return false }

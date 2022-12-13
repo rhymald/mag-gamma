@@ -63,6 +63,8 @@ func init() {
   environment.Welling(&Environment) // fix to partial stack
   environment.Cursing(&Environment) // and here
   PlayerBorn(0)
+  for {PlayerBorn(5.5+primitives.RNF())}
+  return
   go func() { // passive prcoesses block
     go func() { for You.Health.Current >= 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) } ; fmt.Println("FATAL: You are dead.")}()
     go func() { for You.Health.Current >= 0 { player.Transferrence(&YourPool, YourStreams.InternalElementalState, YourElemState, verbose) }     ; fmt.Println("FATAL: You are dead.")}()
@@ -72,6 +74,7 @@ func init() {
 }
 
 func main() {
+  return
   // here must be an interface
   fmt.Println("▼ EUA growling [from everywhere]:", ebr, "I smell you... your soul, your being. LEAVE!")
   Move(3, -17.2)
