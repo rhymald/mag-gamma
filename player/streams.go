@@ -6,7 +6,7 @@ import "fmt"
 
 type Streams struct {
   List []primitives.Stream
-  SoulVolume float64
+  SoulVolume float64 // ? 
   Class  float64
   Herald float64
   Bender float64
@@ -78,7 +78,7 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   }
   for i:=0; i<int(countOfStreams); i++ {
     var strings primitives.Stream
-    strings.Element     = AllElements[0]
+    strings.Element     = AllElements[i%3+2]
     strings.Creation    = lens[i] / slen * standart
     strings.Alteration  = wids[i] / swid * standart
     strings.Destruction = pows[i] / spow * standart

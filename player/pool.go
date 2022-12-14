@@ -64,7 +64,7 @@ func EmitDot(pool *Pool, streams []primitives.Stream) {
   if len(*&pool.Dots) >= int(*&pool.MaxVol) { time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() )) ; return }
   picker := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(streams))
   element := streams[picker].Element
-  weight, pause, _ := primitives.EmitDot_DotWeightAndTimeoutFromStreamAndMaxVol(streams[picker], *&pool.MaxVol)
+  weight, pause, _ := primitives.EmitDot_DotWeightAndTimeoutFromStreamAndMaxVol(streams[picker], *&pool.MaxVol-float64(len(*&pool.Dots)))
   dot := primitives.Dot{Element: element, Weight: weight}
   *&pool.Dots = append(*&pool.Dots, dot)
   time.Sleep( time.Millisecond * time.Duration( pause ))

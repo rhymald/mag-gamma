@@ -18,19 +18,19 @@ func CrackStream_DotWeightFromStream(stream Stream) float64 { return math.Log2(V
 func RegenerateDots_PortionFromPool(max float64, current int) int { return int( math.Sqrt(max-float64(current)) ) }
 func EmitDot_DotWeightAndTimeoutFromStreamAndMaxVol(stream Stream, maxvol float64) (float64, float64, float64) {
   weight  := (math.Pow(math.Log2(Vector(stream.Destruction,stream.Creation+1,stream.Alteration)/3.5+1)+1, 2)-1) * (1 + RNF()) / 2
-  timeout := 256*math.Log2(maxvol)/math.Sqrt(maxvol)*math.Log10(weight+1)
+  timeout := Pool_RegenerateFullTimeOut()/4/(math.Sqrt(maxvol+1))
   health  := 0.0
   return weight, timeout, health
 }
 func DotTransferIn_DotWeightAndTimeoutFromState(state Stream) (float64, float64) {
   weight := math.Log2(Vector(state.Destruction,state.Creation,state.Alteration+1)/3.5+1) * (1 + RNF()) / 2
   step   := 32*math.Sqrt(math.Abs(state.Creation))
-  pause  := 1024*math.Log2(step)/math.Sqrt(step)*math.Sqrt(weight)
+  pause  := Pool_RegenerateFullTimeOut()/4/(math.Log2(step+1))
   return weight, pause
 }
 func DotTransferOut_TimeoutFromWeightAndState(weight float64, state Stream) (float64) {
   step   := 32*math.Sqrt(math.Abs(state.Destruction))
-  pause  := 1024*math.Log2(step)/math.Sqrt(step)*math.Sqrt(weight)
+  pause  := Pool_RegenerateFullTimeOut()/4/(math.Log2(step+1))
   return pause
 }
 func Transference_DotCountDemandAndTotalCooldownFromStates(estate [9]Stream, istate [9]Stream) (float64, [9]int) {

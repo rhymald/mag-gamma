@@ -78,11 +78,11 @@ func main() {
   // here must be an interface
   fmt.Println("▼ EUA growling [from everywhere]:", ebr, "I smell you... your soul, your being. LEAVE!")
   Move(3, -17.2)
-  player.EnergeticSurge(&YourPool, &YourStreams, 5, verbose) ; player.PlotHeatState(YourStreams.List)
+  // player.EnergeticSurge(&YourPool, &YourStreams, 5, verbose) ; player.PlotHeatState(YourStreams.List)
   for {
-    time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut() ))
-    if primitives.RNF() < 0.71 { player.EnergeticSurge(&YourPool, &YourStreams, 0, verbose) ; player.PlotHeatState(YourStreams.List) }
-    if primitives.RNF() < 0.71 { player.PlotEnergyStatus(YourPool, verbose) }
+    time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut()/4 ))
+    // if primitives.RNF() < 0.71 { player.EnergeticSurge(&YourPool, &YourStreams, 0, verbose) ; player.PlotHeatState(YourStreams.List) }
+    if primitives.RNF() < 1 { player.PlotEnergyStatus(YourPool, verbose) }
   }
   fmt.Scanln()
 }
@@ -113,7 +113,7 @@ func PlayerBorn(class float64) {
   fmt.Scanln(&You.Name)
   if You.Name == "Rhymald" || You.Name == "" {verbose = true}
   You.Health.Current = 1
-  player.NewBorn(&YourStreams, class, 10240*0.35, 5)
+  player.NewBorn(&YourStreams, class, 1*0.35, 5)
   You.Health.Max += 100
   player.ExtendPool(&YourPool, YourStreams.List, verbose)
   player.ReadStatesFromEnv(&YourElemState, You.XYZ, &YourStreams, Environment)

@@ -1,58 +1,104 @@
-# PLAN
-### Done:
-- Player creation, **not balanced** among primitives.
-- Player move and power sources affection from environment.
-- Transference, energetic surge and regeneration: speed and amount are fixed, weight **not balanced**
-- Resistances are presented, **not balanced**.
+## Streams
+```yaml
+Class: float64
+Herald: float64
+Bender: float64
+Resistances: [9]float64
+Internal State: [9]Stream
+List:
+  - Stream:
+      Creation: float64
+      Alteration: float64
+      Destruction: float64
+      Aexp: [9]float64 #TBD
+      Heat:
+        Current: float64
+        Threshold: float64
+  - Stream: ...
+```
 
-### TBD:
-1. Heat and OverHeat levels basics.
+#### Elementals State
+```yaml
+External: [9]Stream
+Empowered: [9]Stream
+```
 
-2. Move to and point of interest address book.
+#### Pool
+consumable, transferable.
+```yaml
+MaxVol: float64
+Dots:
+  - Dot:
+      Element: string
+      Weight: float64
+  - Dot: ...
+```
 
-3. Curses basics from environment to deminish excessive resistances, causing overheat.
+#### Flocks
+```yaml
+- Indexes: [all]int
+  Fatal: Stream
+  Effeciency:
+    Cre: float64
+    ...: ... # All other
+- Indexes: [some]int
+  ...: ...
+```
 
-4. Calculate total effectiveness composing all stats,  
-Tune Stats affection on player properties.
+#### Skills
+```yaml
+- Description: Flaming heart
+  Chain:
+  - Flock 1
+  - Socket
+  - Flock 2
+- Description: Well  
+  Chain:
+  - Socket in
+  - Flock 3  
+- Description: Fire channel
+  Cain:
+  - Flock 1
+  - Socket
+  - Flock 4
+  - Socket out
+- ...:
+  - ...
+```
 
-5. Leveling functions:  
-Creation - Empower (up olds' stats randomly),  
-Alteration - Branding I and II (merge, downgrade, closest to conditions),  
-Destruction - Sprouting (new, split, downgrading).
-
-6. Calculate Leveling progression.
-
-7. Tune Leveling progression (1, 2, 2, 3, 3, 3, 5, 5, ...[x5], 8[x8], 13[x13] ...).
-
-8. Elemental compatibility chains.
-
-9. Enemies: harmless and harmful[elemental]:  
-Bug[0], Rabbit[0], Firefly[2],  
-Wasp[1], Dog[0], Hog[0], Hunger[5]...  
-
-10. Casting scheme primitives:  
-Creation: volume and area,  
-Alteration: time and cast speed,  
-Destruction: damage effectiveness, penetration, chaining, overheat.
-
-11. Fractal connections:  
-Point to point: 1-1,  
-Crossing: 1+1, 2+2, 2+2+2, 3+3, 2+2+2+2, 4+4, 3+3+3,  
-Fractal: 1<1, - each return to new,  
-Clustering: extra socket for receiving, group cast.
-
-11. Overheating damage.
-
-12. Overheating major and dried minor conditions:
-
-|element|dried|overheat|
-|-|-|-|
-||regarding major mass of streams|regarding most relevant heats|
-|fire|slow|burn|
-|water|?|?|
-|earth|?|fragility|
-|air|?|ripping|
-|mallom|self-destruction|corruption, regen|
-|noise|deaf, silence|zealous inspiration|
-|void|shadow feast|random-vector effect|
-|resonance|no|friendly overheat|
+#### Physical #TBD
+```yaml
+Position:
+  X: float64
+  Y: float64
+  Z: float64
+Body:
+  Stream:
+    Complexion: float64
+    Endurance: float64
+    Strength: float64
+    Health:
+      Max: float64
+      Current: float64
+Physical State:
+  Stream:
+    Complexion: float64
+    Endurance: float64
+    Strength: float64
+    Stamina:
+      Max: float64
+      Current: float64  
+Inventory:
+  Shoulder: Stream
+  Shoulder: Stream
+  Back: Stream
+  Chest: Stream
+  Belt:
+    Stream:
+      Volume: float64
+      Speed: float64
+      Burden: float64
+      Capacity:
+        Max: float64
+        Current: float64
+```
