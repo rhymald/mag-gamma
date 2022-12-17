@@ -6,7 +6,7 @@ import "fmt"
 
 type Streams struct {
   List []primitives.Stream
-  SoulVolume float64 // ? 
+  SoulVolume float64 // ?
   Class  float64
   Herald float64
   Bender float64
@@ -20,35 +20,52 @@ var (
 
 func PlotStreamList(list Streams, verbose bool) {
   multiplier := 1.0
+  sum, rate := 0.0, 0.0
   fmt.Printf(" ┌──── INFO [List strings]:\n")
   fmt.Printf(" │ Herald: %1.3f ─── Bender: %1.3f ─── Multiplier: %1.3f\n", list.Herald, list.Bender, list.Bender/list.Herald)
-  if verbose { multiplier = list.Bender/list.Herald }
+  if true { multiplier = list.Bender/list.Herald } // does it harm balance?
   for i, stream := range list.List {
+    rating, askillrate, dskillrate := 1.0, 0.0, 0.0
     stats := primitives.StatsFromStream(stream)
     fmt.Printf(" │ ┌─ %d'%s ─── Basical stats: ▣ %1.3f ◈ %1.3f ▦ %1.3f \n", i+1, primitives.ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction)
     dot := math.Pow(math.Log2(primitives.Vector(stream.Destruction,stream.Creation+1,stream.Alteration)/3.5+1)+1, 2) * 0.75 - 0.75
-    fmt.Printf(" │ │ Consumption count: %1.0f dots", stats["M-Fuel"])
-    if verbose { fmt.Printf(" %+1.0f dots ", stats["M-Fuel"]*(multiplier-1)) }
-    fmt.Printf(" for time: %1.0f ms", stats["M-Quickness"])
-    if verbose { fmt.Printf(" %+1.0f ms ", stats["M-Quickness"]*(multiplier-1)) }
+    rating += dot*stats["M-Fuel"]*stats["M-Quickness"]*(multiplier)*multiplier
+    fmt.Printf(" │ │ Consumption count: %1.0f dots", stats["M-Fuel"]*(multiplier))
+    fmt.Printf(" for time: %1.0f ms", stats["M-Quickness"]*(multiplier))
     fmt.Printf(" = avg weight: %1.3f avg\n", dot)
     // Creative
     fmt.Printf(" │ │ ○ Toughness: %2.1f \n", stats["C-Toughness"])
     if stats["Cd-Decay"] > 0 { fmt.Printf(" │ │   ◎ Decay: %+1.1f%%\n", 100*stats["Cd-Decay"]) }
     if stats["Ca-Restoration"] > 0 { fmt.Printf(" │ │   ◎ Restoration: %+1.1f%%\n", 100*stats["Ca-Restoration"]) }
     if stats["Cad-Summon"] > 0 { fmt.Printf(" │ │     ◉ Summon: %+1.1f%%\n", 100*stats["Cad-Summon"]) }
+    dskillrate += rating*stats["C-Toughness"]
+    askillrate += rating*(stats["C-Toughness"]*stats["D-Power"])*(1+stats["Cd-Decay"])/math.Pi
+    dskillrate += rating*(stats["C-Toughness"]*stats["A-Concentration"])*(1+stats["Ca-Restoration"])/math.Pi
+    dskillrate += rating*(stats["C-Toughness"]*stats["D-Power"]*stats["A-Concentration"])*(1+stats["Cad-Summon"])/math.Pi/math.Pi
     // Alterative
     fmt.Printf(" │ │ ○ Concentration: %2.1f \n", stats["A-Concentration"])
     if stats["Ad-Condition"] > 0 { fmt.Printf(" │ │   ◎ Condition: %+1.1f%%\n", 100*stats["Ad-Condition"]) }
     if stats["Ac-Boon"] > 0 { fmt.Printf(" │ │   ◎ Boon: %+1.1f%%\n", 100*stats["Ac-Boon"]) }
     if stats["Adc-Transformation"] > 0 { fmt.Printf(" │ │     ◉ Transformation: %+1.1f%%\n", 100*stats["Adc-Transformation"]) }
+    askillrate += rating*(stats["A-Concentration"])
+    askillrate += rating*(stats["D-Power"]*stats["A-Concentration"])*(1+stats["Ad-Condition"])/math.Pi
+    dskillrate += rating*(stats["C-Toughness"]*stats["A-Concentration"])*(1+stats["Ac-Boon"])/math.Pi
+    dskillrate += rating*(stats["C-Toughness"]*stats["D-Power"]*stats["A-Concentration"])*(1+stats["Adc-Transformation"])/math.Pi/math.Pi
     // Destructive
     fmt.Printf(" │ │ ○ Power: %2.1f \n", stats["D-Power"])
     if stats["Dc-Sharpening"] > 0 { fmt.Printf(" │ │   ◎ Sharpening: %+2.1f%%\n", 100*stats["Dc-Sharpening"]) }
     if stats["Da-Barrier"] > 0 { fmt.Printf(" │ │   ◎ Barrier: %+2.1f%%\n", 100*stats["Da-Barrier"]) }
     if stats["Dac-Disaster"] > 0 { fmt.Printf(" │ │     ◉ Disaster: %+2.1f%%\n", 100*stats["Dac-Disaster"]) }
+    dskillrate += rating*(stats["D-Power"])
+    dskillrate += rating*(stats["D-Power"]*stats["C-Toughness"])*(1+stats["Dc-Sharpening"])/math.Pi
+    askillrate += rating*(stats["D-Power"]*stats["A-Concentration"])*(1+stats["Da-Barrier"])/math.Pi
+    dskillrate += rating*(stats["C-Toughness"]*stats["D-Power"]*stats["A-Concentration"])*(1+stats["Dac-Disaster"])/math.Pi/math.Pi
     fmt.Printf(" │ └──── Overheat threshold: ◮ %1.3f\n", stream.Heat.Threshold)
+    rate += askillrate*math.Cbrt(stream.Heat.Threshold)*dskillrate
+    sum += math.Cbrt((stream.Destruction+1)*(stream.Creation+1)*(stream.Alteration+1)-1)
+    fmt.Printf(" │            Stream volume: %1.3f and rate: %1.3f\n", math.Cbrt((stream.Destruction+1)*(stream.Creation+1)*(stream.Alteration+1)-1), math.Log2( askillrate*(stream.Heat.Threshold*dskillrate) +1)/math.Log2(1.01) )
   }
+  fmt.Printf(" │      Total stream volume: %1.0f and rate: %1.0f\n", math.Log2(sum+1)/math.Log2(1.01), math.Log2(rate+1)/math.Log2(1.01))
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
 
@@ -64,24 +81,24 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   countOfStreams := math.Round(stringsMatrix.Class)
   standart = standart
   empowering := ( - countOfStreams + stringsMatrix.Class )
-  creUp, altUp, desUp := 1.0, 1+primitives.RNF()/2, 1.0
-  if empowering > 0 { desUp = (1+empowering)-1 ; creUp = 3.5-altUp-desUp-1 ; altUp += -1 } else { creUp = (1-empowering)-1 ; desUp = 3.5-altUp-creUp-1 ; altUp += -1 }
+  creUp, altUp, desUp := 1.0, 1+primitives.RNF()/4+primitives.RNF()/4, 1.0
+  if empowering > 0 { desUp = (1+primitives.RNF()*empowering) ; creUp = 3.5-altUp-desUp } else { creUp = (1-primitives.RNF()*empowering) ; desUp = 3.5-altUp-creUp }
   fmt.Printf("INFO [Player creation][New initial streams]: defined %d class (%d streams), %+1.0f%% of power\n", int(stringsMatrix.Class*100000), int(countOfStreams), empowering*100)
   lens, wids, pows := []float64 {}, []float64 {}, []float64 {}
   slen, swid, spow := 0.0, 0.0, 0.0
   for i:=0; i<int(countOfStreams); i++ {
-    leni := (7+9*primitives.RNF())*(1-creUp+primitives.RNF()*creUp+primitives.RNF()*creUp)
-    widi := (7+9*primitives.RNF())*(1-altUp+primitives.RNF()*altUp+primitives.RNF()*altUp)
-    powi := (7+9*primitives.RNF())*(1-desUp+primitives.RNF()*desUp+primitives.RNF()*desUp)
+    leni := (7+9*primitives.RNF())
+    widi := (7+9*primitives.RNF())
+    powi := (7+9*primitives.RNF())
     lens, wids, pows = append(lens, leni), append(wids, widi), append(pows, powi)
     slen += leni ; swid += widi ; spow += powi
   }
   for i:=0; i<int(countOfStreams); i++ {
     var strings primitives.Stream
     strings.Element     = AllElements[i%3+2]
-    strings.Creation    = lens[i] / slen * standart
-    strings.Alteration  = wids[i] / swid * standart
-    strings.Destruction = pows[i] / spow * standart
+    strings.Creation    = lens[i] / slen * standart * math.Cbrt(creUp)
+    strings.Alteration  = wids[i] / swid * standart * math.Cbrt(altUp)
+    strings.Destruction = pows[i] / spow * standart * math.Cbrt(desUp)
     // strings.InfoLWP = [3]float64{ primitives.NewBornStreams_LenFromStream(strings), primitives.NewBornStreams_WidFromStream(strings), primitives.NewBornStreams_PowFromStream(strings) }
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }

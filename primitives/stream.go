@@ -46,7 +46,7 @@ func StreamMean(element string, list []Stream) Stream {
 }
 
 func StatsFromStream(stream Stream) map[string]float64 {
-  coefficiaent := 1.0+1/16
+  coefficiaent := 1.1479
   // lowthres := 1/math.Sqrt(coefficiaent)
   buffer := make(map[string]float64)
   // volume := Vector(stream.Creation+1,stream.Destruction+1,stream.Alteration+1)

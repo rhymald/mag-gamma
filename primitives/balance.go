@@ -4,7 +4,7 @@ import "math"
 //// Player stats
 
 // streams basics
-func NewBornStreams_BendHeraldFromClass(class float64) (float64, float64) { return math.Sqrt(7.5-class), math.Sqrt(0.5+class) }
+func NewBornStreams_BendHeraldFromClass(class float64) (float64, float64) { return math.Cbrt(7.5-class), math.Cbrt(0.5+class) }
 
 // elemental state
 func InnerAffinization_ResistanceFromState(state Stream) float64 { return Vector(state.Destruction,state.Destruction,state.Creation) }

@@ -19,12 +19,13 @@ List:
 
 #### Elementals State
 ```yaml
-External: [9]Stream
+External Wells: [9]Stream
 Empowered: [9]Stream
+External Curses: [9]Stream
+Deminished: [9]Stream
 ```
 
 #### Pool
-consumable, transferable.
 ```yaml
 MaxVol: float64
 Dots:
@@ -52,7 +53,7 @@ Dots:
   - Flock 1
   - Socket
   - Flock 2
-- Description: Well  
+- Description: Cleansing well  
   Chain:
   - Socket in
   - Flock 3  
@@ -66,7 +67,7 @@ Dots:
   - ...
 ```
 
-#### Physical #TBD
+## Physical
 ```yaml
 Position:
   X: float64
