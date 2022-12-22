@@ -51,7 +51,7 @@ func StatsFromStream(stream Stream) map[string]float64 {
   buffer := make(map[string]float64)
   // volume := Vector(stream.Creation+1,stream.Destruction+1,stream.Alteration+1)
   // Destruction = damage, power
-  buffer["D-Power"] = Log1479(1+stream.Destruction)
+  buffer["D-Power"] = Log1479(stream.Destruction)
   if StreamStructure2(stream.Destruction,stream.Creation,stream.Alteration,coefficiaent) {
     // Antibarrier = +AddDamage, +ticks, - if D>C close to each other
     buffer["Dc-Sharpening"] = StreamAffinity2(stream.Destruction,stream.Creation,coefficiaent)
@@ -65,7 +65,7 @@ func StatsFromStream(stream Stream) map[string]float64 {
     buffer["Dac-Disaster"] = StreamAffinity3(stream.Destruction,stream.Alteration,stream.Creation,coefficiaent)
   }
   // Alteration = luck, dexterity
-  buffer["A-Concentration"] = math.Sqrt(Log1479(1+stream.Alteration)+1)
+  buffer["A-Concentration"] = math.Sqrt(Log1479(stream.Alteration)+1)-1
   if StreamStructure2(stream.Alteration,stream.Destruction,stream.Creation,coefficiaent) {
     // Smooth damaging conditions (easy to clean) = +time, +damage : A>D
     buffer["Ad-Condition"] = StreamAffinity2(stream.Alteration,stream.Destruction,coefficiaent)
@@ -79,7 +79,7 @@ func StatsFromStream(stream Stream) map[string]float64 {
     buffer["Adc-Transformation"] = StreamAffinity3(stream.Alteration,stream.Destruction,stream.Creation,coefficiaent)
   }
   // Creation = give, intelligence
-  buffer["C-Toughness"] = math.Sqrt(1+stream.Creation)
+  buffer["C-Toughness"] = math.Sqrt(1+stream.Creation)-1
   if StreamStructure2(stream.Creation,stream.Destruction,stream.Creation,coefficiaent) {
     // Shield = +amount, +time : C>D
     buffer["Cd-Decay"] = StreamAffinity2(stream.Creation,stream.Destruction,coefficiaent)

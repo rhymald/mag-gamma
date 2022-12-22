@@ -19,6 +19,7 @@ var (
 )
 
 func PlotStreamList(list Streams, verbose bool) {
+  resistances := make([]float64, 9)
   multiplier := 1.0
   sum, rate := 0.0, 0.0
   fmt.Printf(" ┌──── INFO [List strings]:\n")
@@ -34,7 +35,7 @@ func PlotStreamList(list Streams, verbose bool) {
     fmt.Printf(" for time: %1.0f ms", stats["M-Quickness"]*(multiplier))
     fmt.Printf(" = avg weight: %1.3f avg\n", dot)
     // Creative
-    fmt.Printf(" │ │ ○ Toughness: %2.1f \n", stats["C-Toughness"])
+    fmt.Printf(" │ │ ○ Toughness: %2.3f \n", stats["C-Toughness"])
     if stats["Cd-Decay"] > 0 { fmt.Printf(" │ │   ◎ Decay: %+1.1f%%\n", 100*stats["Cd-Decay"]) }
     if stats["Ca-Restoration"] > 0 { fmt.Printf(" │ │   ◎ Restoration: %+1.1f%%\n", 100*stats["Ca-Restoration"]) }
     if stats["Cad-Summon"] > 0 { fmt.Printf(" │ │     ◉ Summon: %+1.1f%%\n", 100*stats["Cad-Summon"]) }
@@ -43,7 +44,7 @@ func PlotStreamList(list Streams, verbose bool) {
     dskillrate += rating*(stats["C-Toughness"]*stats["A-Concentration"])*(1+stats["Ca-Restoration"])/math.Pi
     dskillrate += rating*(stats["C-Toughness"]*stats["D-Power"]*stats["A-Concentration"])*(1+stats["Cad-Summon"])/math.Pi/math.Pi
     // Alterative
-    fmt.Printf(" │ │ ○ Concentration: %2.1f \n", stats["A-Concentration"])
+    fmt.Printf(" │ │ ○ Concentration: %2.3f \n", stats["A-Concentration"])
     if stats["Ad-Condition"] > 0 { fmt.Printf(" │ │   ◎ Condition: %+1.1f%%\n", 100*stats["Ad-Condition"]) }
     if stats["Ac-Boon"] > 0 { fmt.Printf(" │ │   ◎ Boon: %+1.1f%%\n", 100*stats["Ac-Boon"]) }
     if stats["Adc-Transformation"] > 0 { fmt.Printf(" │ │     ◉ Transformation: %+1.1f%%\n", 100*stats["Adc-Transformation"]) }
@@ -52,7 +53,12 @@ func PlotStreamList(list Streams, verbose bool) {
     dskillrate += rating*(stats["C-Toughness"]*stats["A-Concentration"])*(1+stats["Ac-Boon"])/math.Pi
     dskillrate += rating*(stats["C-Toughness"]*stats["D-Power"]*stats["A-Concentration"])*(1+stats["Adc-Transformation"])/math.Pi/math.Pi
     // Destructive
-    fmt.Printf(" │ │ ○ Power: %2.1f \n", stats["D-Power"])
+    fmt.Printf(" │ │ ○ Power: %2.3f \n", stats["D-Power"])
+    //   Hit Damage
+    // critdmg := math.Sqrt(primitives.Log1479((primitives.Vector(stream.Destruction+1,stream.Destruction,stream.Alteration)-stream.Destruction))+1)-1
+    critdmg := 2*((primitives.Vector(stream.Destruction,stream.Alteration)+math.Sqrt(stream.Destruction+1)*2-2-stream.Alteration)/primitives.Vector(stream.Destruction,stream.Alteration))
+    critrate := 0.5*((primitives.Vector(stream.Destruction,stream.Alteration)+math.Sqrt(stream.Alteration+1)/2-0.5-stream.Destruction)/primitives.Vector(stream.Destruction,stream.Alteration))
+    fmt.Printf(" │ │   Criticat rate: %+1.1f%% and damage: %+1.1f%% == %+1.1f%% dps \n", critrate*100, critdmg*100, ((1+critrate)*(1+critdmg)-1)*100)
     if stats["Dc-Sharpening"] > 0 { fmt.Printf(" │ │   ◎ Sharpening: %+2.1f%%\n", 100*stats["Dc-Sharpening"]) }
     if stats["Da-Barrier"] > 0 { fmt.Printf(" │ │   ◎ Barrier: %+2.1f%%\n", 100*stats["Da-Barrier"]) }
     if stats["Dac-Disaster"] > 0 { fmt.Printf(" │ │     ◉ Disaster: %+2.1f%%\n", 100*stats["Dac-Disaster"]) }
@@ -62,9 +68,15 @@ func PlotStreamList(list Streams, verbose bool) {
     dskillrate += rating*(stats["C-Toughness"]*stats["D-Power"]*stats["A-Concentration"])*(1+stats["Dac-Disaster"])/math.Pi/math.Pi
     fmt.Printf(" │ └──── Overheat threshold: ◮ %1.3f\n", stream.Heat.Threshold)
     rate += askillrate*math.Cbrt(stream.Heat.Threshold)*dskillrate
-    sum += math.Cbrt((stream.Destruction+1)*(stream.Creation+1)*(stream.Alteration+1)-1)
-    fmt.Printf(" │            Stream volume: %1.3f and rate: %1.3f\n", math.Cbrt((stream.Destruction+1)*(stream.Creation+1)*(stream.Alteration+1)-1), math.Log2( askillrate*(stream.Heat.Threshold*dskillrate) +1)/math.Log2(1.01) )
+    sum += math.Cbrt((stream.Destruction+1)*(stream.Creation+1)*(stream.Alteration+1))-1
+    resistance := primitives.Vector( primitives.Log1479(stream.Alteration), math.Sqrt(primitives.Log1479(stream.Creation)+1)-1, math.Sqrt(primitives.Log1479(stream.Alteration)+1)-1 )
+    resistances[primitives.ElemToInt(stream.Element)] += resistance
+    fmt.Printf(" │     Additional resisance: %+1.3f \n", resistance )
+    fmt.Printf(" │            Stream volume: %1.3f and rate: %+1.3f\n", math.Cbrt((stream.Destruction+1)*(stream.Creation+1)*(stream.Alteration+1))-1, math.Log2( askillrate*(stream.Heat.Threshold*dskillrate) +1)/math.Log2(1.01) )
   }
+  fmt.Printf(" │      Total resistances rate: \n │")
+  for i := 1; i<5; i++ { if resistances[i] != 0 {fmt.Printf(" %s: %1.3f   ", primitives.ElemSigns[i], resistances[i]) }}
+  fmt.Println()
   fmt.Printf(" │      Total stream volume: %1.0f and rate: %1.0f\n", math.Log2(sum+1)/math.Log2(1.01), math.Log2(rate+1)/math.Log2(1.01))
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
