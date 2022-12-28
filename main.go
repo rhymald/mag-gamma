@@ -63,7 +63,7 @@ func init() {
   environment.Welling(&Environment) // fix to partial stack
   environment.Cursing(&Environment) // and here
   PlayerBorn(0.5)
-  for {PlayerBorn(0.75+primitives.RNF()/2) ;PlayerBorn(2.75+primitives.RNF()/2)}
+  for {PlayerBorn(0.75+primitives.RNF()/2) ; PlayerBorn(2.75+primitives.RNF()/2) ; PlayerBorn(5.75+primitives.RNF()/2) }
   // return
   go func() { // passive prcoesses block
     go func() { for You.Health.Current >= 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) } ; fmt.Println("FATAL: You are dead.")}()
@@ -113,7 +113,7 @@ func PlayerBorn(class float64) {
   fmt.Scanln(&You.Name)
   if You.Name == "Rhymald" || You.Name == "" {verbose = true}
   You.Health.Current = 1
-  player.NewBorn(&YourStreams, class, 1*0.07, 5)
+  player.NewBorn(&YourStreams, class, 10240*0.35, 5)
   You.Health.Max += 100
   player.ExtendPool(&YourPool, YourStreams.List, verbose)
   player.ReadStatesFromEnv(&YourElemState, You.XYZ, &YourStreams, Environment)

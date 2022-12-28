@@ -46,7 +46,7 @@ func StreamMean(element string, list []Stream) Stream {
 }
 
 func StatsFromStream(stream Stream) map[string]float64 {
-  coefficiaent := 1.1479
+  coefficiaent := 1.05
   // lowthres := 1/math.Sqrt(coefficiaent)
   buffer := make(map[string]float64)
   // volume := Vector(stream.Creation+1,stream.Destruction+1,stream.Alteration+1)
@@ -99,6 +99,7 @@ func StatsFromStream(stream Stream) map[string]float64 {
   return buffer
 }
 
+func CriticalEffectFromStatsPair(a float64, b float64) (float64, float64) { return (Vector(a,b)-b)/Vector(a,b)+Log1479( a/b+0.1479 )/math.Pi, (Vector(a,b)-a)/Vector(a,b) }
 func StreamStructure2(a float64, b float64, c float64, t float64) bool { if a > b && b*math.Sqrt(t) > c && a/b > 1 && a/b < t { return true } ; return false }
 func StreamStructure3(a float64, b float64, c float64, t float64) bool { if ( StreamStructure2(a,b,c,t) || StreamStructure2(a,c,b,t) ) && math.Max(math.Max(a/b,a/c),b/c)<math.Cbrt(t)*math.Cbrt(t) && math.Max(b/c,c/b) < math.Sqrt(t) { return true } ; return false }
 func StreamAffinity2(a float64, b float64, t float64) float64 { return math.Pow(math.Log2(t/(a/b))/math.Log2(t), 2) }

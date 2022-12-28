@@ -28,56 +28,69 @@ func PlotStreamList(list Streams, verbose bool) {
   for i, stream := range list.List {
     rating, askillrate, dskillrate := 1.0, 0.0, 0.0
     stats := primitives.StatsFromStream(stream)
-    fmt.Printf(" │ ┌─ %d'%s ─── Basical stats: ▣ %1.3f ◈ %1.3f ▦ %1.3f \n", i+1, primitives.ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction)
+    fmt.Printf(" │ ┌─ %d'%s ─── Basical stats: \t ▣ %1.3f \t ◈ %1.3f \t ▦ %1.3f \n", i+1, primitives.ES(stream.Element), stream.Creation, stream.Alteration, stream.Destruction)
     dot := math.Pow(math.Log2(primitives.Vector(stream.Destruction,stream.Creation+1,stream.Alteration)/3.5+1)+1, 2) * 0.75 - 0.75
     rating += dot*stats["M-Fuel"]*stats["M-Quickness"]*(multiplier)*multiplier
-    fmt.Printf(" │ │ Consumption count: %1.0f dots", stats["M-Fuel"]*(multiplier))
-    fmt.Printf(" for time: %1.0f ms", stats["M-Quickness"]*(multiplier))
-    fmt.Printf(" = avg weight: %1.3f avg\n", dot)
+    fmt.Printf(" │ │ Consumption count: \t %1.0f dots \t", stats["M-Fuel"]*(multiplier))
+    fmt.Printf(" for %1.0f ms \t", stats["M-Quickness"]*(multiplier))
+    fmt.Printf(" %1.3f avg weight\n", dot)
     // Creative
-    fmt.Printf(" │ │ ○ Toughness: %2.3f \n", stats["C-Toughness"])
+    fmt.Printf(" │ │ ○ Toughness: %2.3f \t", stats["C-Toughness"])
+    dmg, drate := primitives.CriticalEffectFromStatsPair(stream.Creation, stream.Alteration)
+    fmt.Printf(" %+1.1f%% chance \t %+1.1f%% eff \t %+1.1f%% random\n", drate*100, dmg*100, (math.Sqrt(dmg+1)-1)*100)
     if stats["Cd-Decay"] > 0 { fmt.Printf(" │ │   ◎ Decay: %+1.1f%%\n", 100*stats["Cd-Decay"]) }
     if stats["Ca-Restoration"] > 0 { fmt.Printf(" │ │   ◎ Restoration: %+1.1f%%\n", 100*stats["Ca-Restoration"]) }
-    if stats["Cad-Summon"] > 0 { fmt.Printf(" │ │     ◉ Summon: %+1.1f%%\n", 100*stats["Cad-Summon"]) }
+    if stats["Cad-Summon"] > 0 { fmt.Printf(" │ │       ◉ Summon: %+1.1f%%\n", 100*stats["Cad-Summon"]) }
     dskillrate += rating*stats["C-Toughness"]
     askillrate += rating*(stats["C-Toughness"]*stats["D-Power"])*(1+stats["Cd-Decay"])/math.Pi
     dskillrate += rating*(stats["C-Toughness"]*stats["A-Concentration"])*(1+stats["Ca-Restoration"])/math.Pi
     dskillrate += rating*(stats["C-Toughness"]*stats["D-Power"]*stats["A-Concentration"])*(1+stats["Cad-Summon"])/math.Pi/math.Pi
     // Alterative
-    fmt.Printf(" │ │ ○ Concentration: %2.3f \n", stats["A-Concentration"])
+    fmt.Printf(" │ │ ○ Concentration: %2.3f \t", stats["A-Concentration"])
+    dmg, drate = primitives.CriticalEffectFromStatsPair(stream.Alteration, 2/(1/stream.Creation+1/stream.Destruction) )
+    fmt.Printf(" %+1.1f%% chance \t %+1.1f%% eff \t %+1.1f%% random\n", drate*100, dmg*100, (math.Sqrt(dmg+1)-1)*100)
     if stats["Ad-Condition"] > 0 { fmt.Printf(" │ │   ◎ Condition: %+1.1f%%\n", 100*stats["Ad-Condition"]) }
     if stats["Ac-Boon"] > 0 { fmt.Printf(" │ │   ◎ Boon: %+1.1f%%\n", 100*stats["Ac-Boon"]) }
-    if stats["Adc-Transformation"] > 0 { fmt.Printf(" │ │     ◉ Transformation: %+1.1f%%\n", 100*stats["Adc-Transformation"]) }
+    if stats["Adc-Transformation"] > 0 { fmt.Printf(" │ │       ◉ Transformation: %+1.1f%%\n", 100*stats["Adc-Transformation"]) }
     askillrate += rating*(stats["A-Concentration"])
     askillrate += rating*(stats["D-Power"]*stats["A-Concentration"])*(1+stats["Ad-Condition"])/math.Pi
     dskillrate += rating*(stats["C-Toughness"]*stats["A-Concentration"])*(1+stats["Ac-Boon"])/math.Pi
     dskillrate += rating*(stats["C-Toughness"]*stats["D-Power"]*stats["A-Concentration"])*(1+stats["Adc-Transformation"])/math.Pi/math.Pi
     // Destructive
-    fmt.Printf(" │ │ ○ Power: %2.3f \n", stats["D-Power"])
+    fmt.Printf(" │ │ ○ Power: %2.3f ", stats["D-Power"])
     //   Hit Damage
-    // critdmg := math.Sqrt(primitives.Log1479((primitives.Vector(stream.Destruction+1,stream.Destruction,stream.Alteration)-stream.Destruction))+1)-1
-    critdmg := 2*((primitives.Vector(stream.Destruction,stream.Alteration)+math.Sqrt(stream.Destruction+1)*2-2-stream.Alteration)/primitives.Vector(stream.Destruction,stream.Alteration))
-    critrate := 0.5*((primitives.Vector(stream.Destruction,stream.Alteration)+math.Sqrt(stream.Alteration+1)/2-0.5-stream.Destruction)/primitives.Vector(stream.Destruction,stream.Alteration))
-    fmt.Printf(" │ │   Criticat rate: %+1.1f%% and damage: %+1.1f%% == %+1.1f%% dps \n", critrate*100, critdmg*100, ((1+critrate)*(1+critdmg)-1)*100)
+    dmg, drate = primitives.CriticalEffectFromStatsPair(stream.Destruction, stream.Alteration)
+    fmt.Printf("x%1.3f \t %+1.1f%% chance \t %+1.1f%% eff \t %+1.1f%% random\n", (dmg+1)*(drate+1), drate*100, dmg*100, (math.Sqrt(dmg+1)-1)*100)
     if stats["Dc-Sharpening"] > 0 { fmt.Printf(" │ │   ◎ Sharpening: %+2.1f%%\n", 100*stats["Dc-Sharpening"]) }
     if stats["Da-Barrier"] > 0 { fmt.Printf(" │ │   ◎ Barrier: %+2.1f%%\n", 100*stats["Da-Barrier"]) }
-    if stats["Dac-Disaster"] > 0 { fmt.Printf(" │ │     ◉ Disaster: %+2.1f%%\n", 100*stats["Dac-Disaster"]) }
+    if stats["Dac-Disaster"] > 0 { fmt.Printf(" │ │       ◉ Disaster: %+2.1f%%\n", 100*stats["Dac-Disaster"]) }
     dskillrate += rating*(stats["D-Power"])
     dskillrate += rating*(stats["D-Power"]*stats["C-Toughness"])*(1+stats["Dc-Sharpening"])/math.Pi
     askillrate += rating*(stats["D-Power"]*stats["A-Concentration"])*(1+stats["Da-Barrier"])/math.Pi
     dskillrate += rating*(stats["C-Toughness"]*stats["D-Power"]*stats["A-Concentration"])*(1+stats["Dac-Disaster"])/math.Pi/math.Pi
-    fmt.Printf(" │ └──── Overheat threshold: ◮ %1.3f\n", stream.Heat.Threshold)
+    resistance := primitives.Vector(stream.Alteration,stream.Creation,stream.Destruction)
+    resistances[primitives.ElemToInt(stream.Element)] += resistance
+    fmt.Printf(" │ └───────────────────────────────────────────────────────────────────────────────\n")
+    fmt.Printf(" │     Additional resisance: %+1.3f \n", resistance )
+    fmt.Printf(" │            Stream volume: %1.3f and rate: %+1.0f\n", math.Cbrt((stream.Destruction+1)*(stream.Creation+1)*(stream.Alteration+1))-1, primitives.Log1479( askillrate*(stream.Heat.Threshold*dskillrate) ) )
+    fmt.Printf(" │       Overheat threshold: ◮ %1.3f\n", stream.Heat.Threshold)
     rate += askillrate*math.Cbrt(stream.Heat.Threshold)*dskillrate
     sum += math.Cbrt((stream.Destruction+1)*(stream.Creation+1)*(stream.Alteration+1))-1
-    resistance := primitives.Vector( primitives.Log1479(stream.Alteration), math.Sqrt(primitives.Log1479(stream.Creation)+1)-1, math.Sqrt(primitives.Log1479(stream.Alteration)+1)-1 )
-    resistances[primitives.ElemToInt(stream.Element)] += resistance
-    fmt.Printf(" │     Additional resisance: %+1.3f \n", resistance )
-    fmt.Printf(" │            Stream volume: %1.3f and rate: %+1.3f\n", math.Cbrt((stream.Destruction+1)*(stream.Creation+1)*(stream.Alteration+1))-1, math.Log2( askillrate*(stream.Heat.Threshold*dskillrate) +1)/math.Log2(1.01) )
   }
-  fmt.Printf(" │      Total resistances rate: \n │")
-  for i := 1; i<5; i++ { if resistances[i] != 0 {fmt.Printf(" %s: %1.3f   ", primitives.ElemSigns[i], resistances[i]) }}
+  // TBD idea modify resistances:
+  // from 5's destructions - damage == cold+(biggest(des))
+  // from 8's creations - damage == fire+(biggest(cre))
+  // from 6's to fire'cre and cold'des == damage
+  // from 7's to air'cre and earth'alt == damage 
+  // resistances[0] += ((resistances[5]+1) * (1+resistances[8])) - 1
+  // resistances[1] += resistances[7]+resistances[0]
+  // resistances[2] += resistances[6]/2+resistances[0]+resistances[8]/2
+  // resistances[3] += resistances[7]+resistances[0]
+  // resistances[4] += resistances[6]/2+resistances[0]+resistances[5]/2
+  fmt.Printf(" │   Total resistances rate:")
+  for i := 1; i<5; i++ { if resistances[i] != 0 {fmt.Printf(" %s: %1.3f", primitives.ElemSigns[i], primitives.Log1479(resistances[i]) ) }}
   fmt.Println()
-  fmt.Printf(" │      Total stream volume: %1.0f and rate: %1.0f\n", math.Log2(sum+1)/math.Log2(1.01), math.Log2(rate+1)/math.Log2(1.01))
+  fmt.Printf(" │      Total stream volume: %1.3f and rate: %1.0f\n", primitives.Log1479(sum), primitives.Log1479(rate) )
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
 }
 
@@ -107,10 +120,10 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   }
   for i:=0; i<int(countOfStreams); i++ {
     var strings primitives.Stream
-    strings.Element     = AllElements[i%3+2]
-    strings.Creation    = lens[i] / slen * standart * math.Cbrt(creUp)
-    strings.Alteration  = wids[i] / swid * standart * math.Cbrt(altUp)
-    strings.Destruction = pows[i] / spow * standart * math.Cbrt(desUp)
+    strings.Element     = primitives.RNDElem()// AllElements[0]
+    strings.Creation    = lens[i] / (slen+swid+spow) * standart * math.Cbrt(creUp)
+    strings.Alteration  = wids[i] / (slen+swid+spow) * standart * math.Cbrt(altUp)
+    strings.Destruction = pows[i] / (slen+swid+spow) * standart * math.Cbrt(desUp)
     // strings.InfoLWP = [3]float64{ primitives.NewBornStreams_LenFromStream(strings), primitives.NewBornStreams_WidFromStream(strings), primitives.NewBornStreams_PowFromStream(strings) }
     stringsMatrix.List = append(stringsMatrix.List, strings)
   }
