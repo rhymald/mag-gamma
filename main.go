@@ -62,8 +62,8 @@ func init() {
   // some login, and middleware: regen and blockchain sync WorldInit()
   environment.Welling(&Environment) // fix to partial stack
   environment.Cursing(&Environment) // and here
-  PlayerBorn(0.5)
-  for {PlayerBorn(0.75+primitives.RNF()/2) ; PlayerBorn(2.75+primitives.RNF()/2) ; PlayerBorn(5.75+primitives.RNF()/2) }
+  PlayerBorn(0)
+  // for {PlayerBorn(0.75+primitives.RNF()/2) ; PlayerBorn(2.75+primitives.RNF()/2) ; PlayerBorn(5.75+primitives.RNF()/2) }
   // return
   go func() { // passive prcoesses block
     go func() { for You.Health.Current >= 0 { player.RegenerateDots(&YourPool, YourStreams.List, verbose) } ; fmt.Println("FATAL: You are dead.")}()
@@ -81,7 +81,11 @@ func main() {
   // player.EnergeticSurge(&YourPool, &YourStreams, 5, verbose) ; player.PlotHeatState(YourStreams.List)
   for {
     time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut()/4 ))
-    // if primitives.RNF() < 0.71 { player.EnergeticSurge(&YourPool, &YourStreams, 0, verbose) ; player.PlotHeatState(YourStreams.List) }
+    // if primitives.RNF() > 0.71 {
+    //   player.EnergeticSurge(&YourPool, &YourStreams, 0, verbose)
+    //   player.PlotHeatState(YourStreams.List)
+    //   time.Sleep( time.Millisecond * time.Duration( primitives.Pool_RegenerateFullTimeOut()/2 ))
+    // }
     if primitives.RNF() < 1 { player.PlotEnergyStatus(YourPool, verbose) }
   }
   fmt.Scanln()
@@ -113,7 +117,7 @@ func PlayerBorn(class float64) {
   fmt.Scanln(&You.Name)
   if You.Name == "Rhymald" || You.Name == "" {verbose = true}
   You.Health.Current = 1
-  player.NewBorn(&YourStreams, class, 10240*0.35, 5)
+  player.NewBorn(&YourStreams, class, 1*0.35, 5)
   You.Health.Max += 100
   player.ExtendPool(&YourPool, YourStreams.List, verbose)
   player.ReadStatesFromEnv(&YourElemState, You.XYZ, &YourStreams, Environment)

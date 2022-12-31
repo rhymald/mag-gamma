@@ -10,7 +10,7 @@ func NewBornStreams_BendHeraldFromClass(class float64) (float64, float64) { retu
 func InnerAffinization_ResistanceFromState(state Stream) float64 { return Vector(state.Destruction,state.Destruction,state.Creation) }
 
 // pool
-func ExtendPool_MaxVolFromStreams(streams []Stream) float64 { buffer := 0.0 ; for _, each := range streams { buffer += math.Sqrt(1024*each.Creation) } ; return buffer }
+func ExtendPool_MaxVolFromStreams(streams []Stream) float64 { buffer := 0.0 ; for _, each := range streams { buffer += math.Sqrt(1024*each.Creation)*math.Pi*2 } ; return buffer }
 
 // dots
 func Pool_RegenerateFullTimeOut() float64 { return 4096 }
@@ -18,7 +18,7 @@ func CrackStream_DotWeightFromStream(stream Stream) float64 { return math.Log2(V
 func RegenerateDots_PortionFromPool(max float64, current int) int { return int( math.Sqrt(max-float64(current)) ) }
 func EmitDot_DotWeightAndTimeoutFromStreamAndMaxVol(stream Stream, maxvol float64) (float64, float64, float64) {
   weight  := (math.Pow(math.Log2(Vector(stream.Destruction,stream.Creation+1,stream.Alteration)/3.5+1)+1, 2)-1) * (1 + RNF()) / 2
-  timeout := Pool_RegenerateFullTimeOut()/4/(math.Sqrt(maxvol+1))
+  timeout := Pool_RegenerateFullTimeOut()/(math.Sqrt(maxvol/4/math.Pi+1))
   health  := 0.0
   return weight, timeout, health
 }

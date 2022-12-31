@@ -5,6 +5,7 @@ import "math"
 import "fmt"
 
 type Streams struct {
+  Flocks map[string][]int
   List []primitives.Stream
   SoulVolume float64 // ?
   Class  float64
@@ -81,7 +82,7 @@ func PlotStreamList(list Streams, verbose bool) {
   // from 5's destructions - damage == cold+(biggest(des))
   // from 8's creations - damage == fire+(biggest(cre))
   // from 6's to fire'cre and cold'des == damage
-  // from 7's to air'cre and earth'alt == damage 
+  // from 7's to air'cre and earth'alt == damage
   // resistances[0] += ((resistances[5]+1) * (1+resistances[8])) - 1
   // resistances[1] += resistances[7]+resistances[0]
   // resistances[2] += resistances[6]/2+resistances[0]+resistances[8]/2
@@ -129,6 +130,8 @@ func NewBorn(yourStreams *Streams, class float64, standart float64, playerCount 
   }
   totalVol := primitives.StreamMean(AllElements[0], stringsMatrix.List)
   for i, _ := range stringsMatrix.List { stringsMatrix.List[i].Heat.Threshold = primitives.NewBorn_HeatThresholdFromStream(stringsMatrix.List[i], totalVol) }
+  stringsMatrix.Flocks = make(map[string][]int)
+  stringsMatrix.Flocks["Default"] = DefaultFlockFromAllStreams(stringsMatrix.List)
   *yourStreams = stringsMatrix
   fmt.Printf(" │ DEBUG [Player creation][New initial streams]: done.\n")
   fmt.Printf(" └────────────────────────────────────────────────────────────────────────────────────────────────────\n")
